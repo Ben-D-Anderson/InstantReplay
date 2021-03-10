@@ -122,15 +122,13 @@ public class ReplayCommand implements CommandExecutor {
 				if (!ReplayThreads.getThread(player.getUniqueId()).isRunning()) {
 					ReplayThreads.getThread(player.getUniqueId()).resumeReplay();
 					player.sendMessage(Utils.getReplayPrefix() + Config.readColouredString("replay-resumed"));
-					return true;
 				} else {
 					sender.sendMessage(Utils.getReplayPrefix() + Config.readColouredString("replay-not-paused"));
-					return true;
 				}
 			} else {
 				sender.sendMessage(Utils.getReplayPrefix() + Config.readColouredString("no-active-replay"));
-				return true;
 			}
+			return true;
 		}
 
 		if (args[0].equalsIgnoreCase("start")) {
