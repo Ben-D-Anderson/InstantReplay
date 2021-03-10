@@ -1,6 +1,6 @@
 name: Replay
 version: 1.0
-main: club.cureme.replay.Main
+main: com.terraboxstudios.replay.Main
 
 commands:
   replay:
