@@ -1,5 +1,5 @@
 # Replay - 1.7.10 Minecraft Plugin
-<hr>
+
 This plugin is a replay plugin to help administrators go back in time and view events that happened on their server. This is perfect for game modes such as HCF where events like kick and killing may need recording proof, but now they don't. All a staff member has to do is start a replay where it supposedly happened and watch it all unfold.
 
 Replay displays the events in chronological order and a purely packet based way, this means that when an admin is replaying the events only they can see anything that is happening as to not disturb other players.
