@@ -1,14 +1,14 @@
 package com.terraboxstudios.replay.services;
 
+import com.terraboxstudios.replay.mysql.MySQL;
+import com.terraboxstudios.replay.util.Config;
+
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-
-import com.terraboxstudios.replay.mysql.MySQL;
-import com.terraboxstudios.replay.util.Config;
 
 public class MySQLCleanupService {
 
@@ -22,9 +22,8 @@ public class MySQLCleanupService {
 			try {
 				for (String table : tablesToClean) {
 					PreparedStatement statement = MySQL.getConnection().prepareStatement
-							("DELETE FROM ? WHERE time<=?");
-					statement.setString(1, table);
-					statement.setLong(2, Calendar.getInstance().getTime().getTime() - (86400000L * Config.getConfig().getLong("settings.days-until-logs-deleted")));
+							("DELETE FROM " + table + " WHERE time<=?");
+					statement.setLong(1, Calendar.getInstance().getTime().getTime() - (86400000L * Config.getConfig().getLong("settings.days-until-logs-deleted")));
 					statement.execute();					
 				}
 			} catch (SQLException e) {
