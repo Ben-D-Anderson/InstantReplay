@@ -1,6 +1,8 @@
 name: Replay
 version: 1.0
 main: com.terraboxstudios.replay.Main
+depend:
+  - ProtocolLib
 
 commands:
   replay:
