@@ -1,0 +1,8 @@
+name: Replay
+version: 1.0
+main: club.cureme.replay.Main
+
+commands:
+  replay:
+    description: Replay your surroundings
+    usage: /replay <radius> <time_in_seconds> <speed>
