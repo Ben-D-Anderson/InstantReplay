@@ -32,7 +32,7 @@ public class PlayerInventoryLogger {
 				ItemMeta m = h.getItemMeta();
 				m.setDisplayName(ChatColor.GREEN + "Health");
 				List<String> lore = new LinkedList<>();
-				lore.add(ChatColor.YELLOW + "" + health + ChatColor.RED + "�?�");
+				lore.add(ChatColor.YELLOW + "" + health + ChatColor.RED + "❤");
 				m.setLore(lore);
 				h.setItemMeta(m);
 				ItemStack[] healthArr = new ItemStack[] { h };
