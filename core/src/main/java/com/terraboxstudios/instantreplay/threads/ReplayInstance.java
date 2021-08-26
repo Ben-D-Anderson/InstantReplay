@@ -5,7 +5,8 @@ import com.terraboxstudios.instantreplay.containers.*;
 import com.terraboxstudios.instantreplay.obj.CustomInventory;
 import com.terraboxstudios.instantreplay.util.Config;
 import com.terraboxstudios.instantreplay.util.Utils;
-import com.terraboxstudios.instantreplay.versionspecific.NPC;
+import com.terraboxstudios.instantreplay.versionspecific.npc.NPC;
+import com.terraboxstudios.instantreplay.versionspecific.npc.NPCSkin;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;
@@ -182,10 +183,7 @@ public class ReplayInstance extends Thread {
                                 } catch (NullPointerException ignored) {
                                 }
                                 for (int i = 41; i < 45; i++) {
-                                    ItemStack item = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 7);
-                                    ItemMeta itemmeta = item.getItemMeta();
-                                    itemmeta.setDisplayName(" ");
-                                    item.setItemMeta(itemmeta);
+                                    ItemStack item = Main.getVersionSpecificProvider().getItemFactory().getEmptyItemGUIPlaceholder();
                                     try {
                                         getInventories().get(playerInventoryObj.getUuid()).setItem(i, item);
                                     } catch (NullPointerException ignored) {
@@ -267,35 +265,25 @@ public class ReplayInstance extends Thread {
                         } else {
                             Bukkit.getScheduler().runTask(Main.getPlugin(Main.class), () -> {
                                 if (npc[0] == null) {
-                                    npc[0] = Main.getVersionSpecificProvider().getNPCFactory().createNPC(player, playerMoveObj.getName(), playerMoveObj.getUuid());
-                                    if (npc[0].isInvisible()) {
-                                        npc[0].setInvisible(false);
-                                    }
-                                    if (!npc[0].isSpawned()) {
-                                        npc[0].spawn();
-                                    }
-                                    npcs.put(playerMoveObj.getUuid(), npc[0]);
-                                    npc[0].teleport(
-                                            playerMoveObj.getLocation().getX(),
-                                            playerMoveObj.getLocation().getY(),
-                                            playerMoveObj.getLocation().getZ(),
-                                            playerMoveObj.getLocation().getYaw(),
-                                            playerMoveObj.getLocation().getPitch()
+                                    NPCSkin<?> skin = Main.getVersionSpecificProvider().getNPCFactory()
+                                            .getSkin(playerMoveObj.getUuid(), playerMoveObj.getName());
+                                    npc[0] = Main.getVersionSpecificProvider().getNPCFactory().createNPC(
+                                            player.getUniqueId(),
+                                            playerMoveObj.getUuid(),
+                                            playerMoveObj.getName(),
+                                            skin,
+                                            playerMoveObj.getWorld()
                                     );
+                                    npc[0].spawn(playerMoveObj.getLocation());
+                                    npcs.put(playerMoveObj.getUuid(), npc[0]);
                                 } else {
                                     if (npc[0].isInvisible()) {
                                         npc[0].setInvisible(false);
                                     }
                                     if (!npc[0].isSpawned()) {
-                                        npc[0].spawn();
+                                        npc[0].spawn(playerMoveObj.getLocation());
                                     }
-                                    npc[0].teleport(
-                                            playerMoveObj.getLocation().getX(),
-                                            playerMoveObj.getLocation().getY(),
-                                            playerMoveObj.getLocation().getZ(),
-                                            playerMoveObj.getLocation().getYaw(),
-                                            playerMoveObj.getLocation().getPitch()
-                                    );
+                                    npc[0].moveTo(playerMoveObj.getLocation());
                                     CustomInventory customInventory = getContentAndArmour().get(playerMoveObj.getUuid());
                                     if (customInventory != null) {
                                         ItemStack item = customInventory.getContents()[customInventory.getHeldSlot()];

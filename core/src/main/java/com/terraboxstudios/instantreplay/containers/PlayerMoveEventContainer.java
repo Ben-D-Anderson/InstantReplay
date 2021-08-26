@@ -1,41 +1,32 @@
 package com.terraboxstudios.instantreplay.containers;
 
 import com.terraboxstudios.instantreplay.mysql.MySQL;
+import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.World;
 
 import java.util.UUID;
 
 public class PlayerMoveEventContainer implements Runnable {
 
+	@Getter
 	private final String name, world;
 	private final double x, y, z;
+	@Getter
+	@Setter
 	private long time;
+	@Getter
 	private final UUID uuid;
 	private final float yaw, pitch;
-	
-	public float getYaw() {
-		return yaw;
-	}
-
-	public float getPitch() {
-		return pitch;
-	}
-
-	public String getName() {
-		return name;
-	}
 
 	public Location getLocation() {
 		return new Location(Bukkit.getWorld(world), x, y, z, yaw, pitch);
 	}
 
-	public long getTime() {
-		return time;
-	}
-
-	public void setTime(long time) {
-		this.time = time;
+	public World getWorld() {
+		return Bukkit.getWorld(world);
 	}
 	
 	public PlayerMoveEventContainer(String name, UUID uuid, String world, double x, double y, double z, float yaw, float pitch, long time) {
@@ -53,10 +44,6 @@ public class PlayerMoveEventContainer implements Runnable {
 	@Override
 	public void run() {
 		MySQL.logPlayerMoveEvent(this);
-	}
-
-	public UUID getUuid() {
-		return uuid;
 	}
 
 }
