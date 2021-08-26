@@ -1,11 +1,17 @@
-# Replay - 1.7.10 Minecraft Plugin
+## InstantReplay Minecraft Plugin (1.8 - 1.17)
 
-This plugin is a replay plugin to help administrators go back in time and view events that happened on their server. This is perfect for game modes such as HCF where events like kick and killing may need recording proof, but now they don't. All a staff member has to do is start a replay where it supposedly happened and watch it all unfold.
+WARNING: Requires a MySQL database.
 
-Replay displays the events in chronological order and a purely packet based way, this means that when an admin is replaying the events only they can see anything that is happening as to not disturb other players.
+InstantReplay is a plugin to help administrators go back in time and view events that happened on their server. This is perfect when a staff member must deal with an accusation that usually needs recording proof, as they can just replay what happened.
+<br/>
+All a staff member has to do in this scenario, is the following:
+1. Go to where the event occurred.
+2. Start a replay using the `/instantreplay` command.
+3. Watch the events unfold right in front of them.
 
-Highly Configurable - Replay is a very configurable plugin with the config allowing changes to almost everything including permissions, messages and settings.
-This plugin relies on mysql so ensure you have a mysql database you can use when setting up this plugin.
+Replay displays the events in chronological order and uses packets. This means that when an admin is viewing a replay, only they can see the changes and events that occurred.
+
+InstantReplay is a very configurable plugin, with the config allowing changes to almost everything including permissions, messages and settings.
 
 <u>Features:</u>
 - View player's inventory (right click them)

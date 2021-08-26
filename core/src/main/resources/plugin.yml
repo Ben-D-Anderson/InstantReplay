@@ -1,0 +1,15 @@
+name: ${project.name}
+version: ${project.version}
+description: ${project.description}
+website: ${project.url}
+main: instantreplay.Main
+
+depend:
+  - ProtocolLib
+
+commands:
+  replay:
+    description: Replay your surroundings
+    usage: /replay <radius> <time_in_seconds> <speed>
+    aliases:
+      - instantreplay

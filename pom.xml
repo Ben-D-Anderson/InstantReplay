@@ -5,21 +5,45 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.terraboxstudios</groupId>
-    <artifactId>InstantReplay</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <artifactId>instantreplay-parent</artifactId>
+    <name>InstantReplay</name>
+    <version>${revision}</version>
+    <packaging>pom</packaging>
+    <url>https://github.com/Ben-D-Anderson/InstantReplay</url>
+    <description>InstantReplay for Minecraft server administrators.</description>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
+        <revision>2.0.0</revision>
     </properties>
 
-    <dependencies>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>1.18.20</version>
-            <scope>provided</scope>
-        </dependency>
-    </dependencies>
+    <modules>
+        <module>core</module>
+        <module>craftbukkit_1_17_R1</module>
+        <module>craftbukkit_1_16_R3</module>
+        <module>craftbukkit_1_16_R2</module>
+        <module>craftbukkit_1_16_R1</module>
+        <module>craftbukkit_1_15_R1</module>
+        <module>craftbukkit_1_14_R1</module>
+        <module>craftbukkit_1_13_R2</module>
+        <module>craftbukkit_1_13_R1</module>
+        <module>craftbukkit_1_12_R1</module>
+        <module>craftbukkit_1_11_R1</module>
+        <module>craftbukkit_1_10_R1</module>
+        <module>craftbukkit_1_9_R2</module>
+        <module>craftbukkit_1_9_R1</module>
+        <module>craftbukkit_1_8_R3</module>
+        <module>craftbukkit_1_8_R2</module>
+        <module>craftbukkit_1_8_R1</module>
+        <module>dist</module>
+    </modules>
+
+    <repositories>
+        <repository>
+            <id>dmulloy2-repo</id>
+            <url>https://repo.dmulloy2.net/repository/public/</url>
+        </repository>
+    </repositories>
 
 </project>
