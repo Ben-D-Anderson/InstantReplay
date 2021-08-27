@@ -1,4 +1,4 @@
-package com.terraboxstudios.instantreplay.threads;
+package com.terraboxstudios.instantreplay.replay;
 
 import com.terraboxstudios.instantreplay.Main;
 import org.bukkit.Bukkit;
