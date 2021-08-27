@@ -105,4 +105,9 @@ public class NPCImpl extends NPC {
         }
     }
 
+    @Override
+    public int getId() {
+        return entityPlayer.getId();
+    }
+
 }
