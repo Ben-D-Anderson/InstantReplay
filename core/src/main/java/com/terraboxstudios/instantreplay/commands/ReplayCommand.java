@@ -3,8 +3,8 @@ package com.terraboxstudios.instantreplay.commands;
 import com.terraboxstudios.instantreplay.containers.*;
 import com.terraboxstudios.instantreplay.events.PlayerMoveLogger;
 import com.terraboxstudios.instantreplay.mysql.MySQL;
-import com.terraboxstudios.instantreplay.threads.ReplayInstance;
-import com.terraboxstudios.instantreplay.threads.ReplayThreads;
+import com.terraboxstudios.instantreplay.replay.ReplayInstance;
+import com.terraboxstudios.instantreplay.replay.ReplayThreads;
 import com.terraboxstudios.instantreplay.util.Config;
 import com.terraboxstudios.instantreplay.util.Utils;
 import org.bukkit.ChatColor;
@@ -19,11 +19,10 @@ import java.util.*;
 
 public class ReplayCommand implements CommandExecutor {
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 
-		long timeOfCommandRun = Calendar.getInstance().getTime().getTime() + 100;
+		long timeOfCommandRun = Calendar.getInstance().getTimeInMillis() + 100;
 
 		if (args.length == 0) {
 			sender.sendMessage(Config.readColouredStringList("invalid-argument"));
@@ -50,7 +49,7 @@ public class ReplayCommand implements CommandExecutor {
 				sender.sendMessage(Config.readColouredString("no-permission"));
 				return true;
 			}
-			MySQL.clearLogs();
+			MySQL.getInstance().clearLogs();
 			sender.sendMessage(Utils.getReplayPrefix() + Config.readColouredString("logs-cleared"));
 			return true;
 		}
@@ -92,16 +91,15 @@ public class ReplayCommand implements CommandExecutor {
 				}
 				ReplayThreads.getThread(player.getUniqueId()).setSpeed(speed);
 				player.sendMessage(Utils.getReplayPrefix() + Config.readColouredString("replay-speed-changed").replace("{SPEED}", speed + ""));
-				return true;				
 			} else {
 				sender.sendMessage(Utils.getReplayPrefix() + Config.readColouredString("no-active-replay"));
-				return true;
 			}
+			return true;
 		}
 
 		if (args[0].equalsIgnoreCase("pause")) {
 			if (ReplayThreads.isUserReplaying(player.getUniqueId())) {
-				if (ReplayThreads.getThread(player.getUniqueId()).isRunning()) {
+				if (ReplayThreads.getThread(player.getUniqueId()).isPlaying()) {
 					ReplayThreads.getThread(player.getUniqueId()).pauseReplay();
 					player.sendMessage(Utils.getReplayPrefix() + Config.readColouredString("replay-paused"));
 				} else {
@@ -115,7 +113,7 @@ public class ReplayCommand implements CommandExecutor {
 
 		if (args[0].equalsIgnoreCase("resume")) {
 			if (ReplayThreads.isUserReplaying(player.getUniqueId())) {
-				if (!ReplayThreads.getThread(player.getUniqueId()).isRunning()) {
+				if (!ReplayThreads.getThread(player.getUniqueId()).isPlaying()) {
 					ReplayThreads.getThread(player.getUniqueId()).resumeReplay();
 					player.sendMessage(Utils.getReplayPrefix() + Config.readColouredString("replay-resumed"));
 				} else {
@@ -208,6 +206,7 @@ public class ReplayCommand implements CommandExecutor {
 
 		sender.sendMessage(Utils.getReplayPrefix() + Config.readColouredString("replay-loading"));
 
+		//todo refactor to use EventContainerRendererManagers, EventContainerRenderers and EventContainerProviders
 		ArrayList<PlayerMoveEventContainer> playerEvents = MySQL.getPlayerMoveEvents(player.getLocation(), radius, time, timeStamp);
 		ArrayList<BlockEventContainer> blockEvents = MySQL.getBlockEvents(player.getLocation(), radius, time, timeStamp);
 		ArrayList<DeathDamageEventContainer> deathDamageEvents = MySQL.getDeathDamageEvents(player.getLocation(), radius, time, timeStamp);
@@ -254,7 +253,7 @@ public class ReplayCommand implements CommandExecutor {
 
 						currentObj.setTime(currentObj.getTime() + 100L);
 
-						assumedPlayerMoveEvents.add(new PlayerMoveEventContainer(currentObj.getName(), currentObj.getUuid(), currentLoc.getWorld().getName(), currentLoc.getX(), currentLoc.getY(), currentLoc.getZ(), currentLoc.getYaw(), currentLoc.getPitch(), currentObj.getTime()));				
+						assumedPlayerMoveEvents.add(new PlayerMoveEventContainer(currentObj.getUuid(), currentLoc, currentObj.getTime(), currentObj.getName()));
 					}
 				}
 			}
