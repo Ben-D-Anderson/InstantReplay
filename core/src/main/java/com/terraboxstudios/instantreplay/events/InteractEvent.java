@@ -1,6 +1,6 @@
 package com.terraboxstudios.instantreplay.events;
 
-import com.terraboxstudios.instantreplay.threads.ReplayThreads;
+import com.terraboxstudios.instantreplay.replay.ReplayThreads;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
