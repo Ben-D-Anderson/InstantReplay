@@ -31,6 +31,7 @@ public abstract class NPC {
     protected abstract void specificDeSpawn();
     public abstract void setEquipmentSlot(int i, ItemStack item);
     public abstract void moveTo(Location location);
+    public abstract int getId();
 
     public final void spawn(Location location) {
         spawned = true;
