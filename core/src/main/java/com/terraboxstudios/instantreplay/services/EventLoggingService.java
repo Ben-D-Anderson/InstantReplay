@@ -1,5 +1,8 @@
 package com.terraboxstudios.instantreplay.services;
 
+import com.terraboxstudios.instantreplay.containers.EventContainer;
+import com.terraboxstudios.instantreplay.mysql.MySQL;
+
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -11,18 +14,18 @@ public class EventLoggingService {
 	private EventLoggingService() {
 		service = Executors.newSingleThreadExecutor();
 	}
-	
+
 	public void shutdown() {
 		service.shutdown();
 	}
-	
+
 	public static EventLoggingService getInstance() {
 		if (instance == null) instance = new EventLoggingService();
 		return instance;
 	}
 
-	public void logEvent(Runnable eventContainer) {
-		service.execute(eventContainer);
+	public void logEvent(EventContainer eventContainer) {
+		service.execute(() -> MySQL.getInstance().logEvent(eventContainer));
 	}
 
 }
