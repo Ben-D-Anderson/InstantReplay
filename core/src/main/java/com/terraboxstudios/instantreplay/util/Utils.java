@@ -10,13 +10,13 @@ import java.util.*;
 public class Utils {
 
 	public static Location stringToLocation(String str) {
-		String[] str2loc = str.split(":");
-		Location loc = new Location(Bukkit.getServer().getWorld(str2loc[0]),0,0,0);
-		loc.setX(Double.parseDouble(str2loc[1]));
-		loc.setY(Double.parseDouble(str2loc[2]));
-		loc.setZ(Double.parseDouble(str2loc[3]));
-		loc.setYaw(Float.parseFloat(str2loc[4]));
-		loc.setPitch(Float.parseFloat(str2loc[5]));
+		String[] strArr = str.split(":");
+		Location loc = new Location(Bukkit.getServer().getWorld(strArr[0]), 0, 0, 0);
+		loc.setX(Double.parseDouble(strArr[1]));
+		loc.setY(Double.parseDouble(strArr[2]));
+		loc.setZ(Double.parseDouble(strArr[3]));
+		loc.setYaw(Float.parseFloat(strArr[4]));
+		loc.setPitch(Float.parseFloat(strArr[5]));
 		return loc;
 	}
 
@@ -28,6 +28,7 @@ public class Utils {
 		return Objects.requireNonNull(loc.getWorld()).getName()+":"+loc.getX()+":"+loc.getY()+":"+loc.getZ()+":"+loc.getYaw()+":"+loc.getPitch();
 	}
 
+	//todo consider implementing comparable on EventContainer abstract class
 	public static void sortBlockEventsByTime(ArrayList<BlockEventContainer> blockEvents) {
 		blockEvents.sort(Comparator.comparingLong(BlockEventContainer::getTime));
 	}
