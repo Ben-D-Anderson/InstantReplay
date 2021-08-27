@@ -12,7 +12,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 @EqualsAndHashCode
-public abstract class EventContainer {
+public abstract class EventContainer implements Comparable<EventContainer> {
 
     private final String world;
     private final double x, y, z;
@@ -43,5 +43,9 @@ public abstract class EventContainer {
         EventLoggingService.getInstance().logEvent(this);
     }
 
+    @Override
+    public int compareTo(EventContainer o) {
+        return Long.compare(getTime(), o.getTime());
+    }
 
 }

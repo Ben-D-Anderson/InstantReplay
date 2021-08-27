@@ -220,8 +220,8 @@ public class ReplayCommand implements CommandExecutor {
 		List<PlayerMoveEventContainer> assumedPlayerMoveEvents = new LinkedList<>();
 		if (!playerEvents.isEmpty()) {
 			ArrayList<ArrayList<PlayerMoveEventContainer>> allPlayerMoveEvents = Utils.sortPlayerMoveEventsByPlayer(playerEvents);
-			for (ArrayList<PlayerMoveEventContainer> playerMoveEventsTMP : allPlayerMoveEvents) {
-				ArrayList<PlayerMoveEventContainer> playerMoveEvents = Utils.sortPlayerMoveEventsByTime(playerMoveEventsTMP);
+			for (ArrayList<PlayerMoveEventContainer> playerMoveEvents : allPlayerMoveEvents) {
+				playerMoveEvents.sort(null);
 				for (int i = 0; i < playerMoveEvents.size(); i++) {
 					if (playerMoveEvents.get(i) == playerMoveEvents.get(playerMoveEvents.size() - 1)) {
 						assumedPlayerMoveEvents.add(playerMoveEvents.get(i));
@@ -264,7 +264,7 @@ public class ReplayCommand implements CommandExecutor {
 		}
 
 		if (!blockEvents.isEmpty()) {
-			Utils.sortBlockEventsByTime(blockEvents);
+			blockEvents.sort(null);
 			for(BlockEventContainer blockEventObj : blockEvents) {
 				player.sendBlockChange(blockEventObj.getLoc(), blockEventObj.getOldBlockMaterial(), blockEventObj.getOldBlockData());
 				blockEventObj.setTime(Long.parseLong(new DecimalFormat("#").format(blockEventObj.getTime() / 100)) * 100);

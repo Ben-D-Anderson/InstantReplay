@@ -28,21 +28,7 @@ public class Utils {
 		return Objects.requireNonNull(loc.getWorld()).getName()+":"+loc.getX()+":"+loc.getY()+":"+loc.getZ()+":"+loc.getYaw()+":"+loc.getPitch();
 	}
 
-	//todo consider implementing comparable on EventContainer abstract class
-	public static void sortBlockEventsByTime(ArrayList<BlockEventContainer> blockEvents) {
-		blockEvents.sort(Comparator.comparingLong(BlockEventContainer::getTime));
-	}
-
-	public static ArrayList<PlayerMoveEventContainer> sortPlayerMoveEventsByTime(ArrayList<PlayerMoveEventContainer> playerMoveEvents) {
-		playerMoveEvents.sort(Comparator.comparingLong(PlayerMoveEventContainer::getTime));
-		return playerMoveEvents;
-	}
-
-	public static List<PlayerMoveEventContainer> sortPlayerMoveEventsByTime(List<PlayerMoveEventContainer> playerMoveEvents) {
-		playerMoveEvents.sort(Comparator.comparingLong(PlayerMoveEventContainer::getTime));
-		return playerMoveEvents;
-	}
-
+	//todo this is a monstrosity
 	public static ArrayList<ArrayList<PlayerMoveEventContainer>> sortPlayerMoveEventsByPlayer(ArrayList<PlayerMoveEventContainer> playerEvents) {
 		HashMap<String, ArrayList<PlayerMoveEventContainer>> knownPlayers = new HashMap<>();
 		for (PlayerMoveEventContainer playerMoveObj : playerEvents) {

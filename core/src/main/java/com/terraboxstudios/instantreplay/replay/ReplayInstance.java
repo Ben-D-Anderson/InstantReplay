@@ -52,7 +52,8 @@ public class ReplayInstance extends Thread {
     public ReplayInstance(ArrayList<BlockEventContainer> blockEventsToDo, List<PlayerMoveEventContainer> playerMoveEvents, ArrayList<DeathDamageEventContainer> deathDamageEvents, ArrayList<JoinLeaveEventContainer> joinLeaveEvents, ArrayList<PlayerInventoryEventContainer> playerInventoryEvents, UUID uuid, int speed, int time, long timeStamp, long timeOfCommandRun, int radius, Location location) {
         this.blockEventsToDo = blockEventsToDo;
         this.blockEventsDone = new ArrayList<>();
-        this.playerMoveEvents = Utils.sortPlayerMoveEventsByTime(playerMoveEvents);
+        playerMoveEvents.sort(null);
+        this.playerMoveEvents = playerMoveEvents;
         this.deathDamageEvents = deathDamageEvents;
         this.joinLeaveEvents = joinLeaveEvents;
         this.playerInventoryEvents = playerInventoryEvents;
