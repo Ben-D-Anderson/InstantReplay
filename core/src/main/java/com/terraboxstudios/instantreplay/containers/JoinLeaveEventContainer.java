@@ -1,56 +1,20 @@
 package com.terraboxstudios.instantreplay.containers;
 
-import com.terraboxstudios.instantreplay.mysql.MySQL;
-import org.bukkit.Bukkit;
+import lombok.Getter;
 import org.bukkit.Location;
 
 import java.util.UUID;
 
-public class JoinLeaveEventContainer implements Runnable {
+@Getter
+public final class JoinLeaveEventContainer extends EventContainer {
 
-	private final String world, name, type;
-	private long time;
-	private final UUID uuid;
-	private final int x, y, z;
+    private final String name, type;
 
-	public JoinLeaveEventContainer(String type, String name, UUID uuid, String world, int x, int y, int z, long time) {
-		this.type = type;
-		this.name = name;
-		this.uuid = uuid;
-		this.time = time;
-		this.world = world;
-		this.x = x;
-		this.y = y;
-		this.z = z;
-	}
-	
-	public Location getLocation() {
-		return new Location(Bukkit.getWorld(world), x, y, z);
-	}
-	
-	@Override
-	public void run() {
-		MySQL.logJoinLeaveEvent(this);
-	}
+    public JoinLeaveEventContainer(UUID uuid, Location location, long time, String name, String type) {
+        super(uuid, location, time);
+        this.name = name;
+        this.type = type;
+    }
 
-	public String getName() {
-		return name;
-	}
-	
-	public long getTime() {
-		return time;
-	}
-	
-	public String getType() {
-		return type;
-	}
-	
-	public void setTime(long time) {
-		this.time = time;
-	}
-	
-	public UUID getUuid() {
-		return uuid;
-	}
-	
+
 }

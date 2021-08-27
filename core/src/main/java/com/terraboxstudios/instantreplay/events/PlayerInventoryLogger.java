@@ -1,13 +1,12 @@
 package com.terraboxstudios.instantreplay.events;
 
-import com.terraboxstudios.instantreplay.services.EventLoggingService;
 import com.terraboxstudios.instantreplay.Main;
 import com.terraboxstudios.instantreplay.containers.PlayerInventoryEventContainer;
+import com.terraboxstudios.instantreplay.inventory.InventorySerializer;
 import com.terraboxstudios.instantreplay.util.Config;
-import com.terraboxstudios.instantreplay.util.InventorySerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -25,27 +24,45 @@ public class PlayerInventoryLogger {
 	public PlayerInventoryLogger() {
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.getPlugin(Main.class), () -> {
 			for (Player player : Bukkit.getOnlinePlayers()) {
-				if (player.isDead())
-					continue;
+				if (player.isDead()) continue;
+
 				int health = ((int) player.getHealth()) / 2;
-				ItemStack h = new ItemStack(Material.SPECKLED_MELON);
-				ItemMeta m = h.getItemMeta();
-				m.setDisplayName(ChatColor.GREEN + "Health");
-				List<String> lore = new LinkedList<>();
-				lore.add(ChatColor.YELLOW + "" + health + ChatColor.RED + "❤");
-				m.setLore(lore);
-				h.setItemMeta(m);
-				ItemStack[] healthArr = new ItemStack[] { h };
-				String[] inv = InventorySerializer.playerInventoryToBase64(player.getInventory(), healthArr);
-				if (invCache.get(player.getUniqueId()) != null) {
-					if (!Arrays.equals(invCache.get(player.getUniqueId()), inv)) {
-						invCache.put(player.getUniqueId(), inv);
-						EventLoggingService.getInstance().logEvent(new PlayerInventoryEventContainer(player.getName(), player.getUniqueId(), inv[0] + ";" + inv[1] + ";" + inv[2] + ";" + inv[3], player.getInventory().getContents(), player.getInventory().getArmorContents(), healthArr, player.getInventory().getHeldItemSlot(), player.getLocation().getWorld().getName(), (int) player.getLocation().getX(), (int) player.getLocation().getY(), (int) player.getLocation().getZ(), Calendar.getInstance().getTime().getTime()));
-					}
-				} else {
-					invCache.put(player.getUniqueId(), inv);
-					EventLoggingService.getInstance().logEvent(new PlayerInventoryEventContainer(player.getName(), player.getUniqueId(), inv[0] + ";" + inv[1] + ";" + inv[2] + ";" + inv[3], player.getInventory().getContents(), player.getInventory().getArmorContents(), healthArr, player.getInventory().getHeldItemSlot(), player.getLocation().getWorld().getName(), (int) player.getLocation().getX(), (int) player.getLocation().getY(), (int) player.getLocation().getZ(), Calendar.getInstance().getTime().getTime()));
+				ItemStack healthItem = Main.getVersionSpecificProvider().getItemFactory().getHealthItemGUI();
+				ItemMeta healthItemMeta = healthItem.getItemMeta();
+				if (healthItemMeta != null) {
+					healthItemMeta.setDisplayName(ChatColor.GREEN + "Health");
+					List<String> lore = new LinkedList<>();
+					lore.add(ChatColor.YELLOW + "" + health + ChatColor.RED + "❤");
+					healthItemMeta.setLore(lore);
+					healthItem.setItemMeta(healthItemMeta);
 				}
+
+				ItemStack[] healthArr = new ItemStack[] { healthItem };
+				String[] inv = InventorySerializer.playerInventoryToBase64(player.getInventory(), healthArr);
+
+				String[] cachedInventory = invCache.get(player.getUniqueId());
+				if (cachedInventory != null && Arrays.equals(invCache.get(player.getUniqueId()), inv)) {
+					continue;
+				}
+
+				invCache.put(player.getUniqueId(), inv);
+				String serializedInventory = inv[0] + ";" + inv[1] + ";" + inv[2] + ";" + inv[3];
+				Location location = player.getLocation().clone();
+				location.setX((int) location.getX());
+				location.setY((int) location.getY());
+				location.setZ((int) location.getZ());
+
+				new PlayerInventoryEventContainer(
+						player.getUniqueId(),
+						location,
+						Calendar.getInstance().getTimeInMillis(),
+						player.getName(),
+						serializedInventory,
+						player.getInventory().getContents(),
+						player.getInventory().getArmorContents(),
+						healthArr,
+						player.getInventory().getHeldItemSlot()
+				).log();
 			}
 		}, 20L, getSecondsPerLog() * 20L);
 	}
