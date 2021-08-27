@@ -1,27 +1,20 @@
 package com.terraboxstudios.instantreplay;
 
-import java.sql.SQLException;
-import java.util.Objects;
-import java.util.logging.Level;
-
-import com.terraboxstudios.instantreplay.events.BlockChangeEvent;
-import com.terraboxstudios.instantreplay.events.DeathDamageEvent;
-import com.terraboxstudios.instantreplay.events.InteractEvent;
-import com.terraboxstudios.instantreplay.events.JoinLeaveEvent;
-import com.terraboxstudios.instantreplay.events.PlayerInventoryLogger;
-import com.terraboxstudios.instantreplay.events.PlayerMoveLogger;
-import com.terraboxstudios.instantreplay.events.RightClickNPCEvent;
-import com.terraboxstudios.instantreplay.services.MySQLCleanupService;
 import com.terraboxstudios.instantreplay.commands.ReplayCommand;
+import com.terraboxstudios.instantreplay.events.*;
 import com.terraboxstudios.instantreplay.mysql.MySQL;
+import com.terraboxstudios.instantreplay.replay.ReplayThreads;
 import com.terraboxstudios.instantreplay.services.EventLoggingService;
-import com.terraboxstudios.instantreplay.threads.ReplayThreads;
+import com.terraboxstudios.instantreplay.services.MySQLCleanupService;
 import com.terraboxstudios.instantreplay.util.Config;
 import com.terraboxstudios.instantreplay.versionspecific.VersionSpecificProvider;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.util.Objects;
+import java.util.logging.Level;
 
 
 public class Main extends JavaPlugin {
@@ -43,7 +36,7 @@ public class Main extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		Config.loadConfig();
-		initSQL();
+		MySQL.getInstance();
 		MySQLCleanupService.start();
 		registerEvents();
 		registerCommands();
@@ -54,7 +47,7 @@ public class Main extends JavaPlugin {
 		ReplayThreads.stopAllThreads();
 		EventLoggingService.getInstance().shutdown();
 		MySQLCleanupService.shutdown();
-		closeSQL();
+		MySQL.getInstance().closeConnection();
 	}
 
 	private void registerCommands() {
@@ -73,22 +66,6 @@ public class Main extends JavaPlugin {
 
 	private void registerEvent(Listener l) {
 		Bukkit.getPluginManager().registerEvents(l, this);
-	}
-
-	private void initSQL() {
-		try {
-			new MySQL();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	private void closeSQL() {
-		try {
-			MySQL.getConnection().close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
 	}
 
 }
