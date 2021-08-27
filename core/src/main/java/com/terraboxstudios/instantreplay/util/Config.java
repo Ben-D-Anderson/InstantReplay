@@ -7,6 +7,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.util.List;
+import java.util.Objects;
 
 public class Config {
 
@@ -35,7 +36,7 @@ public class Config {
     }
 
     public static String readColouredString(String path) {
-    	return ChatColor.translateAlternateColorCodes('&', config.getString(path));
+    	return ChatColor.translateAlternateColorCodes('&', Objects.requireNonNull(config.getString(path)));
     }
     
     public static String readColouredStringList(String path) {
