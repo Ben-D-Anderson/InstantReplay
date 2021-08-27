@@ -1,8 +1,9 @@
-package com.terraboxstudios.instantreplay.threads;
+package com.terraboxstudios.instantreplay.replay;
 
 import com.terraboxstudios.instantreplay.Main;
 import com.terraboxstudios.instantreplay.containers.*;
-import com.terraboxstudios.instantreplay.obj.CustomInventory;
+import com.terraboxstudios.instantreplay.inventory.CustomInventory;
+import com.terraboxstudios.instantreplay.inventory.InventoryFactory;
 import com.terraboxstudios.instantreplay.util.Config;
 import com.terraboxstudios.instantreplay.util.Utils;
 import com.terraboxstudios.instantreplay.versionspecific.npc.NPC;
@@ -15,7 +16,6 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import java.text.DecimalFormat;
 import java.util.*;
@@ -24,8 +24,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ReplayInstance extends Thread {
 
-    private final AtomicBoolean running = new AtomicBoolean(true);
+    private final AtomicBoolean playing = new AtomicBoolean(true);
     private final AtomicBoolean alive = new AtomicBoolean(true);
+    //todo refactor to use EventRenderers
     private final ArrayList<BlockEventContainer> blockEventsToDo, blockEventsDone;
     private final ArrayList<DeathDamageEventContainer> deathDamageEvents;
     private final ArrayList<JoinLeaveEventContainer> joinLeaveEvents;
@@ -47,6 +48,7 @@ public class ReplayInstance extends Thread {
     @Getter
     private final Location location;
 
+    //todo refactor to use Joshua Bloch's builder design pattern
     public ReplayInstance(ArrayList<BlockEventContainer> blockEventsToDo, List<PlayerMoveEventContainer> playerMoveEvents, ArrayList<DeathDamageEventContainer> deathDamageEvents, ArrayList<JoinLeaveEventContainer> joinLeaveEvents, ArrayList<PlayerInventoryEventContainer> playerInventoryEvents, UUID uuid, int speed, int time, long timeStamp, long timeOfCommandRun, int radius, Location location) {
         this.blockEventsToDo = blockEventsToDo;
         this.blockEventsDone = new ArrayList<>();
@@ -66,12 +68,9 @@ public class ReplayInstance extends Thread {
         }
         if (timeStamp < 1) {
             player.sendMessage(Utils.getReplayPrefix() + Config.readColouredString("replay-starting").replace("{TIME}", time + "").replace("{SPEED}", speed + "").replace("{RADIUS}", radius + ""));
+            eventTime = Calendar.getInstance().getTimeInMillis() - (time * 1000L);
         } else {
             player.sendMessage(Utils.getReplayPrefix() + Config.readColouredString("replay-starting-with-timestamp").replace("{TIMESTAMP}", timeStamp + "").replace("{SPEED}", speed + "").replace("{RADIUS}", radius + ""));
-        }
-        if (timeStamp < 1) {
-            eventTime = Calendar.getInstance().getTime().getTime() - (time * 1000L);
-        } else {
             eventTime = timeStamp;
         }
         eventTime -= 100;
@@ -81,7 +80,7 @@ public class ReplayInstance extends Thread {
 
     public void stopReplay() {
         alive.set(false);
-        running.set(false);
+        playing.set(false);
         player = Bukkit.getPlayer(uuid);
         if (player != null) {
             for (NPC npc : npcs.values()) {
@@ -92,29 +91,29 @@ public class ReplayInstance extends Thread {
                     blockEventsToDo.remove(b);
                 }
                 for (BlockEventContainer blockEventObj : blockEventsToDo) {
-                    player.sendBlockChange(blockEventObj.getLoc(), blockEventObj.getNewBlockMaterial(), blockEventObj.getNewBlockData());
+                    player.sendBlockChange(blockEventObj.getLocation(), blockEventObj.getNewBlockMaterial(), blockEventObj.getNewBlockData());
                 }
             }
         }
     }
 
     public void pauseReplay() {
-        running.set(false);
+        playing.set(false);
     }
 
-    public boolean isRunning() {
-        return running.get();
+    public boolean isPlaying() {
+        return playing.get();
     }
 
     public void resumeReplay() {
-        running.set(true);
+        playing.set(true);
     }
 
     @Override
     public void run() {
         int timestampI = 0;
         while (alive.get()) {
-            while (eventTime < timeOfCommandRun && running.get()) {
+            while (eventTime < timeOfCommandRun && playing.get()) {
                 timestampI++;
                 if (timestampI >= Config.getConfig().getInt("settings.seconds-per-timestamp-output") * 10) {
                     player.sendMessage(Utils.getReplayPrefix() + Config.readColouredString("replay-timestamp-output").replace("{TIMESTAMP}", eventTime + ""));
@@ -127,70 +126,25 @@ public class ReplayInstance extends Thread {
                             ReplayThreads.stopThread(uuid);
                             return;
                         }
-                        contentAndArmour.put(playerInventoryObj.getUuid(), new CustomInventory(playerInventoryObj.getContents(), playerInventoryObj.getArmourContents(), playerInventoryObj.getHealth(), playerInventoryObj.getHeldSlot()));
-                        if (getInventories().get(playerInventoryObj.getUuid()) != null) {
-                            if (player.getOpenInventory().getTopInventory().getTitle().equals(playerInventoryObj.getName() + "'s Inventory")) {
-                                for (int i = 0; i < 9; i++) {
-                                    ItemStack item = getContentAndArmour().get(playerInventoryObj.getUuid()).getContents()[i];
-                                    if (item == null)
-                                        item = new ItemStack(Material.AIR, 1);
-                                    try {
-                                        getInventories().get(playerInventoryObj.getUuid()).setItem(i, item);
-                                    } catch (NullPointerException ignored) {
-                                    }
-                                }
-                                for (int i = 9; i < 18; i++) {
-                                    ItemStack item = getContentAndArmour().get(playerInventoryObj.getUuid()).getContents()[i];
-                                    if (item == null)
-                                        item = new ItemStack(Material.AIR, 1);
-                                    try {
-                                        getInventories().get(playerInventoryObj.getUuid()).setItem(i + 18, item);
-                                    } catch (NullPointerException ignored) {
-                                    }
-                                }
-                                for (int i = 18; i < 27; i++) {
-                                    ItemStack item = getContentAndArmour().get(playerInventoryObj.getUuid()).getContents()[i];
-                                    if (item == null)
-                                        item = new ItemStack(Material.AIR, 1);
-                                    try {
-                                        getInventories().get(playerInventoryObj.getUuid()).setItem(i, item);
-                                    } catch (NullPointerException ignored) {
-                                    }
-                                }
-                                for (int i = 27; i < 36; i++) {
-                                    ItemStack item = getContentAndArmour().get(playerInventoryObj.getUuid()).getContents()[i];
-                                    if (item == null)
-                                        item = new ItemStack(Material.AIR, 1);
-                                    try {
-                                        getInventories().get(playerInventoryObj.getUuid()).setItem(i - 18, item);
-                                    } catch (NullPointerException ignored) {
-                                    }
-                                }
-                                for (int i = 36; i < 40; i++) {
-                                    ItemStack item = getContentAndArmour().get(playerInventoryObj.getUuid()).getArmourContents()[i - 36];
-                                    if (item == null)
-                                        item = new ItemStack(Material.AIR, 1);
-                                    try {
-                                        getInventories().get(playerInventoryObj.getUuid()).setItem(i, item);
-                                    } catch (NullPointerException ignored) {
-                                    }
-                                }
-                                ItemStack healthItem = getContentAndArmour().get(playerInventoryObj.getUuid()).getHealth()[0];
-                                if (healthItem == null)
-                                    healthItem = new ItemStack(Material.AIR, 1);
-                                try {
-                                    getInventories().get(playerInventoryObj.getUuid()).setItem(40, healthItem);
-                                } catch (NullPointerException ignored) {
-                                }
-                                for (int i = 41; i < 45; i++) {
-                                    ItemStack item = Main.getVersionSpecificProvider().getItemFactory().getEmptyItemGUIPlaceholder();
-                                    try {
-                                        getInventories().get(playerInventoryObj.getUuid()).setItem(i, item);
-                                    } catch (NullPointerException ignored) {
-                                    }
-                                }
-                                player.getOpenInventory().getTopInventory().setContents(getInventories().get(playerInventoryObj.getUuid()).getContents());
-                            }
+
+                        CustomInventory newCustomInventory = new CustomInventory(playerInventoryObj.getContents(), playerInventoryObj.getArmourContents(), playerInventoryObj.getHealth(), playerInventoryObj.getHeldSlot());
+                        CustomInventory previousInventory = contentAndArmour.get(playerInventoryObj.getUuid());
+                        if (previousInventory != null && previousInventory.equals(newCustomInventory)) continue;
+
+                        contentAndArmour.put(playerInventoryObj.getUuid(), newCustomInventory);
+                        Inventory npcInv = getInventories().get(playerInventoryObj.getUuid());
+                        if (npcInv == null) {
+                            getInventories().put(playerInventoryObj.getUuid(),
+                                    InventoryFactory.getInstance().createNPCInventory(
+                                            getContentAndArmour().get(playerInventoryObj.getUuid()),
+                                            playerInventoryObj.getName()
+                                    )
+                            );
+                        } else {
+                            InventoryFactory.getInstance().updateNPCInventory(
+                                    npcInv,
+                                    getContentAndArmour().get(playerInventoryObj.getUuid())
+                            );
                         }
                     }
                 }
@@ -201,7 +155,7 @@ public class ReplayInstance extends Thread {
                             ReplayThreads.stopThread(uuid);
                             return;
                         }
-                        player.sendBlockChange(blockEventObj.getLoc(), blockEventObj.getNewBlockMaterial(), blockEventObj.getNewBlockData());
+                        player.sendBlockChange(blockEventObj.getLocation(), blockEventObj.getNewBlockMaterial(), blockEventObj.getNewBlockData());
                         blockEventsDone.add(blockEventObj);
                     }
                 }
@@ -312,7 +266,7 @@ public class ReplayInstance extends Thread {
                 } catch (InterruptedException ignored) {
                 }
             }
-            if (running.get()) {
+            if (playing.get()) {
                 player = Bukkit.getPlayer(uuid);
                 if (player == null) {
                     ReplayThreads.stopThread(uuid);
