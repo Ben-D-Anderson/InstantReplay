@@ -1,4 +1,4 @@
-package com.terraboxstudios.instantreplay.util;
+package com.terraboxstudios.instantreplay.inventory;
 
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
