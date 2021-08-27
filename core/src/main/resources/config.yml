@@ -4,7 +4,7 @@ settings:
   ignore-y-radius: true
   seconds-per-player-move-log: 1 #RECOMMENDED IS 1
   seconds-per-player-inventory-log: 1 #RECOMMENDED IS 1
-  days-until-logs-deleted: 3 #RECOMMENDED IS 3 OR LESS
+  hours-until-logs-deleted: 72 #RECOMMENDED IS 72 OR LESS
   replay-permission: "replay.replay"
   replay-reload-permission: "replay.reload"
   replay-clearlogs-permission: "replay.clearlogs"
