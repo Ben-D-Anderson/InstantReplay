@@ -1,6 +1,7 @@
 package com.terraboxstudios.instantreplay.containers;
 
 import com.terraboxstudios.instantreplay.services.EventLoggingService;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;
@@ -10,6 +11,7 @@ import org.bukkit.World;
 import java.util.Objects;
 import java.util.UUID;
 
+@EqualsAndHashCode
 public abstract class EventContainer {
 
     private final String world;
@@ -41,6 +43,5 @@ public abstract class EventContainer {
         EventLoggingService.getInstance().logEvent(this);
     }
 
-    ;
 
 }

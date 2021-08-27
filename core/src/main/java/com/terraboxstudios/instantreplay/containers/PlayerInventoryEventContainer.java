@@ -1,11 +1,13 @@
 package com.terraboxstudios.instantreplay.containers;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.UUID;
 
+@EqualsAndHashCode(callSuper = true)
 @Getter
 public final class PlayerInventoryEventContainer extends EventContainer {
 
