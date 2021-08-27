@@ -6,4 +6,6 @@ public interface ItemFactory {
 
     ItemStack getEmptyItemGUIPlaceholder();
 
+    ItemStack getHealthItemGUI();
+
 }
