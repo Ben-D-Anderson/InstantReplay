@@ -1,4 +1,4 @@
-package com.terraboxstudios.instantreplay.events;
+package com.terraboxstudios.instantreplay.events.listeners;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
@@ -19,7 +19,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 
 import java.util.Optional;
 
-public class RightClickNPCEvent implements Listener {
+public class PlayerRightClickNPCListener implements Listener {
 
 	@EventHandler
 	public void onInvClick(InventoryClickEvent e) {
@@ -32,7 +32,7 @@ public class RightClickNPCEvent implements Listener {
 		}
 	}
 
-	public RightClickNPCEvent() {
+	public PlayerRightClickNPCListener() {
 		ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
 		registerListener(protocolManager);
 	}

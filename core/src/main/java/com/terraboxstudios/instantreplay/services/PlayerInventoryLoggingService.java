@@ -1,7 +1,7 @@
-package com.terraboxstudios.instantreplay.events;
+package com.terraboxstudios.instantreplay.services;
 
 import com.terraboxstudios.instantreplay.Main;
-import com.terraboxstudios.instantreplay.containers.PlayerInventoryEventContainer;
+import com.terraboxstudios.instantreplay.events.containers.PlayerInventoryEventContainer;
 import com.terraboxstudios.instantreplay.inventory.InventorySerializer;
 import com.terraboxstudios.instantreplay.util.Config;
 import org.bukkit.Bukkit;
@@ -13,7 +13,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.*;
 
-public class PlayerInventoryLogger {
+public class PlayerInventoryLoggingService {
 
 	private final HashMap<UUID, String[]> invCache = new HashMap<>();
 	
@@ -21,7 +21,7 @@ public class PlayerInventoryLogger {
 		return Config.getConfig().getInt("settings.seconds-per-player-inventory-log");
 	}
 
-	public PlayerInventoryLogger() {
+	public PlayerInventoryLoggingService() {
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.getPlugin(Main.class), () -> {
 			for (Player player : Bukkit.getOnlinePlayers()) {
 				if (player.isDead()) continue;

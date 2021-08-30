@@ -1,5 +1,6 @@
-package com.terraboxstudios.instantreplay.containers;
+package com.terraboxstudios.instantreplay.events.containers;
 
+import com.terraboxstudios.instantreplay.events.EventContainer;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.bukkit.Location;

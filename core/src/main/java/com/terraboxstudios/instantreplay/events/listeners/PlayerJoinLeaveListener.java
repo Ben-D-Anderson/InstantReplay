@@ -1,6 +1,6 @@
-package com.terraboxstudios.instantreplay.events;
+package com.terraboxstudios.instantreplay.events.listeners;
 
-import com.terraboxstudios.instantreplay.containers.JoinLeaveEventContainer;
+import com.terraboxstudios.instantreplay.events.containers.PlayerJoinLeaveEventContainer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -10,12 +10,12 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.Calendar;
 
-public class JoinLeaveEvent implements Listener {
+public class PlayerJoinLeaveListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onJoin(PlayerJoinEvent e) {
         Player p = e.getPlayer();
-        new JoinLeaveEventContainer(
+        new PlayerJoinLeaveEventContainer(
                 p.getUniqueId(),
                 p.getLocation(),
                 Calendar.getInstance().getTimeInMillis(),
@@ -27,7 +27,7 @@ public class JoinLeaveEvent implements Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onLeave(PlayerQuitEvent e) {
         Player p = e.getPlayer();
-        new JoinLeaveEventContainer(
+        new PlayerJoinLeaveEventContainer(
                 p.getUniqueId(),
                 p.getLocation(),
                 Calendar.getInstance().getTimeInMillis(),

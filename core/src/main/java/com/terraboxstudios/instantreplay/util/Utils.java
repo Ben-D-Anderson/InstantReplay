@@ -1,7 +1,6 @@
 package com.terraboxstudios.instantreplay.util;
 
-import com.terraboxstudios.instantreplay.containers.BlockEventContainer;
-import com.terraboxstudios.instantreplay.containers.PlayerMoveEventContainer;
+import com.terraboxstudios.instantreplay.events.containers.PlayerMoveEventContainer;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 

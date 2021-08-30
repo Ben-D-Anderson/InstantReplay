@@ -1,6 +1,6 @@
-package com.terraboxstudios.instantreplay.events;
+package com.terraboxstudios.instantreplay.events.listeners;
 
-import com.terraboxstudios.instantreplay.containers.BlockEventContainer;
+import com.terraboxstudios.instantreplay.events.containers.PlayerChangeBlockEventContainer;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
@@ -12,7 +12,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import java.util.Calendar;
 import java.util.UUID;
 
-public class BlockChangeEvent implements Listener {
+public class PlayerChangeBlockListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBlockPlace(BlockPlaceEvent e) {
@@ -21,7 +21,7 @@ public class BlockChangeEvent implements Listener {
         Material newMaterial = e.getBlock().getState().getType();
         byte oldBlockData = 0;
         byte newBlockData = e.getBlock().getState().getRawData();
-        new BlockEventContainer(UUID.randomUUID(),
+        new PlayerChangeBlockEventContainer(UUID.randomUUID(),
                 location,
                 Calendar.getInstance().getTimeInMillis(),
                 oldMaterial,
@@ -38,7 +38,7 @@ public class BlockChangeEvent implements Listener {
         Material newMaterial = Material.AIR;
         byte oldBlockData = e.getBlock().getState().getRawData();
         byte newBlockData = 0;
-        new BlockEventContainer(UUID.randomUUID(),
+        new PlayerChangeBlockEventContainer(UUID.randomUUID(),
                 location,
                 Calendar.getInstance().getTimeInMillis(),
                 oldMaterial,

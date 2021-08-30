@@ -1,7 +1,7 @@
 package com.terraboxstudios.instantreplay.replay;
 
 import com.terraboxstudios.instantreplay.Main;
-import com.terraboxstudios.instantreplay.containers.*;
+import com.terraboxstudios.instantreplay.events.containers.*;
 import com.terraboxstudios.instantreplay.inventory.CustomInventory;
 import com.terraboxstudios.instantreplay.inventory.InventoryFactory;
 import com.terraboxstudios.instantreplay.util.Config;
@@ -27,9 +27,9 @@ public class ReplayInstance extends Thread {
     private final AtomicBoolean playing = new AtomicBoolean(true);
     private final AtomicBoolean alive = new AtomicBoolean(true);
     //todo refactor to use EventRenderers
-    private final ArrayList<BlockEventContainer> blockEventsToDo, blockEventsDone;
-    private final ArrayList<DeathDamageEventContainer> deathDamageEvents;
-    private final ArrayList<JoinLeaveEventContainer> joinLeaveEvents;
+    private final ArrayList<PlayerChangeBlockEventContainer> blockEventsToDo, blockEventsDone;
+    private final ArrayList<PlayerDeathDamageEventContainer> deathDamageEvents;
+    private final ArrayList<PlayerJoinLeaveEventContainer> joinLeaveEvents;
     private final ArrayList<PlayerInventoryEventContainer> playerInventoryEvents;
     private final List<PlayerMoveEventContainer> playerMoveEvents;
     private final UUID uuid;
@@ -49,10 +49,9 @@ public class ReplayInstance extends Thread {
     private final Location location;
 
     //todo refactor to use Joshua Bloch's builder design pattern
-    public ReplayInstance(ArrayList<BlockEventContainer> blockEventsToDo, List<PlayerMoveEventContainer> playerMoveEvents, ArrayList<DeathDamageEventContainer> deathDamageEvents, ArrayList<JoinLeaveEventContainer> joinLeaveEvents, ArrayList<PlayerInventoryEventContainer> playerInventoryEvents, UUID uuid, int speed, int time, long timeStamp, long timeOfCommandRun, int radius, Location location) {
+    public ReplayInstance(ArrayList<PlayerChangeBlockEventContainer> blockEventsToDo, List<PlayerMoveEventContainer> playerMoveEvents, ArrayList<PlayerDeathDamageEventContainer> deathDamageEvents, ArrayList<PlayerJoinLeaveEventContainer> joinLeaveEvents, ArrayList<PlayerInventoryEventContainer> playerInventoryEvents, UUID uuid, int speed, int time, long timeStamp, long timeOfCommandRun, int radius, Location location) {
         this.blockEventsToDo = blockEventsToDo;
         this.blockEventsDone = new ArrayList<>();
-        playerMoveEvents.sort(null);
         this.playerMoveEvents = playerMoveEvents;
         this.deathDamageEvents = deathDamageEvents;
         this.joinLeaveEvents = joinLeaveEvents;
@@ -88,10 +87,10 @@ public class ReplayInstance extends Thread {
                 npc.deSpawn();
             }
             if (blockEventsDone != null && !blockEventsDone.isEmpty()) {
-                for (BlockEventContainer b : blockEventsDone) {
+                for (PlayerChangeBlockEventContainer b : blockEventsDone) {
                     blockEventsToDo.remove(b);
                 }
-                for (BlockEventContainer blockEventObj : blockEventsToDo) {
+                for (PlayerChangeBlockEventContainer blockEventObj : blockEventsToDo) {
                     player.sendBlockChange(blockEventObj.getLocation(), blockEventObj.getNewBlockMaterial(), blockEventObj.getNewBlockData());
                 }
             }
@@ -149,7 +148,7 @@ public class ReplayInstance extends Thread {
                         }
                     }
                 }
-                for (BlockEventContainer blockEventObj : blockEventsToDo) {
+                for (PlayerChangeBlockEventContainer blockEventObj : blockEventsToDo) {
                     if (blockEventObj.getTime() == eventTime) {
                         player = Bukkit.getPlayer(uuid);
                         if (player == null) {
@@ -160,7 +159,7 @@ public class ReplayInstance extends Thread {
                         blockEventsDone.add(blockEventObj);
                     }
                 }
-                for (DeathDamageEventContainer deathDamageEventObj : deathDamageEvents) {
+                for (PlayerDeathDamageEventContainer deathDamageEventObj : deathDamageEvents) {
                     if (deathDamageEventObj.getTime() == eventTime) {
                         player = Bukkit.getPlayer(uuid);
                         if (player == null) {
@@ -182,7 +181,7 @@ public class ReplayInstance extends Thread {
                         }
                     }
                 }
-                for (JoinLeaveEventContainer joinLeaveEventObj : joinLeaveEvents) {
+                for (PlayerJoinLeaveEventContainer joinLeaveEventObj : joinLeaveEvents) {
                     if (joinLeaveEventObj.getTime() == eventTime) {
                         player = Bukkit.getPlayer(uuid);
                         if (player == null) {

@@ -1,7 +1,7 @@
-package com.terraboxstudios.instantreplay.events;
+package com.terraboxstudios.instantreplay.services;
 
 import com.terraboxstudios.instantreplay.Main;
-import com.terraboxstudios.instantreplay.containers.PlayerMoveEventContainer;
+import com.terraboxstudios.instantreplay.events.containers.PlayerMoveEventContainer;
 import com.terraboxstudios.instantreplay.util.Config;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -11,7 +11,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.UUID;
 
-public class PlayerMoveLogger {
+public class PlayerMoveLoggingService {
 	
 	private final HashMap<UUID, Location> locCache = new HashMap<>();
 	
@@ -19,7 +19,7 @@ public class PlayerMoveLogger {
 		return Config.getConfig().getDouble("settings.seconds-per-player-move-log");
 	}
 	
-	public PlayerMoveLogger() {
+	public PlayerMoveLoggingService() {
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.getPlugin(Main.class), () -> {
 			for (Player player : Bukkit.getOnlinePlayers()) {
 				if (player.isDead()) continue;

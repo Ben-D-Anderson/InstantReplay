@@ -1,7 +1,7 @@
 package com.terraboxstudios.instantreplay.commands;
 
-import com.terraboxstudios.instantreplay.containers.*;
-import com.terraboxstudios.instantreplay.events.PlayerMoveLogger;
+import com.terraboxstudios.instantreplay.events.containers.*;
+import com.terraboxstudios.instantreplay.services.PlayerMoveLoggingService;
 import com.terraboxstudios.instantreplay.mysql.MySQL;
 import com.terraboxstudios.instantreplay.replay.ReplayInstance;
 import com.terraboxstudios.instantreplay.replay.ReplayThreads;
@@ -190,6 +190,8 @@ public class ReplayCommand implements CommandExecutor {
 					sender.sendMessage(Utils.getReplayPrefix() + Config.readColouredString("invalid-argument-start-time"));
 					return true;
 				}
+			} else {
+				timeStamp = Calendar.getInstance().getTimeInMillis() - (time * 1000L);
 			}
 		}
 		try {
@@ -208,9 +210,9 @@ public class ReplayCommand implements CommandExecutor {
 
 		//todo refactor to use EventContainerRendererManagers, EventContainerRenderers and EventContainerProviders
 		ArrayList<PlayerMoveEventContainer> playerEvents = MySQL.getPlayerMoveEvents(player.getLocation(), radius, time, timeStamp);
-		ArrayList<BlockEventContainer> blockEvents = MySQL.getBlockEvents(player.getLocation(), radius, time, timeStamp);
-		ArrayList<DeathDamageEventContainer> deathDamageEvents = MySQL.getDeathDamageEvents(player.getLocation(), radius, time, timeStamp);
-		ArrayList<JoinLeaveEventContainer> joinLeaveEvents = MySQL.getJoinLeaveEvents(player.getLocation(), radius, time, timeStamp);
+		ArrayList<PlayerChangeBlockEventContainer> blockEvents = MySQL.getBlockEvents(player.getLocation(), radius, time, timeStamp);
+		ArrayList<PlayerDeathDamageEventContainer> deathDamageEvents = MySQL.getDeathDamageEvents(player.getLocation(), radius, time, timeStamp);
+		ArrayList<PlayerJoinLeaveEventContainer> joinLeaveEvents = MySQL.getJoinLeaveEvents(player.getLocation(), radius, time, timeStamp);
 		ArrayList<PlayerInventoryEventContainer> playerInventoryEvents = MySQL.getPlayerInventoryEvents(player.getLocation(), radius, time, timeStamp);
 		if (blockEvents.isEmpty() && playerEvents.isEmpty() && deathDamageEvents.isEmpty() && joinLeaveEvents.isEmpty()) {
 			sender.sendMessage(Utils.getReplayPrefix() + Config.readColouredString("no-events-found"));
@@ -221,7 +223,6 @@ public class ReplayCommand implements CommandExecutor {
 		if (!playerEvents.isEmpty()) {
 			ArrayList<ArrayList<PlayerMoveEventContainer>> allPlayerMoveEvents = Utils.sortPlayerMoveEventsByPlayer(playerEvents);
 			for (ArrayList<PlayerMoveEventContainer> playerMoveEvents : allPlayerMoveEvents) {
-				playerMoveEvents.sort(null);
 				for (int i = 0; i < playerMoveEvents.size(); i++) {
 					if (playerMoveEvents.get(i) == playerMoveEvents.get(playerMoveEvents.size() - 1)) {
 						assumedPlayerMoveEvents.add(playerMoveEvents.get(i));
@@ -238,15 +239,15 @@ public class ReplayCommand implements CommandExecutor {
 					double yChange = nextLoc.getY() - currentLoc.getY();
 					double zChange = nextLoc.getZ() - currentLoc.getZ();
 
-					double xIncrement = xChange / (PlayerMoveLogger.getSecondsPerLog() * 10);
-					double yIncrement = yChange / (PlayerMoveLogger.getSecondsPerLog() * 10);
-					double zIncrement = zChange / (PlayerMoveLogger.getSecondsPerLog() * 10);
+					double xIncrement = xChange / (PlayerMoveLoggingService.getSecondsPerLog() * 10);
+					double yIncrement = yChange / (PlayerMoveLoggingService.getSecondsPerLog() * 10);
+					double zIncrement = zChange / (PlayerMoveLoggingService.getSecondsPerLog() * 10);
 
 					if (xIncrement == 0 && yIncrement == 0 && zIncrement == 0) {
 						continue;
 					}
 
-					for (int x = 0; x < PlayerMoveLogger.getSecondsPerLog() * 10; x++) {						
+					for (int x = 0; x < PlayerMoveLoggingService.getSecondsPerLog() * 10; x++) {
 						currentLoc.setX(currentLoc.getX() + xIncrement);
 						currentLoc.setY(currentLoc.getY() + yIncrement);
 						currentLoc.setZ(currentLoc.getZ() + zIncrement);
@@ -264,21 +265,20 @@ public class ReplayCommand implements CommandExecutor {
 		}
 
 		if (!blockEvents.isEmpty()) {
-			blockEvents.sort(null);
-			for(BlockEventContainer blockEventObj : blockEvents) {
-				player.sendBlockChange(blockEventObj.getLoc(), blockEventObj.getOldBlockMaterial(), blockEventObj.getOldBlockData());
+			for(PlayerChangeBlockEventContainer blockEventObj : blockEvents) {
+				player.sendBlockChange(blockEventObj.getLocation(), blockEventObj.getOldBlockMaterial(), blockEventObj.getOldBlockData());
 				blockEventObj.setTime(Long.parseLong(new DecimalFormat("#").format(blockEventObj.getTime() / 100)) * 100);
 			}
 		}
 
 		if (!deathDamageEvents.isEmpty()) {
-			for(DeathDamageEventContainer deathDamageEventObj : deathDamageEvents) {
+			for(PlayerDeathDamageEventContainer deathDamageEventObj : deathDamageEvents) {
 				deathDamageEventObj.setTime((Long.parseLong(new DecimalFormat("#").format(deathDamageEventObj.getTime() / 100)) * 100));
 			}
 		}
 
 		if (!joinLeaveEvents.isEmpty()) {
-			for(JoinLeaveEventContainer joinLeaveEventObj : joinLeaveEvents) {
+			for(PlayerJoinLeaveEventContainer joinLeaveEventObj : joinLeaveEvents) {
 				joinLeaveEventObj.setTime((Long.parseLong(new DecimalFormat("#").format(joinLeaveEventObj.getTime() / 100)) * 100));
 			}
 		}

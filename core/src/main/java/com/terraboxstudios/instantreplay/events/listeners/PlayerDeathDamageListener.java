@@ -1,6 +1,6 @@
-package com.terraboxstudios.instantreplay.events;
+package com.terraboxstudios.instantreplay.events.listeners;
 
-import com.terraboxstudios.instantreplay.containers.DeathDamageEventContainer;
+import com.terraboxstudios.instantreplay.events.containers.PlayerDeathDamageEventContainer;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -13,7 +13,7 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import java.util.Calendar;
 
-public class DeathDamageEvent implements Listener {
+public class PlayerDeathDamageListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void damageByEntityEvent(EntityDamageByEntityEvent e) {
@@ -26,7 +26,7 @@ public class DeathDamageEvent implements Listener {
         String source = (e.getDamager() instanceof Player) ? "PLAYER (" + e.getDamager().getName() + ")" : e.getDamager().getType().toString();
         String type = (damaged.getHealth() - e.getDamage() <= 0) ? "DEATH" : "DAMAGE";
 
-        new DeathDamageEventContainer(damaged.getUniqueId(),
+        new PlayerDeathDamageEventContainer(damaged.getUniqueId(),
                 location,
                 Calendar.getInstance().getTimeInMillis(),
                 damaged.getName(),
@@ -48,7 +48,7 @@ public class DeathDamageEvent implements Listener {
 
         String type = (damaged.getHealth() - e.getDamage() <= 0) ? "DEATH" : "DAMAGE";
 
-        new DeathDamageEventContainer(
+        new PlayerDeathDamageEventContainer(
                 damaged.getUniqueId(),
                 location,
                 Calendar.getInstance().getTimeInMillis(),
