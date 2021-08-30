@@ -1,6 +1,6 @@
 package com.terraboxstudios.instantreplay.util;
 
-import com.terraboxstudios.instantreplay.Main;
+import com.terraboxstudios.instantreplay.InstantReplay;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -14,7 +14,7 @@ public class Config {
     private static FileConfiguration config;
     private static File configFile;
 
-    private static final Main plugin = Main.getPlugin(Main.class);
+    private static final InstantReplay plugin = InstantReplay.getPlugin(InstantReplay.class);
 
     public static void loadConfig() {
         if (!plugin.getDataFolder().exists()) {
