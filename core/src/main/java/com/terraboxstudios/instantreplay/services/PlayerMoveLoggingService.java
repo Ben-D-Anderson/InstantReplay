@@ -1,6 +1,6 @@
 package com.terraboxstudios.instantreplay.services;
 
-import com.terraboxstudios.instantreplay.Main;
+import com.terraboxstudios.instantreplay.InstantReplay;
 import com.terraboxstudios.instantreplay.events.containers.PlayerMoveEventContainer;
 import com.terraboxstudios.instantreplay.util.Config;
 import org.bukkit.Bukkit;
@@ -20,7 +20,7 @@ public class PlayerMoveLoggingService {
 	}
 	
 	public PlayerMoveLoggingService() {
-		Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.getPlugin(Main.class), () -> {
+		Bukkit.getScheduler().scheduleSyncRepeatingTask(InstantReplay.getPlugin(InstantReplay.class), () -> {
 			for (Player player : Bukkit.getOnlinePlayers()) {
 				if (player.isDead()) continue;
 
