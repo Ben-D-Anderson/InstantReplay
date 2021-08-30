@@ -5,7 +5,6 @@ import com.terraboxstudios.instantreplay.events.containers.PlayerDeathDamageEven
 import com.terraboxstudios.instantreplay.mysql.MySQL;
 import org.bukkit.Location;
 
-import java.util.Collections;
 import java.util.List;
 
 public class PlayerDeathDamageEventContainerProvider implements EventContainerProvider<PlayerDeathDamageEventContainer> {
