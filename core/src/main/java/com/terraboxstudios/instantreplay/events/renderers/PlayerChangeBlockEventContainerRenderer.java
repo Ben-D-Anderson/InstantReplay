@@ -14,20 +14,35 @@ public class PlayerChangeBlockEventContainerRenderer extends EventContainerRende
     }
 
     public void renderRemaining(long currentTimestamp) {
-        if (getEventContainers().size() < 1) return;
+        if (getEventContainers().isEmpty()) return;
         getEventContainers()
                 .stream()
                 .filter(container -> container.getTime() > currentTimestamp)
                 .forEach(this::render);
     }
 
+    public void undoRenderAll() {
+        getEventContainers().forEach(this::undoRender);
+    }
+
+    public void undoRender(PlayerChangeBlockEventContainer eventContainer) {
+        render(eventContainer, true);
+    }
+
     @Override
     protected void render(PlayerChangeBlockEventContainer eventContainer) {
+        render(eventContainer, false);
+    }
+
+    private void render(PlayerChangeBlockEventContainer eventContainer, boolean undoRender) {
         Player player = Bukkit.getPlayer(getContext().getViewer());
         if (player == null) return;
 
-        //todo version specific implementation
-        player.sendBlockChange(eventContainer.getLocation(), eventContainer.getNewBlockMaterial(), eventContainer.getNewBlockData());
+        if (undoRender) {
+            player.sendBlockChange(eventContainer.getLocation(), eventContainer.getOldBlockMaterial(), eventContainer.getOldBlockData());
+        } else {
+            player.sendBlockChange(eventContainer.getLocation(), eventContainer.getNewBlockMaterial(), eventContainer.getNewBlockData());
+        }
     }
 
 }
