@@ -1,6 +1,6 @@
 package com.terraboxstudios.instantreplay.inventory;
 
-import com.terraboxstudios.instantreplay.Main;
+import com.terraboxstudios.instantreplay.InstantReplay;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
@@ -52,7 +52,7 @@ public class InventoryFactory {
             healthItem = new ItemStack(Material.AIR, 1);
         inventory.setItem(40, healthItem);
         for (int i = 41; i < 45; i++) {
-            ItemStack item = Main.getVersionSpecificProvider().getItemFactory().getEmptyItemGUIPlaceholder();
+            ItemStack item = InstantReplay.getVersionSpecificProvider().getItemFactory().getEmptyItemGUIPlaceholder();
             ItemMeta itemMeta = item.getItemMeta();
             if (itemMeta != null) {
                 itemMeta.setDisplayName(" ");
