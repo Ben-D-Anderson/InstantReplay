@@ -1,6 +1,6 @@
 package com.terraboxstudios.instantreplay.services;
 
-import com.terraboxstudios.instantreplay.Main;
+import com.terraboxstudios.instantreplay.InstantReplay;
 import com.terraboxstudios.instantreplay.events.containers.PlayerInventoryEventContainer;
 import com.terraboxstudios.instantreplay.inventory.InventorySerializer;
 import com.terraboxstudios.instantreplay.util.Config;
@@ -22,12 +22,12 @@ public class PlayerInventoryLoggingService {
 	}
 
 	public PlayerInventoryLoggingService() {
-		Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.getPlugin(Main.class), () -> {
+		Bukkit.getScheduler().scheduleSyncRepeatingTask(InstantReplay.getPlugin(InstantReplay.class), () -> {
 			for (Player player : Bukkit.getOnlinePlayers()) {
 				if (player.isDead()) continue;
 
 				int health = ((int) player.getHealth()) / 2;
-				ItemStack healthItem = Main.getVersionSpecificProvider().getItemFactory().getHealthItemGUI();
+				ItemStack healthItem = InstantReplay.getVersionSpecificProvider().getItemFactory().getHealthItemGUI();
 				ItemMeta healthItemMeta = healthItem.getItemMeta();
 				if (healthItemMeta != null) {
 					healthItemMeta.setDisplayName(ChatColor.GREEN + "Health");
