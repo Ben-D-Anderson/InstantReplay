@@ -1,11 +1,14 @@
 package com.terraboxstudios.instantreplay;
 
 import com.terraboxstudios.instantreplay.commands.ReplayCommand;
-import com.terraboxstudios.instantreplay.events.*;
+import com.terraboxstudios.instantreplay.events.listeners.*;
+import com.terraboxstudios.instantreplay.listeners.*;
 import com.terraboxstudios.instantreplay.mysql.MySQL;
 import com.terraboxstudios.instantreplay.replay.ReplayThreads;
 import com.terraboxstudios.instantreplay.services.EventLoggingService;
 import com.terraboxstudios.instantreplay.services.MySQLCleanupService;
+import com.terraboxstudios.instantreplay.services.PlayerInventoryLoggingService;
+import com.terraboxstudios.instantreplay.services.PlayerMoveLoggingService;
 import com.terraboxstudios.instantreplay.util.Config;
 import com.terraboxstudios.instantreplay.versionspecific.VersionSpecificProvider;
 import lombok.Getter;
@@ -55,13 +58,13 @@ public class Main extends JavaPlugin {
 	}
 
 	private void registerEvents() {
-		new PlayerMoveLogger();
-		new PlayerInventoryLogger();
-		registerEvent(new InteractEvent());
-		registerEvent(new JoinLeaveEvent());
-		registerEvent(new DeathDamageEvent());
-		registerEvent(new BlockChangeEvent());
-		registerEvent(new RightClickNPCEvent());
+		new PlayerMoveLoggingService();
+		new PlayerInventoryLoggingService();
+		registerEvent(new PlayerInteractListener());
+		registerEvent(new PlayerJoinLeaveListener());
+		registerEvent(new PlayerDeathDamageListener());
+		registerEvent(new PlayerChangeBlockListener());
+		registerEvent(new PlayerRightClickNPCListener());
 	}
 
 	private void registerEvent(Listener l) {
