@@ -24,7 +24,7 @@ public abstract class EventContainerRenderer<T extends EventContainer> {
     }
 
     public void render(long currentTimestamp) {
-        if (eventContainers.size() < 1) return;
+        if (eventContainers.isEmpty()) return;
         boolean hasRendered = false;
         for (T container : eventContainers) {
             if (container.getTime() == currentTimestamp) {
