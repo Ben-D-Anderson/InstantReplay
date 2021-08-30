@@ -2,7 +2,6 @@ package com.terraboxstudios.instantreplay;
 
 import com.terraboxstudios.instantreplay.commands.ReplayCommand;
 import com.terraboxstudios.instantreplay.events.listeners.*;
-import com.terraboxstudios.instantreplay.listeners.*;
 import com.terraboxstudios.instantreplay.mysql.MySQL;
 import com.terraboxstudios.instantreplay.replay.ReplayThreads;
 import com.terraboxstudios.instantreplay.services.EventLoggingService;
@@ -20,7 +19,7 @@ import java.util.Objects;
 import java.util.logging.Level;
 
 
-public class Main extends JavaPlugin {
+public class InstantReplay extends JavaPlugin {
 
 	@Getter
 	private static VersionSpecificProvider versionSpecificProvider;
