@@ -1,6 +1,6 @@
 package com.terraboxstudios.instantreplay.util;
 
-import com.terraboxstudios.instantreplay.events.containers.PlayerMoveEventContainer;
+import com.terraboxstudios.instantreplay.InstantReplay;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
@@ -27,24 +27,20 @@ public class Utils {
 		return Objects.requireNonNull(loc.getWorld()).getName()+":"+loc.getX()+":"+loc.getY()+":"+loc.getZ()+":"+loc.getYaw()+":"+loc.getPitch();
 	}
 
-	//todo this is a monstrosity
-	public static ArrayList<ArrayList<PlayerMoveEventContainer>> sortPlayerMoveEventsByPlayer(ArrayList<PlayerMoveEventContainer> playerEvents) {
-		HashMap<String, ArrayList<PlayerMoveEventContainer>> knownPlayers = new HashMap<>();
-		for (PlayerMoveEventContainer playerMoveObj : playerEvents) {
-			knownPlayers.computeIfAbsent(playerMoveObj.getName(), k -> new ArrayList<>());
-			knownPlayers.get(playerMoveObj.getName()).add(playerMoveObj);
-		}
-		ArrayList<ArrayList<PlayerMoveEventContainer>> finalArrayList = new ArrayList<>();
-
-		for (String key : knownPlayers.keySet()) {
-			finalArrayList.add(knownPlayers.get(key));
-		}
-
-		return finalArrayList;
-	}
-
 	public static String getReplayPrefix() {
 		return Config.getConfig().getBoolean("settings.use-plugin-prefix") ? Config.readColouredString("plugin-prefix") : "";
+	}
+
+	public static void runOnMainThread(Runnable runnable) {
+		Bukkit.getScheduler().runTask(InstantReplay.getPlugin(InstantReplay.class), runnable);
+	}
+
+	public static boolean isLocationInReplay(Location locationOne, Location locationTwo, int radius) {
+		if (locationOne.getWorld() == null || locationTwo.getWorld() == null) return false;
+		return (locationOne.getBlockX() >= locationTwo.getBlockX() - radius && locationOne.getBlockX() <= locationTwo.getBlockX() + radius)
+				&& (locationOne.getBlockZ() >= locationTwo.getBlockZ() - radius && locationOne.getBlockZ() <= locationTwo.getBlockZ() + radius)
+				&& locationOne.getWorld().getName().equals(locationTwo.getWorld().getName());
+
 	}
 	
 }
