@@ -1,4 +1,4 @@
-package com.terraboxstudios.instantreplay.containers;
+package com.terraboxstudios.instantreplay.events;
 
 import com.terraboxstudios.instantreplay.services.EventLoggingService;
 import lombok.EqualsAndHashCode;
@@ -12,7 +12,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 @EqualsAndHashCode
-public abstract class EventContainer implements Comparable<EventContainer> {
+public abstract class EventContainer {
 
     private final String world;
     private final double x, y, z;
@@ -41,11 +41,6 @@ public abstract class EventContainer implements Comparable<EventContainer> {
 
     public void log() {
         EventLoggingService.getInstance().logEvent(this);
-    }
-
-    @Override
-    public int compareTo(EventContainer o) {
-        return Long.compare(getTime(), o.getTime());
     }
 
 }
