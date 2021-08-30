@@ -5,7 +5,6 @@ import com.terraboxstudios.instantreplay.events.containers.PlayerJoinLeaveEventC
 import com.terraboxstudios.instantreplay.mysql.MySQL;
 import org.bukkit.Location;
 
-import java.util.Collections;
 import java.util.List;
 
 public class PlayerJoinLeaveEventContainerProvider implements EventContainerProvider<PlayerJoinLeaveEventContainer> {
