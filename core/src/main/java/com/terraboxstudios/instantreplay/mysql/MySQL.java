@@ -1,7 +1,8 @@
 package com.terraboxstudios.instantreplay.mysql;
 
 import com.terraboxstudios.instantreplay.Main;
-import com.terraboxstudios.instantreplay.containers.*;
+import com.terraboxstudios.instantreplay.events.*;
+import com.terraboxstudios.instantreplay.events.containers.*;
 import com.terraboxstudios.instantreplay.inventory.InventorySerializer;
 import com.terraboxstudios.instantreplay.util.Config;
 import com.terraboxstudios.instantreplay.util.Utils;
@@ -13,6 +14,7 @@ import org.bukkit.inventory.ItemStack;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
 
@@ -84,14 +86,14 @@ public class MySQL {
 	}
 
 	public void logEvent(EventContainer eventContainer) {
-		if (eventContainer instanceof BlockEventContainer) {
-			logBlockEvent((BlockEventContainer) eventContainer);
+		if (eventContainer instanceof PlayerChangeBlockEventContainer) {
+			logBlockEvent((PlayerChangeBlockEventContainer) eventContainer);
 		} else if (eventContainer instanceof PlayerMoveEventContainer) {
 			logPlayerMoveEvent((PlayerMoveEventContainer) eventContainer);
-		} else if (eventContainer instanceof DeathDamageEventContainer) {
-			logDeathDamageEvent((DeathDamageEventContainer) eventContainer);
-		} else if (eventContainer instanceof JoinLeaveEventContainer) {
-			logJoinLeaveEvent((JoinLeaveEventContainer) eventContainer);
+		} else if (eventContainer instanceof PlayerDeathDamageEventContainer) {
+			logDeathDamageEvent((PlayerDeathDamageEventContainer) eventContainer);
+		} else if (eventContainer instanceof PlayerJoinLeaveEventContainer) {
+			logJoinLeaveEvent((PlayerJoinLeaveEventContainer) eventContainer);
 		} else if (eventContainer instanceof PlayerInventoryEventContainer) {
 			logPlayerInventoryEvent((PlayerInventoryEventContainer) eventContainer);
 		} else {
@@ -99,7 +101,7 @@ public class MySQL {
 		}
 	}
 
-	private void logBlockEvent(BlockEventContainer blockEventObj) {
+	private void logBlockEvent(PlayerChangeBlockEventContainer blockEventObj) {
 		try {
 			PreparedStatement statement = getConnection().prepareStatement
 					("INSERT INTO block_events (location, old_block, old_block_data, new_block, new_block_data, time) VALUES (?, ?, ?, ?, ?, ?)");
@@ -131,7 +133,7 @@ public class MySQL {
 		}
 	}
 
-	private void logDeathDamageEvent(DeathDamageEventContainer deathDamageEventObj) {
+	private void logDeathDamageEvent(PlayerDeathDamageEventContainer deathDamageEventObj) {
 		try {
 			PreparedStatement statement = getConnection().prepareStatement
 					("INSERT INTO death_damage_events (name, UUID, location, event_type, source, time) VALUES (?, ?, ?, ?, ?, ?)");
@@ -148,7 +150,7 @@ public class MySQL {
 		}
 	}
 
-	private void logJoinLeaveEvent(JoinLeaveEventContainer joinLeaveEventObj) {
+	private void logJoinLeaveEvent(PlayerJoinLeaveEventContainer joinLeaveEventObj) {
 		try {
 			PreparedStatement statement = getConnection().prepareStatement
 					("INSERT INTO join_leave_events (name, UUID, location, event_type, time) VALUES (?, ?, ?, ?, ?)");
@@ -180,16 +182,14 @@ public class MySQL {
 		}
 	}
 
-	public ArrayList<BlockEventContainer> getBlockEvents(Location replayLocation, int radius, int seconds, long timeStamp) {
-		ArrayList<BlockEventContainer> blockEvents = new ArrayList<>();
+	public List<PlayerChangeBlockEventContainer> getBlockEvents(Location replayLocation, int radius, long timestamp) {
+		List<PlayerChangeBlockEventContainer> blockEvents = new ArrayList<>();
 		if (replayLocation.getWorld() == null) return blockEvents;
-
-		long time = timeStamp > 1 ? timeStamp : Calendar.getInstance().getTimeInMillis() - (seconds * 1000L);
 
 		try {
 			PreparedStatement statement = getConnection().prepareStatement
-					("SELECT * FROM block_events WHERE time>=?");
-			statement.setLong(1, time);
+					("SELECT * FROM block_events WHERE time>=? SORT BY time ASC");
+			statement.setLong(1, timestamp);
 
 			ResultSet results = statement.executeQuery();
 			while (results.next()) {
@@ -200,7 +200,7 @@ public class MySQL {
 				eventLocation.setZ(eventLocation.getBlockZ());
 
 				if (isLocationInReplay(eventLocation, replayLocation, radius)) {
-					blockEvents.add(new BlockEventContainer(UUID.randomUUID(), eventLocation, results.getLong("time"), Material.getMaterial(results.getString("old_block")), Material.getMaterial(results.getString("new_block")), results.getByte("old_block_data"), results.getByte("new_block_data")));
+					blockEvents.add(new PlayerChangeBlockEventContainer(UUID.randomUUID(), eventLocation, results.getLong("time"), Material.getMaterial(results.getString("old_block")), Material.getMaterial(results.getString("new_block")), results.getByte("old_block_data"), results.getByte("new_block_data")));
 				}
 			}
 			return blockEvents;
@@ -210,18 +210,15 @@ public class MySQL {
 		return blockEvents;
 	}
 
-
-	public ArrayList<PlayerMoveEventContainer> getPlayerMoveEvents(Location replayLocation, int radius, int seconds, long timeStamp) {
-		ArrayList<PlayerMoveEventContainer> playerMoveEvents = new ArrayList<>();
+	public List<PlayerMoveEventContainer> getPlayerMoveEvents(Location replayLocation, int radius, long timestamp) {
+		List<PlayerMoveEventContainer> playerMoveEvents = new ArrayList<>();
 		if (replayLocation.getWorld() == null) return playerMoveEvents;
-
-		long time = timeStamp > 1 ? timeStamp : Calendar.getInstance().getTimeInMillis() - (seconds * 1000L);
 
 		radius += 4;
 		try {
 			PreparedStatement statement = getConnection().prepareStatement
-					("SELECT * FROM player_move_events WHERE time>=?");
-			statement.setLong(1, time);
+					("SELECT * FROM player_move_events WHERE time>=? SORT BY time ASC");
+			statement.setLong(1, timestamp);
 
 			ResultSet results = statement.executeQuery();
 			while (results.next()) {
@@ -239,16 +236,14 @@ public class MySQL {
 		return playerMoveEvents;
 	}
 
-	public ArrayList<DeathDamageEventContainer> getDeathDamageEvents(Location replayLocation, int radius, int seconds, long timeStamp) {
-		ArrayList<DeathDamageEventContainer> deathDamageEvents = new ArrayList<>();
+	public List<PlayerDeathDamageEventContainer> getDeathDamageEvents(Location replayLocation, int radius, long timestamp) {
+		List<PlayerDeathDamageEventContainer> deathDamageEvents = new ArrayList<>();
 		if (replayLocation.getWorld() == null) return deathDamageEvents;
-
-		long time = timeStamp > 1 ? timeStamp : Calendar.getInstance().getTimeInMillis() - (seconds * 1000L);
 
 		try {
 			PreparedStatement statement = getConnection().prepareStatement
-					("SELECT * FROM death_damage_events WHERE time>=?");
-			statement.setLong(1, time);
+					("SELECT * FROM death_damage_events WHERE time>=? SORT BY time ASC");
+			statement.setLong(1, timestamp);
 
 			ResultSet results = statement.executeQuery();
 			while (results.next()) {
@@ -261,7 +256,7 @@ public class MySQL {
 					eventLocation.setY((int) eventLocation.getY());
 					eventLocation.setZ((int) eventLocation.getZ());
 
-					deathDamageEvents.add(new DeathDamageEventContainer(uuid, eventLocation, results.getLong("time"), results.getString("name"), results.getString("event_type"), results.getString("source")));
+					deathDamageEvents.add(new PlayerDeathDamageEventContainer(uuid, eventLocation, results.getLong("time"), results.getString("name"), results.getString("event_type"), results.getString("source")));
 				}
 			}
 			return deathDamageEvents;
@@ -271,16 +266,14 @@ public class MySQL {
 		return deathDamageEvents;
 	}
 
-	public ArrayList<JoinLeaveEventContainer> getJoinLeaveEvents(Location replayLocation, int radius, int seconds, long timeStamp) {
-		ArrayList<JoinLeaveEventContainer> joinLeaveEvents = new ArrayList<>();
+	public List<PlayerJoinLeaveEventContainer> getJoinLeaveEvents(Location replayLocation, int radius, long timestamp) {
+		List<PlayerJoinLeaveEventContainer> joinLeaveEvents = new ArrayList<>();
 		if (replayLocation.getWorld() == null) return joinLeaveEvents;
-
-		long time = timeStamp > 1 ? timeStamp : Calendar.getInstance().getTimeInMillis() - (seconds * 1000L);
 
 		try {
 			PreparedStatement statement = getConnection().prepareStatement
-					("SELECT * FROM join_leave_events WHERE time>=?");
-			statement.setLong(1, time);
+					("SELECT * FROM join_leave_events WHERE time>=? SORT BY time ASC");
+			statement.setLong(1, timestamp);
 
 			ResultSet results = statement.executeQuery();
 			while (results.next()) {
@@ -293,7 +286,7 @@ public class MySQL {
 					eventLocation.setY((int) eventLocation.getY());
 					eventLocation.setZ((int) eventLocation.getZ());
 
-					joinLeaveEvents.add(new JoinLeaveEventContainer(uuid, eventLocation, results.getLong("time"), results.getString("name"), results.getString("event_type")));
+					joinLeaveEvents.add(new PlayerJoinLeaveEventContainer(uuid, eventLocation, results.getLong("time"), results.getString("name"), results.getString("event_type")));
 				}
 			}
 			return joinLeaveEvents;
@@ -303,16 +296,14 @@ public class MySQL {
 		return joinLeaveEvents;
 	}
 
-	public ArrayList<PlayerInventoryEventContainer> getPlayerInventoryEvents(Location replayLocation, int radius, int seconds, long timeStamp) {
-		ArrayList<PlayerInventoryEventContainer> playerInventoryEvents = new ArrayList<>();
+	public List<PlayerInventoryEventContainer> getPlayerInventoryEvents(Location replayLocation, int radius, long timestamp) {
+		List<PlayerInventoryEventContainer> playerInventoryEvents = new ArrayList<>();
 		if (replayLocation.getWorld() == null) return playerInventoryEvents;
-
-		long time = timeStamp > 1 ? timeStamp : Calendar.getInstance().getTimeInMillis() - (seconds * 1000L);
 
 		try {
 			PreparedStatement statement = getConnection().prepareStatement
-					("SELECT * FROM player_inventory_events WHERE time>=?");
-			statement.setLong(1, time);
+					("SELECT * FROM player_inventory_events WHERE time>=? SORT BY time ASC");
+			statement.setLong(1, timestamp);
 
 			ResultSet results = statement.executeQuery();
 			while (results.next()) {
