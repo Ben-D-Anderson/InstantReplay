@@ -1,7 +1,6 @@
 package com.terraboxstudios.instantreplay.replay;
 
-import com.terraboxstudios.instantreplay.Main;
-import org.bukkit.Bukkit;
+import com.terraboxstudios.instantreplay.util.Utils;
 
 import java.util.HashMap;
 import java.util.UUID;
@@ -23,7 +22,7 @@ public class ReplayThreads {
 	}
 
 	public static void stopThread(UUID uuid) {
-		Bukkit.getScheduler().runTask(Main.getPlugin(Main.class), () -> threads.remove(uuid).stopReplay());
+		Utils.runOnMainThread(() -> threads.remove(uuid).stopReplay());
 	}
 
 	public static void stopAllThreads() {
