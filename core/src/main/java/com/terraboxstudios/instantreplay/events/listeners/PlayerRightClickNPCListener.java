@@ -7,7 +7,7 @@ import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
-import com.terraboxstudios.instantreplay.Main;
+import com.terraboxstudios.instantreplay.InstantReplay;
 import com.terraboxstudios.instantreplay.replay.ReplayInstance;
 import com.terraboxstudios.instantreplay.replay.ReplayThreads;
 import com.terraboxstudios.instantreplay.versionspecific.npc.NPC;
@@ -38,7 +38,7 @@ public class PlayerRightClickNPCListener implements Listener {
 	}
 
 	private void registerListener(ProtocolManager protocolManager) {
-		protocolManager.addPacketListener(new PacketAdapter(Main.getPlugin(Main.class), ListenerPriority.NORMAL, PacketType.Play.Client.USE_ENTITY) {
+		protocolManager.addPacketListener(new PacketAdapter(InstantReplay.getPlugin(InstantReplay.class), ListenerPriority.NORMAL, PacketType.Play.Client.USE_ENTITY) {
 			public void onPacketReceiving(PacketEvent e) {
 				if (!(e.getPacketType() == PacketType.Play.Client.USE_ENTITY && ReplayThreads.isUserReplaying(e.getPlayer().getUniqueId())))
 					return;
@@ -53,13 +53,13 @@ public class PlayerRightClickNPCListener implements Listener {
 				if (!clickedNPCOptional.isPresent()) return;
 				NPC clickedNPC = clickedNPCOptional.get();
 
-				player.openInventory(replayInstance.getInventories().get(clickedNPC.getUniqueId()));
+				player.openInventory(replayInstance.getContext().getNpcInventoryMap().get(clickedNPC.getUniqueId()));
 			}
 		});
 	}
 
 	private Optional<NPC> findNPCById(ReplayInstance replayInstance, int id) {
-		return replayInstance.getNpcs().values()
+		return replayInstance.getContext().getNpcMap().values()
 				.stream()
 				.filter(npc -> npc.getId() == id)
 				.findFirst();

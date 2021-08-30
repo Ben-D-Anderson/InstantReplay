@@ -1,48 +1,49 @@
 package com.terraboxstudios.instantreplay.replay;
 
-import com.terraboxstudios.instantreplay.events.EventContainerRenderer;
+import com.terraboxstudios.instantreplay.inventory.CustomInventory;
+import com.terraboxstudios.instantreplay.versionspecific.npc.NPC;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.bukkit.Location;
+import org.bukkit.inventory.Inventory;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 @Getter
 public class ReplayContext {
 
     private final UUID viewer;
-    private final long timeOfCommandRun, timestamp;
+    private final long startTimestamp;
     private final int radius;
     private final Location location;
-    private final EventContainerRenderer<?>[] renderers;
+    private final Map<UUID, NPC> npcMap;
+    private final Map<UUID, Inventory> npcInventoryMap;
+    private final Map<UUID, CustomInventory> npcCustomInventoryMap;
     @Setter
     private int speed;
 
     private ReplayContext(ReplayContext.Builder builder) {
         this.viewer = builder.viewer;
-        this.timestamp = builder.timestamp;
-        this.timeOfCommandRun = builder.timeOfCommandRun;
+        this.startTimestamp = builder.timestamp;
         this.radius = builder.radius;
         this.location = builder.location;
         this.speed = builder.speed;
-        this.renderers = builder.renderers;
+        this.npcMap = new HashMap<>();
+        this.npcInventoryMap = new HashMap<>();
+        this.npcCustomInventoryMap = new HashMap<>();
     }
 
     @RequiredArgsConstructor
     public static class Builder {
 
         private final UUID viewer;
-        private final long timestamp, timeOfCommandRun;
+        private final long timestamp;
         private final int radius;
         private final Location location;
         private int speed;
-        private EventContainerRenderer<?>[] renderers;
-
-        public Builder setRenderers(EventContainerRenderer<?>... renderers) {
-            this.renderers = renderers;
-            return this;
-        }
 
         public Builder setSpeed(int speed) {
             this.speed = speed;
