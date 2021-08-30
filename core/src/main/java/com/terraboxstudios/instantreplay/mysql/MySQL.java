@@ -1,6 +1,6 @@
 package com.terraboxstudios.instantreplay.mysql;
 
-import com.terraboxstudios.instantreplay.Main;
+import com.terraboxstudios.instantreplay.InstantReplay;
 import com.terraboxstudios.instantreplay.events.*;
 import com.terraboxstudios.instantreplay.events.containers.*;
 import com.terraboxstudios.instantreplay.inventory.InventorySerializer;
@@ -43,7 +43,7 @@ public class MySQL {
 			initTables();
 		} catch (ClassNotFoundException | SQLException exception) {
 			Bukkit.getLogger().log(Level.SEVERE, "Failed to connect to MySQL database!");
-			Bukkit.getPluginManager().disablePlugin(Main.getPlugin(Main.class));
+			Bukkit.getPluginManager().disablePlugin(InstantReplay.getPlugin(InstantReplay.class));
 		}
 	}
 
@@ -199,7 +199,7 @@ public class MySQL {
 				eventLocation.setY(eventLocation.getBlockY());
 				eventLocation.setZ(eventLocation.getBlockZ());
 
-				if (isLocationInReplay(eventLocation, replayLocation, radius)) {
+				if (Utils.isLocationInReplay(eventLocation, replayLocation, radius)) {
 					blockEvents.add(new PlayerChangeBlockEventContainer(UUID.randomUUID(), eventLocation, results.getLong("time"), Material.getMaterial(results.getString("old_block")), Material.getMaterial(results.getString("new_block")), results.getByte("old_block_data"), results.getByte("new_block_data")));
 				}
 			}
@@ -225,7 +225,7 @@ public class MySQL {
 				String locString = results.getString("location");
 				Location eventLocation = Utils.stringToLocation(locString);
 
-				if (isLocationInReplay(eventLocation, replayLocation, radius)) {
+				if (Utils.isLocationInReplay(eventLocation, replayLocation, radius)) {
 					playerMoveEvents.add(new PlayerMoveEventContainer(UUID.fromString(results.getString("UUID")), eventLocation, results.getLong("time"), results.getString("name")));
 				}
 			}
@@ -250,7 +250,7 @@ public class MySQL {
 				String locString = results.getString("location");
 				Location eventLocation = Utils.stringToLocation(locString);
 
-				if (isLocationInReplay(eventLocation, replayLocation, radius)) {
+				if (Utils.isLocationInReplay(eventLocation, replayLocation, radius)) {
 					UUID uuid = UUID.fromString(results.getString("UUID"));
 					eventLocation.setX((int) eventLocation.getX());
 					eventLocation.setY((int) eventLocation.getY());
@@ -280,7 +280,7 @@ public class MySQL {
 				String locString = results.getString("location");
 				Location eventLocation = Utils.stringToLocation(locString);
 
-				if (isLocationInReplay(eventLocation, replayLocation, radius)) {
+				if (Utils.isLocationInReplay(eventLocation, replayLocation, radius)) {
 					UUID uuid = UUID.fromString(results.getString("UUID"));
 					eventLocation.setX((int) eventLocation.getX());
 					eventLocation.setY((int) eventLocation.getY());
@@ -310,7 +310,7 @@ public class MySQL {
 				String locString = results.getString("location");
 				Location eventLocation = Utils.stringToLocation(locString);
 
-				if (isLocationInReplay(eventLocation, replayLocation, radius)) {
+				if (Utils.isLocationInReplay(eventLocation, replayLocation, radius)) {
 					String[] serArr = results.getString("serialized").split(";");
 					ItemStack[] content = InventorySerializer.itemStackArrayFromBase64(serArr[0]);
 					ItemStack[] armour = InventorySerializer.itemStackArrayFromBase64(serArr[1]);
@@ -330,14 +330,6 @@ public class MySQL {
 			e.printStackTrace();
 		}
 		return playerInventoryEvents;
-	}
-
-	private boolean isLocationInReplay(Location locationOne, Location locationTwo, int radius) {
-		if (locationOne.getWorld() == null || locationTwo.getWorld() == null) return false;
-		return (locationOne.getBlockX() >= locationTwo.getBlockX() - radius && locationOne.getBlockX() <= locationTwo.getBlockX() + radius)
-				&& (locationOne.getBlockZ() >= locationTwo.getBlockZ() - radius && locationOne.getBlockZ() <= locationTwo.getBlockZ() + radius)
-				&& locationOne.getWorld().getName().equals(locationTwo.getWorld().getName());
-
 	}
 
 	public void cleanTables() {
