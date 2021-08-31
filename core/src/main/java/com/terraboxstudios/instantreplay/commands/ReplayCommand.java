@@ -20,12 +20,12 @@ public class ReplayCommand implements CommandExecutor {
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (args.length == 0) {
-			sender.sendMessage(Config.readColouredStringList("invalid-argument"));
+			sendHelp(sender);
 			return true;
 		}
 		
 		if (args[0].equalsIgnoreCase("help")) {
-			sender.sendMessage(Config.readColouredStringList("invalid-argument"));
+			sendHelp(sender);
 			return true;
 		}
 		
@@ -132,7 +132,7 @@ public class ReplayCommand implements CommandExecutor {
 		}
 
 		if (!args[0].equalsIgnoreCase("start") && !args[0].equalsIgnoreCase("resume") && !args[0].equalsIgnoreCase("pause") && !args[0].equalsIgnoreCase("stop") && !args[0].equalsIgnoreCase("reload") && !args[0].equalsIgnoreCase("clearlogs")) {
-			sender.sendMessage(Config.readColouredStringList("invalid-argument"));
+			sendHelp(sender);
 			return true;
 		}
 
@@ -166,6 +166,20 @@ public class ReplayCommand implements CommandExecutor {
 		ReplayInstance replayInstance = new ReplayInstance(context);
 		ReplayThreads.addToThreads(player.getUniqueId(), replayInstance);
 		return true;
+	}
+
+	private void sendHelp(CommandSender sender) {
+		for (String line : Config.readColouredStringListAsList("invalid-argument")) {
+			if (line.startsWith("{") && line.endsWith("]")) {
+				String permissiveLine = line.substring(1, line.lastIndexOf("}"));
+				String varPermission = line.substring(line.lastIndexOf("}") + 2, line.length() - 1);
+				if (sender.hasPermission(Objects.requireNonNull(Config.getConfig().getString("settings." + varPermission)))) {
+					sender.sendMessage(permissiveLine);
+				}
+			} else {
+				sender.sendMessage(line);
+			}
+		}
 	}
 
 	//todo add timestamp converter command
