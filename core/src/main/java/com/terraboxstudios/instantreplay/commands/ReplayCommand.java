@@ -1,7 +1,7 @@
 package com.terraboxstudios.instantreplay.commands;
 
-import com.terraboxstudios.instantreplay.replay.ReplayContext;
 import com.terraboxstudios.instantreplay.mysql.MySQL;
+import com.terraboxstudios.instantreplay.replay.ReplayContext;
 import com.terraboxstudios.instantreplay.replay.ReplayInstance;
 import com.terraboxstudios.instantreplay.replay.ReplayThreads;
 import com.terraboxstudios.instantreplay.util.Config;
@@ -12,7 +12,8 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.*;
+import java.util.Calendar;
+import java.util.Objects;
 
 public class ReplayCommand implements CommandExecutor {
 
@@ -129,7 +130,7 @@ public class ReplayCommand implements CommandExecutor {
 			}
 			if (args.length != 4) {
 				sender.sendMessage(Utils.getReplayPrefix() + Config.readColouredString("invalid-format-start"));
-				return true;				
+				return true;
 			}
 		}
 
@@ -138,65 +139,20 @@ public class ReplayCommand implements CommandExecutor {
 			return true;
 		}
 
-		int radius, time = 0, speed;
-		long timeStamp = 0;
+		int radius, speed;
+		long timeStamp;
 		try {
-			time = Integer.parseInt(args[2]);
-		} catch (Exception e) {
-			if (!args[2].endsWith("s") && !args[2].endsWith("m") && !args[2].endsWith("h") && !args[2].endsWith("d") && !args[2].endsWith("t")) {
+			radius = Integer.parseInt(args[1]);
+			timeStamp = parseTimeArgument(args[2]);
+			speed = Integer.parseInt(args[3]);
+			if (radius < 1)
+				radius = 1;
+			if (timeStamp < 1) {
 				sender.sendMessage(Utils.getReplayPrefix() + Config.readColouredString("invalid-argument-start-time"));
 				return true;
 			}
-			if (args[2].endsWith("s")) {
-				try {
-					time = Integer.parseInt(args[2].substring(0, args[2].length() - 1));
-				} catch (Exception e2) {
-					sender.sendMessage(Utils.getReplayPrefix() + Config.readColouredString("invalid-argument-start-time"));
-					return true;
-				}
-			}
-			if (args[2].endsWith("m")) {
-				try {
-					time = 60 * Integer.parseInt(args[2].substring(0, args[2].length() - 1));
-				} catch (Exception e2) {
-					sender.sendMessage(Utils.getReplayPrefix() + Config.readColouredString("invalid-argument-start-time"));
-					return true;
-				}
-			}
-			if (args[2].endsWith("h")) {
-				try {
-					time = 60 * 60 * Integer.parseInt(args[2].substring(0, args[2].length() - 1));
-				} catch (Exception e2) {
-					sender.sendMessage(Utils.getReplayPrefix() + Config.readColouredString("invalid-argument-start-time"));
-					return true;
-				}
-			}
-			if (args[2].endsWith("d")) {
-				try {
-					time = 24 * 60 * 60 * Integer.parseInt(args[2].substring(0, args[2].length() - 1));
-				} catch (Exception e2) {
-					sender.sendMessage(Utils.getReplayPrefix() + Config.readColouredString("invalid-argument-start-time"));
-					return true;
-				}
-			}
-			if (args[2].endsWith("t")) {
-				try {
-					timeStamp = Long.parseLong(args[2].substring(0, args[2].length() - 1));
-				} catch (Exception e2) {
-					sender.sendMessage(Utils.getReplayPrefix() + Config.readColouredString("invalid-argument-start-time"));
-					return true;
-				}
-			} else {
-				timeStamp = Calendar.getInstance().getTimeInMillis() - (time * 1000L);
-			}
-		}
-		try {
-			radius = Integer.parseInt(args[1]);
-			speed = Integer.parseInt(args[3]);
 			if (speed < 1)
 				speed = 1;
-			if (radius < 1)
-				radius = 1;
 		} catch (Exception e) {
 			sender.sendMessage(Utils.getReplayPrefix() + Config.readColouredString("invalid-argument-start"));
 			return true;
@@ -213,6 +169,35 @@ public class ReplayCommand implements CommandExecutor {
 		ReplayInstance replayInstance = new ReplayInstance(context);
 		ReplayThreads.addToThreads(player.getUniqueId(), replayInstance);
 		return true;
+	}
+
+	//todo add timestamp converter command
+	private long parseTimeArgument(String argument) {
+		long timestamp = 0;
+		long longArgument = Long.parseLong(argument.substring(0, argument.length() - 1));
+		switch (Character.toLowerCase(argument.charAt(argument.length() - 1))) {
+			case 's':
+				timestamp = Calendar.getInstance().getTimeInMillis() - (longArgument * 1000);
+				break;
+			case 'm':
+				timestamp = Calendar.getInstance().getTimeInMillis() - (60 * longArgument * 1000);
+				break;
+			case 'h':
+				timestamp = Calendar.getInstance().getTimeInMillis() - (60 * 60 * longArgument * 1000);
+				break;
+			case 't':
+				int longArgumentLength = String.valueOf(longArgument).length();
+				if (longArgumentLength == 10) {
+					longArgument *= 1000;
+				} else if (longArgumentLength != 13) {
+					return 0;
+				}
+				timestamp = longArgument;
+				break;
+			default:
+				break;
+		}
+		return timestamp;
 	}
 
 }
