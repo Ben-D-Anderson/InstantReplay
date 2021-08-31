@@ -8,6 +8,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import java.io.File;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class Config {
 
@@ -36,16 +37,14 @@ public class Config {
     }
 
     public static String readColouredString(String path) {
-    	return ChatColor.translateAlternateColorCodes('&', Objects.requireNonNull(config.getString(path)));
+        return ChatColor.translateAlternateColorCodes('&', Objects.requireNonNull(config.getString(path)));
     }
-    
-    public static String readColouredStringList(String path) {
-    	List<String> stringList = config.getStringList(path);
-    	StringBuilder translated = new StringBuilder();
-        for (String str : stringList) {
-            translated.append(ChatColor.translateAlternateColorCodes('&', str)).append("\n");
-        }
-        return translated.toString();
+
+    public static List<String> readColouredStringListAsList(String path) {
+        return getConfig().getStringList(path)
+                .stream()
+                .map(s -> ChatColor.translateAlternateColorCodes('&', s))
+                .collect(Collectors.toList());
     }
-    
+
 }
