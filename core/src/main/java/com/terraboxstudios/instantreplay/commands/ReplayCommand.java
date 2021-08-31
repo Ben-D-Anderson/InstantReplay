@@ -19,9 +19,6 @@ public class ReplayCommand implements CommandExecutor {
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-
-		long timeOfCommandRun = Calendar.getInstance().getTimeInMillis() + 100;
-
 		if (args.length == 0) {
 			sender.sendMessage(Config.readColouredStringList("invalid-argument"));
 			return true;
