@@ -1,7 +1,7 @@
 package com.terraboxstudios.instantreplay.mysql;
 
 import com.terraboxstudios.instantreplay.InstantReplay;
-import com.terraboxstudios.instantreplay.events.*;
+import com.terraboxstudios.instantreplay.events.EventContainer;
 import com.terraboxstudios.instantreplay.events.containers.*;
 import com.terraboxstudios.instantreplay.inventory.InventorySerializer;
 import com.terraboxstudios.instantreplay.util.Config;
@@ -70,14 +70,11 @@ public class MySQL {
 		return connection;
 	}
 
-	/**
-	 * Delete all entries from all replay tables in the database
-	 */
 	public void clearLogs() {
-		String[] tables = {"block_events", "player_move_events", "death_damage_events", "player_inventory_events", "join_leave_events"};
 		for (String table : tables) {
+			String tableName = table.substring(0, table.indexOf("(")).trim();
 			try {
-				PreparedStatement statement = getConnection().prepareStatement("DELETE FROM " + table);
+				PreparedStatement statement = getConnection().prepareStatement("DELETE FROM " + tableName);
 				statement.execute();
 			} catch (SQLException e) {
 				e.printStackTrace();
@@ -314,15 +311,15 @@ public class MySQL {
 					String[] serArr = results.getString("serialized").split(";");
 					ItemStack[] content = InventorySerializer.itemStackArrayFromBase64(serArr[0]);
 					ItemStack[] armour = InventorySerializer.itemStackArrayFromBase64(serArr[1]);
-					int slot = Integer.parseInt(serArr[2]);
-					ItemStack[] health = InventorySerializer.itemStackArrayFromBase64(serArr[3]);
+					int health = Integer.parseInt(serArr[2]);
+					ItemStack[] hands = InventorySerializer.itemStackArrayFromBase64(serArr[3]);
 
 					UUID uuid = UUID.fromString(results.getString("UUID"));
 					eventLocation.setX((int) eventLocation.getX());
 					eventLocation.setY((int) eventLocation.getY());
 					eventLocation.setZ((int) eventLocation.getZ());
 
-					playerInventoryEvents.add(new PlayerInventoryEventContainer(uuid, eventLocation, results.getLong("time"), results.getString("name"), results.getString("serialized"), content, armour, health, slot));
+					playerInventoryEvents.add(new PlayerInventoryEventContainer(uuid, eventLocation, results.getLong("time"), results.getString("name"), results.getString("serialized"), content, armour, hands, health));
 				}
 			}
 			return playerInventoryEvents;

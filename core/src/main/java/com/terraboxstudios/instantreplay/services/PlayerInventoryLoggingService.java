@@ -5,13 +5,14 @@ import com.terraboxstudios.instantreplay.events.containers.PlayerInventoryEventC
 import com.terraboxstudios.instantreplay.inventory.InventorySerializer;
 import com.terraboxstudios.instantreplay.util.Config;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.UUID;
 
 public class PlayerInventoryLoggingService {
 
@@ -26,19 +27,8 @@ public class PlayerInventoryLoggingService {
 			for (Player player : Bukkit.getOnlinePlayers()) {
 				if (player.isDead()) continue;
 
-				int health = ((int) player.getHealth()) / 2;
-				ItemStack healthItem = InstantReplay.getVersionSpecificProvider().getItemFactory().getHealthItemGUI();
-				ItemMeta healthItemMeta = healthItem.getItemMeta();
-				if (healthItemMeta != null) {
-					healthItemMeta.setDisplayName(ChatColor.GREEN + "Health");
-					List<String> lore = new LinkedList<>();
-					lore.add(ChatColor.YELLOW + "" + health + ChatColor.RED + "❤");
-					healthItemMeta.setLore(lore);
-					healthItem.setItemMeta(healthItemMeta);
-				}
-
-				ItemStack[] healthArr = new ItemStack[] { healthItem };
-				String[] inv = InventorySerializer.playerInventoryToBase64(player.getInventory(), healthArr);
+				ItemStack[] handsArr = InstantReplay.getVersionSpecificProvider().getItemFactory().getHands(player.getInventory());
+				String[] inv = InventorySerializer.playerInventoryToBase64(player.getInventory(), handsArr);
 
 				String[] cachedInventory = invCache.get(player.getUniqueId());
 				if (cachedInventory != null && Arrays.equals(invCache.get(player.getUniqueId()), inv)) {
@@ -60,8 +50,8 @@ public class PlayerInventoryLoggingService {
 						serializedInventory,
 						player.getInventory().getContents(),
 						player.getInventory().getArmorContents(),
-						healthArr,
-						player.getInventory().getHeldItemSlot()
+						handsArr,
+						(int) player.getHealth()
 				).log();
 			}
 		}, 20L, getSecondsPerLog() * 20L);

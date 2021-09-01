@@ -10,9 +10,7 @@ import org.bukkit.inventory.ItemStack;
 @Getter
 public class CustomInventory {
 
-	//todo change health to just an integer stored in other event container
-	private final ItemStack[] contents, armourContents, health;
-	//todo change to itemstack for mainhand and offhand
-	private final int heldSlot;
+	private final ItemStack[] contents, armourContents, hands;
+	private final int health;
 
 }

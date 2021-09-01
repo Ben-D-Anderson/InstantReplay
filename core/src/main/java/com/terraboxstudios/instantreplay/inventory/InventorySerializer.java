@@ -12,12 +12,12 @@ import java.io.IOException;
 
 public class InventorySerializer {
 
-    public static String[] playerInventoryToBase64(PlayerInventory playerInventory, ItemStack[] health) throws IllegalStateException {
-    	String content = itemStackArrayToBase64(playerInventory.getContents());
-    	String armor = itemStackArrayToBase64(playerInventory.getArmorContents());
-    	String _health = itemStackArrayToBase64(health);
-    	
-    	return new String[] { content, armor, String.valueOf(playerInventory.getHeldItemSlot()), _health };
+    public static String[] playerInventoryToBase64(PlayerInventory playerInventory, ItemStack[] handsArr) throws IllegalStateException {
+        String content = itemStackArrayToBase64(playerInventory.getContents());
+        String armor = itemStackArrayToBase64(playerInventory.getArmorContents());
+        String hands = itemStackArrayToBase64(handsArr);
+
+        return new String[]{content, armor, String.valueOf(playerInventory.getHeldItemSlot()), hands};
     }
     
     private static String itemStackArrayToBase64(ItemStack[] items) throws IllegalStateException {

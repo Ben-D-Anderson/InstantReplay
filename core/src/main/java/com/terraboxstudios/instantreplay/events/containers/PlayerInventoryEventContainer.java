@@ -13,20 +13,20 @@ import java.util.UUID;
 public final class PlayerInventoryEventContainer extends EventContainer {
 
     private final String name, serializedInventory;
-    private final ItemStack[] contents, armourContents, health;
-    private final int heldSlot;
+    private final ItemStack[] contents, armourContents, hands;
+    private final int health;
 
     public PlayerInventoryEventContainer(UUID uuid, Location location, long time,
                                          String name, String serializedInventory,
                                          ItemStack[] contents, ItemStack[] armourContents,
-                                         ItemStack[] health, int heldSlot) {
+                                         ItemStack[] hands, int health) {
         super(uuid, location, time);
         this.name = name;
         this.serializedInventory = serializedInventory;
         this.contents = contents;
         this.armourContents = armourContents;
+        this.hands = hands;
         this.health = health;
-        this.heldSlot = heldSlot;
     }
 
 }
