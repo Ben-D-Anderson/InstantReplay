@@ -24,6 +24,7 @@ public class InstantReplay extends JavaPlugin {
 	@Getter
 	private static VersionSpecificProvider versionSpecificProvider;
 
+	//todo correctly locate implementation
 	static {
 		try {
 			String packageName = VersionSpecificProvider.class.getPackage().getName();
