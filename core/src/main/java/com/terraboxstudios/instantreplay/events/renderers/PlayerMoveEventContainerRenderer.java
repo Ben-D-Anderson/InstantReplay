@@ -24,7 +24,6 @@ public class PlayerMoveEventContainerRenderer extends EventContainerRenderer<Pla
     protected void render(PlayerMoveEventContainer eventContainer) {
         Player player = Bukkit.getPlayer(getContext().getViewer());
         if (player == null) return;
-
         NPC npc = getContext().getNpcMap().get(eventContainer.getUuid());
         if (npc != null) {
             if (!Utils.isLocationInReplay(eventContainer.getLocation(), player.getLocation(), getContext().getRadius())) {
@@ -45,10 +44,15 @@ public class PlayerMoveEventContainerRenderer extends EventContainerRenderer<Pla
             }
             CustomInventory customInventory = getContext().getNpcCustomInventoryMap().get(eventContainer.getUuid());
             if (customInventory != null) {
-                ItemStack item = customInventory.getContents()[customInventory.getHeldSlot()];
+                ItemStack item = customInventory.getHands()[0];
                 if (item == null)
                     item = new ItemStack(Material.AIR);
                 npc.setItemInMainHand(item);
+                item = customInventory.getHands()[1];
+                if (item == null) {
+                    item = new ItemStack(Material.AIR);
+                }
+                npc.setItemInOffHand(item);
                 npc.setEquipmentSlot(0, item);
                 for (int armourSlot = 0; armourSlot < 4; armourSlot++) {
                     item = customInventory.getArmourContents()[armourSlot];
