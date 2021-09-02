@@ -15,7 +15,7 @@ public class PlayerMoveLoggingService {
 	
 	private final HashMap<UUID, Location> locCache = new HashMap<>();
 	
-	public static double getSecondsPerLog() {
+	private double getSecondsPerLog() {
 		return Config.getConfig().getDouble("settings.seconds-per-player-move-log");
 	}
 	

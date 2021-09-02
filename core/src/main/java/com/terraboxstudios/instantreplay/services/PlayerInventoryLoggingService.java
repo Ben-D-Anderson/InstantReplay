@@ -17,9 +17,9 @@ import java.util.UUID;
 public class PlayerInventoryLoggingService {
 
 	private final HashMap<UUID, String[]> invCache = new HashMap<>();
-	
-	public static int getSecondsPerLog() {
-		return Config.getConfig().getInt("settings.seconds-per-player-inventory-log");
+
+	private double getSecondsPerLog() {
+		return Config.getConfig().getDouble("settings.seconds-per-player-inventory-log");
 	}
 
 	public PlayerInventoryLoggingService() {
@@ -54,7 +54,7 @@ public class PlayerInventoryLoggingService {
 						(int) player.getHealth()
 				).log();
 			}
-		}, 20L, getSecondsPerLog() * 20L);
+		}, 20L, (long) (getSecondsPerLog() * 20L));
 	}
 
 }
