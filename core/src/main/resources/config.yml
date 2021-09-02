@@ -1,3 +1,10 @@
+mysql:
+  username: ""
+  password: ""
+  host: ""
+  database: ""
+  port: 3306
+
 settings:
   use-plugin-prefix: true
   seconds-per-timestamp-output: 60
@@ -9,18 +16,11 @@ settings:
   replay-reload-permission: "replay.reload"
   replay-clearlogs-permission: "replay.clearlogs"
 
-mysql:
-  username: ""
-  password: ""
-  host: ""
-  database: ""
-  port: 3306
-
 plugin-prefix: "&6&l[&3&lReplay&6&l] &r&7"
 no-permission: "&cInsufficient Permissions."
 no-events-found: "&cNo block, player, death or damage events found meeting radius and time."
 no-active-replay: "&cYou are not currently running a replay."
-config-reloaded: "&aConfiguration reloaded."
+config-reloaded: "&aConfiguration reloaded. Please note this does not change event logging times."
 logs-cleared: "&aLogs successfully cleared."
 invalid-argument:
   - "&7&m                                                        "
