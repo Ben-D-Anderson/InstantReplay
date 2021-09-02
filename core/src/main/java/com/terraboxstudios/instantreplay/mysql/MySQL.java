@@ -207,6 +207,7 @@ public class MySQL {
 		return blockEvents;
 	}
 
+	//TODO Add buffering system to only get x amount of events at a time and retrieve the next x amount when needed
 	public List<PlayerMoveEventContainer> getPlayerMoveEvents(Location replayLocation, int radius, long timestamp) {
 		List<PlayerMoveEventContainer> playerMoveEvents = new ArrayList<>();
 		if (replayLocation.getWorld() == null) return playerMoveEvents;
