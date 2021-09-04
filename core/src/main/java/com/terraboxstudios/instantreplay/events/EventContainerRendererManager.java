@@ -4,6 +4,7 @@ import com.terraboxstudios.instantreplay.events.containers.*;
 import com.terraboxstudios.instantreplay.events.providers.*;
 import com.terraboxstudios.instantreplay.events.renderers.*;
 import com.terraboxstudios.instantreplay.exceptions.PlayerNotOnlineException;
+import com.terraboxstudios.instantreplay.mysql.MySQL;
 import com.terraboxstudios.instantreplay.replay.ReplayContext;
 import com.terraboxstudios.instantreplay.replay.ReplayThreads;
 import lombok.Getter;
@@ -65,7 +66,7 @@ public final class EventContainerRendererManager {
             throw new PlayerNotOnlineException();
         }
 
-        playerChangeBlockEventContainerRenderer.undoRenderAll();
+        MySQL.getInstance().undoRenderAllBlocks(playerChangeBlockEventContainerRenderer, context);
     }
 
     private void createRenderers() {
