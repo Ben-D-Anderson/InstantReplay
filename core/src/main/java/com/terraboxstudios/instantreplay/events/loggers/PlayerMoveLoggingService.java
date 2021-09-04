@@ -1,4 +1,4 @@
-package com.terraboxstudios.instantreplay.services;
+package com.terraboxstudios.instantreplay.events.loggers;
 
 import com.terraboxstudios.instantreplay.InstantReplay;
 import com.terraboxstudios.instantreplay.events.containers.PlayerMoveEventContainer;

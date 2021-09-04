@@ -1,4 +1,4 @@
-package com.terraboxstudios.instantreplay.events.listeners;
+package com.terraboxstudios.instantreplay.events.loggers;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;

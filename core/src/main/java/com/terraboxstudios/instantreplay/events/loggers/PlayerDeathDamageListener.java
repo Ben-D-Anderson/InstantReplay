@@ -1,4 +1,4 @@
-package com.terraboxstudios.instantreplay.events.listeners;
+package com.terraboxstudios.instantreplay.events.loggers;
 
 import com.terraboxstudios.instantreplay.events.containers.PlayerDeathDamageEventContainer;
 import org.bukkit.Location;
