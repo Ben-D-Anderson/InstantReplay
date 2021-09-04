@@ -56,7 +56,7 @@ public final class EventContainerRendererManager {
             throw new PlayerNotOnlineException();
         }
 
-        playerChangeBlockEventContainerRenderer.renderRemaining(currentTimestamp);
+        playerChangeBlockEventContainerRenderer.renderRemaining(context);
     }
 
     public void undoRenderAllBlockChanges() {
