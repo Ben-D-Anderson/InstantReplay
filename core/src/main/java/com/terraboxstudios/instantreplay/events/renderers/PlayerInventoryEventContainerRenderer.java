@@ -22,7 +22,7 @@ public class PlayerInventoryEventContainerRenderer extends EventContainerRendere
         if (player == null) return;
 
         CustomInventory previousInventory = getContext().getNpcCustomInventoryMap().get(eventContainer.getUuid());
-        CustomInventory newCustomInventory = new CustomInventory(eventContainer.getContents(), eventContainer.getArmourContents(), eventContainer.getHealth(), eventContainer.getHeldSlot());
+        CustomInventory newCustomInventory = new CustomInventory(eventContainer.getContents(), eventContainer.getArmourContents(), eventContainer.getHands(), eventContainer.getHealth());
         if (previousInventory != null && previousInventory.equals(newCustomInventory)) return;
 
         getContext().getNpcCustomInventoryMap().put(eventContainer.getUuid(), newCustomInventory);
