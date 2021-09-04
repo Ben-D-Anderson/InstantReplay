@@ -41,7 +41,7 @@ public class ReplayCommand implements CommandExecutor {
 			sender.sendMessage(Utils.getReplayPrefix() + Config.readColouredString("config-reloaded"));
 			return true;
 		}
-		
+
 		if (args[0].equalsIgnoreCase("clearlogs")) {
 			if (!sender.hasPermission(Objects.requireNonNull(Config.getConfig().getString("settings.replay-clearlogs-permission")))) {
 				sender.sendMessage(Config.readColouredString("no-permission"));
@@ -51,13 +51,40 @@ public class ReplayCommand implements CommandExecutor {
 			sender.sendMessage(Utils.getReplayPrefix() + Config.readColouredString("logs-cleared"));
 			return true;
 		}
-		
+
+		if (args[0].equalsIgnoreCase("timestamp")) {
+			long timestamp;
+			if (args.length > 1) {
+				timestamp = convertToTimestamp(args[1]);
+				if (timestamp < 1) {
+					sender.sendMessage(Utils.getReplayPrefix() + Config.readColouredString("no-convert-timestamp"));
+					return true;
+				}
+				Utils.sendTimestampMessage(sender, timestamp);
+			} else {
+				if (sender instanceof Player) {
+					Player player = (Player) sender;
+					if (ReplayThreads.isUserReplaying(player.getUniqueId())) {
+						timestamp = ReplayThreads.getThread(player.getUniqueId()).getRendererManager().getCurrentTimestamp();
+						Utils.sendReplayTimestampMessage(player, timestamp);
+					} else {
+						timestamp = (int) Calendar.getInstance().getTimeInMillis() / 1000;
+						Utils.sendTimestampMessage(player, timestamp);
+					}
+				} else {
+					timestamp = (int) Calendar.getInstance().getTimeInMillis() / 1000;
+					Utils.sendTimestampMessage(sender, timestamp);
+				}
+			}
+			return true;
+		}
+
 		if (!(sender instanceof Player)) {
 			sender.sendMessage(ChatColor.RED + "Command Only Allowed For Players");
 			return true;
 		}
 		Player player = (Player) sender;
-		
+
 		if (!player.hasPermission(Objects.requireNonNull(Config.getConfig().getString("settings.replay-permission")))) {
 			sender.sendMessage(Config.readColouredString("no-permission"));
 			return true;
@@ -139,26 +166,6 @@ public class ReplayCommand implements CommandExecutor {
 			}
 		}
 
-		if (args[0].equalsIgnoreCase("timestamp")) {
-			long timestamp;
-			if (args.length > 1) {
-				timestamp = convertToTimestamp(args[1]);
-				if (timestamp < 1) {
-					sender.sendMessage(Utils.getReplayPrefix() + Config.readColouredString("no-convert-timestamp"));
-					return true;
-				}
-				Utils.sendTimestampMessage(player, timestamp);
-			} else {
-				if (ReplayThreads.isUserReplaying(player.getUniqueId())) {
-					timestamp = ReplayThreads.getThread(player.getUniqueId()).getRendererManager().getCurrentTimestamp();
-					Utils.sendReplayTimestampMessage(player, timestamp);
-				} else {
-					timestamp = (int) Calendar.getInstance().getTimeInMillis() / 1000;
-					Utils.sendTimestampMessage(player, timestamp);
-				}
-			}
-			return true;
-		}
 
 		if (!args[0].equalsIgnoreCase("start")
 				&& !args[0].equalsIgnoreCase("resume")

@@ -5,6 +5,7 @@ import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.Objects;
@@ -40,10 +41,10 @@ public class Utils {
 		player.spigot().sendMessage(component);
 	}
 
-	public static void sendTimestampMessage(Player player, long timestamp) {
+	public static void sendTimestampMessage(CommandSender sender, long timestamp) {
 		TextComponent component = new TextComponent(TextComponent.fromLegacyText(Utils.getReplayPrefix() + Config.readColouredString("timestamp-output").replace("{TIMESTAMP}", timestamp + "")));
 		component.setClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, timestamp + ""));
-		player.spigot().sendMessage(component);
+		sender.spigot().sendMessage(component);
 	}
 
 	public static void runOnMainThread(Runnable runnable) {
