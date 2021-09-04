@@ -70,7 +70,7 @@ public class ReplayInstance extends Thread {
 
                 timestampPrintTimer++;
                 if (timestampPrintTimer >= Config.getConfig().getInt("settings.seconds-per-timestamp-output") * 10) {
-                    Utils.sendTimestampMessage(player, timestampPrintTimer);
+                    Utils.sendReplayTimestampMessage(player, timestampPrintTimer);
                     timestampPrintTimer = 0;
                 }
 
