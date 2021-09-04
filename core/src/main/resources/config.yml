@@ -27,7 +27,7 @@ invalid-argument:
   - "&7&m                                                        "
   - "&c                      Help Page                      "
   - "&7&m                                                        "
-  - "&c/replay start <radius> <time> <speed> &7- start a replay."
+  - "&c/replay start <radius> <time> [speed] &7- start a replay."
   - "&c/replay speed <speed> &7- change the speed of the running replay."
   - "&c/replay stop &7- stop the running replay."
   - "&c/replay pause &7- pause the running replay."

@@ -160,7 +160,7 @@ public class ReplayCommand implements CommandExecutor {
 				sender.sendMessage(Utils.getReplayPrefix() + Config.readColouredString("replay-already-running"));
 				return true;
 			}
-			if (args.length != 4) {
+			if (args.length != 4 && args.length != 3) {
 				sender.sendMessage(Utils.getReplayPrefix() + Config.readColouredString("invalid-format-start"));
 				return true;
 			}
@@ -183,15 +183,20 @@ public class ReplayCommand implements CommandExecutor {
 		try {
 			radius = Integer.parseInt(args[1]);
 			timeStamp = parseTimeArgument(args[2]);
-			speed = Integer.parseInt(args[3]);
-			if (radius < 1)
+			try {
+				speed = Integer.parseInt(args[3]);
+				if (speed < 1)
+					speed = 1;
+			} catch (Exception e) {
+				speed = 1;
+			}
+			if (radius < 1) {
 				radius = 1;
+			}
 			if (timeStamp < 1) {
 				sender.sendMessage(Utils.getReplayPrefix() + Config.readColouredString("invalid-argument-start-time"));
 				return true;
 			}
-			if (speed < 1)
-				speed = 1;
 		} catch (Exception e) {
 			sender.sendMessage(Utils.getReplayPrefix() + Config.readColouredString("invalid-argument-start"));
 			return true;
