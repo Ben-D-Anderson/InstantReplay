@@ -3,10 +3,10 @@ package com.terraboxstudios.instantreplay.versionspecific.v1_8_R1.npc;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import com.mojang.util.UUIDTypeAdapter;
+import com.terraboxstudios.instantreplay.util.ConsoleLogger;
 import com.terraboxstudios.instantreplay.versionspecific.npc.NPC;
 import com.terraboxstudios.instantreplay.versionspecific.npc.NPCFactory;
 import com.terraboxstudios.instantreplay.versionspecific.npc.NPCSkin;
-import org.bukkit.Bukkit;
 import org.bukkit.World;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -36,10 +36,10 @@ public class NPCFactoryImpl extends NPCFactory {
                 }
                 profile.getProperties().put("textures", new Property("textures", skin, signature));
             } else {
-                Bukkit.getLogger().log(Level.WARNING, "Couldn't contact Mojang skin servers.");
+                ConsoleLogger.getInstance().log(Level.WARNING, "Couldn't contact Mojang skin servers.");
             }
         } catch (IOException e) {
-            Bukkit.getLogger().log(Level.WARNING, "Couldn't parse data from Mojang skin servers. Error: " + e.getLocalizedMessage());
+            ConsoleLogger.getInstance().log(Level.WARNING, "Couldn't parse data from Mojang skin servers. Error: " + e.getLocalizedMessage());
         }
         return new NPCSkinImpl(profile);
     }

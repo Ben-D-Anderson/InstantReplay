@@ -7,6 +7,7 @@ import com.terraboxstudios.instantreplay.events.renderers.PlayerChangeBlockEvent
 import com.terraboxstudios.instantreplay.inventory.InventorySerializer;
 import com.terraboxstudios.instantreplay.replay.ReplayContext;
 import com.terraboxstudios.instantreplay.util.Config;
+import com.terraboxstudios.instantreplay.util.ConsoleLogger;
 import com.terraboxstudios.instantreplay.util.Utils;
 import lombok.Getter;
 import org.bukkit.Bukkit;
@@ -26,7 +27,6 @@ public class MySQL {
 	private Connection connection;
 	@Getter
 	private final int eventRenderBuffer;
-
 	private static MySQL instance;
 
 	public static MySQL getInstance() {
@@ -48,7 +48,7 @@ public class MySQL {
 					port + "/" + database, username, password);
 			initTables();
 		} catch (ClassNotFoundException | SQLException exception) {
-			Bukkit.getLogger().log(Level.SEVERE, "Failed to connect to MySQL database!");
+			ConsoleLogger.getInstance().log(Level.SEVERE, "Failed to connect to MySQL database!");
 			Bukkit.getPluginManager().disablePlugin(InstantReplay.getPlugin(InstantReplay.class));
 		}
 	}
@@ -381,8 +381,7 @@ public class MySQL {
 	public void closeConnection() {
 		try {
 			getConnection().close();
-		} catch (SQLException e) {
-			e.printStackTrace();
+		} catch (SQLException ignored) {
 		}
 	}
 

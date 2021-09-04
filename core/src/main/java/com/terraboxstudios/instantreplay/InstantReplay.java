@@ -8,6 +8,7 @@ import com.terraboxstudios.instantreplay.services.EventContainerProviderService;
 import com.terraboxstudios.instantreplay.services.EventLoggingService;
 import com.terraboxstudios.instantreplay.services.MySQLCleanupService;
 import com.terraboxstudios.instantreplay.util.Config;
+import com.terraboxstudios.instantreplay.util.ConsoleLogger;
 import com.terraboxstudios.instantreplay.versionspecific.VersionSpecificProvider;
 import lombok.Getter;
 import org.bukkit.Bukkit;
@@ -29,7 +30,7 @@ public class InstantReplay extends JavaPlugin {
 			String internalsName = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
 			versionSpecificProvider = (VersionSpecificProvider) Class.forName(packageName + "." + internalsName + ".VersionSpecificProviderImpl").newInstance();
 		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | ClassCastException exception) {
-			Bukkit.getLogger().log(Level.SEVERE, "Plugin could not find a valid implementation for this server version.");
+			ConsoleLogger.getInstance().log(Level.SEVERE, "Plugin could not find a valid implementation for this server version.");
 		}
 	}
 

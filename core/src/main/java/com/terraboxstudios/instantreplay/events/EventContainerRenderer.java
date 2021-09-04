@@ -3,8 +3,8 @@ package com.terraboxstudios.instantreplay.events;
 import com.terraboxstudios.instantreplay.mysql.MySQL;
 import com.terraboxstudios.instantreplay.replay.ReplayContext;
 import com.terraboxstudios.instantreplay.services.EventContainerProviderService;
+import com.terraboxstudios.instantreplay.util.ConsoleLogger;
 import lombok.Getter;
-import org.bukkit.Bukkit;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Semaphore;
@@ -40,7 +40,7 @@ public abstract class EventContainerRenderer<T extends EventContainer> {
             }
             while (eventContainers.isEmpty() && getProviderLock().availablePermits() == 0) {
                 //wait for new containers to be provided
-                Bukkit.getLogger().log(Level.WARNING, "Replay events aren't being provided fast enough. Is the server or database running behind?");
+                ConsoleLogger.getInstance().log(Level.WARNING, "Replay events aren't being provided fast enough. Is the server or database running behind?");
                 try {
                     TimeUnit.MILLISECONDS.sleep(50);
                 } catch (InterruptedException ignored) {
