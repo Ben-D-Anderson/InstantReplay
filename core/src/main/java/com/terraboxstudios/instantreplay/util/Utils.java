@@ -34,8 +34,14 @@ public class Utils {
 		return Config.getConfig().getBoolean("settings.use-plugin-prefix") ? Config.readColouredString("plugin-prefix") : "";
 	}
 
-	public static void sendTimestampMessage(Player player, long timestamp) {
+	public static void sendReplayTimestampMessage(Player player, long timestamp) {
 		TextComponent component = new TextComponent(TextComponent.fromLegacyText(Utils.getReplayPrefix() + Config.readColouredString("replay-timestamp-output").replace("{TIMESTAMP}", timestamp + "")));
+		component.setClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, timestamp + ""));
+		player.spigot().sendMessage(component);
+	}
+
+	public static void sendTimestampMessage(Player player, long timestamp) {
+		TextComponent component = new TextComponent(TextComponent.fromLegacyText(Utils.getReplayPrefix() + Config.readColouredString("timestamp-output").replace("{TIMESTAMP}", timestamp + "")));
 		component.setClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, timestamp + ""));
 		player.spigot().sendMessage(component);
 	}
@@ -51,5 +57,8 @@ public class Utils {
 				&& locationOne.getWorld().getName().equals(locationTwo.getWorld().getName());
 
 	}
-	
+
+	public static long roundTime(long time) {
+		return Math.round(time / (double) 100) * 100L;
+	}
 }
