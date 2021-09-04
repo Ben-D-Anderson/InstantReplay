@@ -1,8 +1,8 @@
 name: InstantReplay
-version: ${project.version}
+version: 2.0.0
 author: Ben-D-Anderson
-description: ${project.description}
-website: ${project.url}
+description: InstantReplay for Minecraft server administrators.
+website: https://github.com/Ben-D-Anderson/InstantReplay
 main: com.terraboxstudios.instantreplay.InstantReplay
 
 depend:
