@@ -63,9 +63,9 @@ public class PlayerMoveEventContainerRenderer extends EventContainerRenderer<Pla
 
             }
         } else {
-            NPCSkin<?> skin = InstantReplay.getVersionSpecificProvider().getNPCFactory()
+            NPCSkin<?> skin = InstantReplay.getVersionSpecificProvider().getNpcFactory()
                     .getSkin(eventContainer.getUuid(), eventContainer.getName());
-            npc = InstantReplay.getVersionSpecificProvider().getNPCFactory().createNPC(
+            npc = InstantReplay.getVersionSpecificProvider().getNpcFactory().createNPC(
                     player.getUniqueId(),
                     eventContainer.getUuid(),
                     eventContainer.getName(),
