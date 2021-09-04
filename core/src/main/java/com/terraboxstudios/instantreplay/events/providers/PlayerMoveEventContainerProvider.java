@@ -4,6 +4,7 @@ import com.terraboxstudios.instantreplay.events.EventContainer;
 import com.terraboxstudios.instantreplay.events.EventContainerProvider;
 import com.terraboxstudios.instantreplay.events.containers.PlayerMoveEventContainer;
 import com.terraboxstudios.instantreplay.mysql.MySQL;
+import com.terraboxstudios.instantreplay.replay.ReplayContext;
 import com.terraboxstudios.instantreplay.util.Config;
 import org.bukkit.Location;
 
@@ -20,8 +21,8 @@ public class PlayerMoveEventContainerProvider implements EventContainerProvider<
     }
 
     @Override
-    public List<PlayerMoveEventContainer> getEventContainers(Location replayLocation, int radius, long timestamp) {
-        List<PlayerMoveEventContainer> containers = MySQL.getInstance().getPlayerMoveEvents(replayLocation, radius, timestamp);
+    public List<PlayerMoveEventContainer> getEventContainers(ReplayContext context) {
+        List<PlayerMoveEventContainer> containers = MySQL.getInstance().getPlayerMoveEvents(context);
         new ArrayList<>(containers).forEach(container -> predictMovementContainers(containers, container));
         return containers;
     }
