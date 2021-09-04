@@ -12,6 +12,7 @@ settings:
   seconds-per-player-move-log: 1 #RECOMMENDED IS 1
   seconds-per-player-inventory-log: 1 #RECOMMENDED IS 1
   hours-until-logs-deleted: 72 #RECOMMENDED IS 72 OR LESS
+  event-render-buffer: 100 #RECOMMENDED IS BETWEEN 50 AND 500
   replay-permission: "replay.replay"
   replay-reload-permission: "replay.reload"
   replay-clearlogs-permission: "replay.clearlogs"
@@ -42,10 +43,13 @@ replay-resumed: "Replay Resumed."
 replay-loading: "Loading..."
 replay-finished: "&aReplay Finished."
 replay-starting: "Replay starting from {TIMESTAMP} at {SPEED}x speed with a {RADIUS} block radius."
-replay-timestamp-output: "Current UNIX timestamp of replay: {TIMESTAMP} &7(Click To Copy)"
+replay-timestamp-output: "Current UNIX timestamp of replay: &e{TIMESTAMP} &7(Click To Copy)"
+timestamp-output: "UNIX timestamp: &e{TIMESTAMP} &7(Click To Copy)"
+no-convert-timestamp: "&cCouldn't convert argument to a timestamp. Please use the format: 'yyyy/mm/dd-HH:mm:ss'"
+timestamp-converter-format: "yyyy/mm/dd-HH:mm:ss"
 replay-speed-changed: "Replay speed set to {SPEED}x speed."
 invalid-format-speed: "&cFormat: /replay speed <speed>"
-invalid-argument-speed: "&cSpeed must be an integer."
+invalid-argument-speed: "&cSpeed must be an integer and cannot be above 10."
 invalid-format-start: "&cFormat: /replay start <radius> <time> <speed>"
 invalid-argument-start: "&cRadius and speed must be integers."
 invalid-argument-start-time: "&cTime must be in the formats: <seconds>s or <minutes>m or <hours>h or <timestamp_in_unix_format>t"
