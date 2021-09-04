@@ -4,17 +4,17 @@ import com.terraboxstudios.instantreplay.mysql.MySQL;
 import com.terraboxstudios.instantreplay.replay.ReplayContext;
 import com.terraboxstudios.instantreplay.services.EventContainerProviderService;
 import lombok.Getter;
+import org.bukkit.Bukkit;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.ListIterator;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 
 @Getter
 public abstract class EventContainerRenderer<T extends EventContainer> {
 
-    private final List<T> eventContainers;
+    private final ConcurrentLinkedQueue<T> eventContainers;
     private final ReplayContext context;
     private final EventContainerProvider<T> eventContainerProvider;
     private final Semaphore providerLock;
@@ -22,27 +22,41 @@ public abstract class EventContainerRenderer<T extends EventContainer> {
     public EventContainerRenderer(ReplayContext context, EventContainerProvider<T> eventContainerProvider) {
         this.context = context;
         this.eventContainerProvider = eventContainerProvider;
-        this.eventContainers = Collections.synchronizedList(new ArrayList<>());
+        this.eventContainers = new ConcurrentLinkedQueue<>();
         this.eventContainers.addAll(eventContainerProvider.provide(context));
         this.providerLock = new Semaphore(1);
     }
 
     public void render(long currentTimestamp) {
         boolean hasRendered = false;
-        ListIterator<T> iterator = eventContainers.listIterator();
-        while (iterator.hasNext()) {
-            T container = iterator.next();
+        while (!eventContainers.isEmpty()) {
+            T container = eventContainers.peek();
             if (container.getTime() <= currentTimestamp) {
                 render(container);
-                iterator.remove();
+                eventContainers.poll();
                 hasRendered = true;
             } else if (hasRendered) {
                 break;
             }
+            while (eventContainers.isEmpty() && getProviderLock().availablePermits() == 0) {
+                //wait for new containers to be provided
+                Bukkit.getLogger().log(Level.WARNING, "Replay events aren't being provided fast enough. Is the server or database running behind?");
+                try {
+                    TimeUnit.MILLISECONDS.sleep(50);
+                } catch (InterruptedException ignored) {
+                }
+            }
             if (eventContainers.size() <= MySQL.getInstance().getEventRenderBuffer()
-                    && eventContainers.size() > 0
-                    && getProviderLock().tryAcquire())
-                provideNextContainers(eventContainers.get(eventContainers.size() - 1));
+                    && !eventContainers.isEmpty()
+                    && getProviderLock().tryAcquire()) {
+                T lastEventContainer = null;
+                for (T eventContainer : eventContainers) {
+                    lastEventContainer = eventContainer;
+                }
+                if (lastEventContainer != null) {
+                    provideNextContainers(lastEventContainer);
+                }
+            }
         }
     }
 
