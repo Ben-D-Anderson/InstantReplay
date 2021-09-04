@@ -12,7 +12,10 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Objects;
 
 public class ReplayCommand implements CommandExecutor {
@@ -80,6 +83,11 @@ public class ReplayCommand implements CommandExecutor {
 				int speed;
 				try {
 					speed = Integer.parseInt(args[1]);
+					speed = Math.abs(speed);
+					if (speed > 10) {
+						sender.sendMessage(Utils.getReplayPrefix() + Config.readColouredString("invalid-argument-speed"));
+						return true;
+					}
 				} catch (Exception e) {
 					sender.sendMessage(Utils.getReplayPrefix() + Config.readColouredString("invalid-argument-speed"));
 					return true;
@@ -131,7 +139,34 @@ public class ReplayCommand implements CommandExecutor {
 			}
 		}
 
-		if (!args[0].equalsIgnoreCase("start") && !args[0].equalsIgnoreCase("resume") && !args[0].equalsIgnoreCase("pause") && !args[0].equalsIgnoreCase("stop") && !args[0].equalsIgnoreCase("reload") && !args[0].equalsIgnoreCase("clearlogs")) {
+		if (args[0].equalsIgnoreCase("timestamp")) {
+			long timestamp;
+			if (args.length > 1) {
+				timestamp = convertToTimestamp(args[1]);
+				if (timestamp < 1) {
+					sender.sendMessage(Utils.getReplayPrefix() + Config.readColouredString("no-convert-timestamp"));
+					return true;
+				}
+				Utils.sendTimestampMessage(player, timestamp);
+			} else {
+				if (ReplayThreads.isUserReplaying(player.getUniqueId())) {
+					timestamp = ReplayThreads.getThread(player.getUniqueId()).getRendererManager().getCurrentTimestamp();
+					Utils.sendReplayTimestampMessage(player, timestamp);
+				} else {
+					timestamp = (int) Calendar.getInstance().getTimeInMillis() / 1000;
+					Utils.sendTimestampMessage(player, timestamp);
+				}
+			}
+			return true;
+		}
+
+		if (!args[0].equalsIgnoreCase("start")
+				&& !args[0].equalsIgnoreCase("resume")
+				&& !args[0].equalsIgnoreCase("pause")
+				&& !args[0].equalsIgnoreCase("stop")
+				&& !args[0].equalsIgnoreCase("reload")
+				&& !args[0].equalsIgnoreCase("clearlogs")
+				&& !args[0].equalsIgnoreCase("timestamp")) {
 			sendHelp(sender);
 			return true;
 		}
@@ -160,6 +195,7 @@ public class ReplayCommand implements CommandExecutor {
 		ReplayContext context = new ReplayContext.Builder(
 				player.getUniqueId(),
 				timeStamp,
+				Utils.roundTime(Calendar.getInstance().getTimeInMillis()),
 				radius,
 				player.getLocation()
 		).setSpeed(speed).build();
@@ -182,7 +218,17 @@ public class ReplayCommand implements CommandExecutor {
 		}
 	}
 
-	//todo add timestamp converter command
+	private long convertToTimestamp(String argument) {
+		long timestamp = -1L;
+		SimpleDateFormat sdf = new SimpleDateFormat(Objects.requireNonNull(Config.getConfig().getString("timestamp-converter-format")));
+		try {
+			Date parsedDate = sdf.parse(argument);
+			timestamp = parsedDate.getTime();
+		} catch (ParseException ignored) {
+		}
+		return timestamp;
+	}
+
 	private long parseTimeArgument(String argument) {
 		long timestamp = 0;
 		long longArgument = Long.parseLong(argument.substring(0, argument.length() - 1));
