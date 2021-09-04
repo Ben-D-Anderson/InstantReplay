@@ -1,10 +1,10 @@
-package com.terraboxstudios.instantreplay.verionspecific.v1_8_R1;
+package com.terraboxstudios.instantreplay.versionspecific.v1_8_R1;
 
-import com.terraboxstudios.instantreplay.verionspecific.v1_8_R1.item.ItemFactoryImpl;
-import com.terraboxstudios.instantreplay.verionspecific.v1_8_R1.npc.NPCFactoryImpl;
 import com.terraboxstudios.instantreplay.versionspecific.VersionSpecificProvider;
 import com.terraboxstudios.instantreplay.versionspecific.item.ItemFactory;
 import com.terraboxstudios.instantreplay.versionspecific.npc.NPCFactory;
+import com.terraboxstudios.instantreplay.versionspecific.v1_8_R1.item.ItemFactoryImpl;
+import com.terraboxstudios.instantreplay.versionspecific.v1_8_R1.npc.NPCFactoryImpl;
 
 public class VersionSpecificProviderImpl implements VersionSpecificProvider {
 

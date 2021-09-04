@@ -1,4 +1,4 @@
-package com.terraboxstudios.instantreplay.verionspecific.v1_8_R1.item;
+package com.terraboxstudios.instantreplay.versionspecific.v1_8_R1.item;
 
 import com.terraboxstudios.instantreplay.versionspecific.item.ItemFactory;
 import org.bukkit.Material;

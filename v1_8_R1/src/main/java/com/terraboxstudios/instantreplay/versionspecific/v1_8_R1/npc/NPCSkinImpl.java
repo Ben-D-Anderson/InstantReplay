@@ -1,4 +1,4 @@
-package com.terraboxstudios.instantreplay.verionspecific.v1_8_R1.npc;
+package com.terraboxstudios.instantreplay.versionspecific.v1_8_R1.npc;
 
 import com.mojang.authlib.GameProfile;
 import com.terraboxstudios.instantreplay.versionspecific.npc.NPCSkin;
