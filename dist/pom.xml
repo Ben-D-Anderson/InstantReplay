@@ -20,7 +20,7 @@
 
     <build>
         <directory>../target</directory>
-        <finalName>${parent.name}-${revision}</finalName>
+        <finalName>${project.parent.name}-${revision}</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -39,6 +39,7 @@
                                     <include>com.terraboxstudios:instantreplay-*</include>
                                 </includes>
                             </artifactSet>
+                            <createDependencyReducedPom>false</createDependencyReducedPom>
                         </configuration>
                     </execution>
                 </executions>
