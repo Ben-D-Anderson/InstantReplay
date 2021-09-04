@@ -4,10 +4,7 @@ import com.terraboxstudios.instantreplay.commands.ReplayCommand;
 import com.terraboxstudios.instantreplay.events.listeners.*;
 import com.terraboxstudios.instantreplay.mysql.MySQL;
 import com.terraboxstudios.instantreplay.replay.ReplayThreads;
-import com.terraboxstudios.instantreplay.services.EventLoggingService;
-import com.terraboxstudios.instantreplay.services.MySQLCleanupService;
-import com.terraboxstudios.instantreplay.services.PlayerInventoryLoggingService;
-import com.terraboxstudios.instantreplay.services.PlayerMoveLoggingService;
+import com.terraboxstudios.instantreplay.services.*;
 import com.terraboxstudios.instantreplay.util.Config;
 import com.terraboxstudios.instantreplay.versionspecific.VersionSpecificProvider;
 import lombok.Getter;
@@ -49,6 +46,7 @@ public class InstantReplay extends JavaPlugin {
 	public void onDisable() {
 		ReplayThreads.stopAllThreads();
 		EventLoggingService.getInstance().shutdown();
+		EventContainerProviderService.getInstance().shutdown();
 		MySQLCleanupService.shutdown();
 		MySQL.getInstance().closeConnection();
 	}
