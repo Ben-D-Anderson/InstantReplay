@@ -16,7 +16,7 @@ import java.util.UUID;
 public class ReplayContext {
 
     private final UUID viewer;
-    private final long startTimestamp;
+    private final long startTimestamp, timeOfCommand;
     private final int radius;
     private final Location location;
     private final Map<UUID, NPC> npcMap;
@@ -27,7 +27,8 @@ public class ReplayContext {
 
     private ReplayContext(ReplayContext.Builder builder) {
         this.viewer = builder.viewer;
-        this.startTimestamp = builder.timestamp;
+        this.startTimestamp = builder.startTimestamp;
+        this.timeOfCommand = builder.timeOfCommand;
         this.radius = builder.radius;
         this.location = builder.location;
         this.speed = builder.speed;
@@ -40,10 +41,10 @@ public class ReplayContext {
     public static class Builder {
 
         private final UUID viewer;
-        private final long timestamp;
+        private final long startTimestamp, timeOfCommand;
         private final int radius;
         private final Location location;
-        private int speed;
+        private int speed = 1;
 
         public Builder setSpeed(int speed) {
             this.speed = speed;
