@@ -5,6 +5,7 @@ import com.terraboxstudios.instantreplay.events.EventContainerRenderer;
 import com.terraboxstudios.instantreplay.events.containers.PlayerChangeBlockEventContainer;
 import com.terraboxstudios.instantreplay.replay.ReplayContext;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 public class PlayerChangeBlockEventContainerRenderer extends EventContainerRenderer<PlayerChangeBlockEventContainer> {
@@ -13,16 +14,8 @@ public class PlayerChangeBlockEventContainerRenderer extends EventContainerRende
         super(context, eventContainerProvider);
     }
 
-    public void renderRemaining(long currentTimestamp) {
-        if (getEventContainers().isEmpty()) return;
-        getEventContainers()
-                .stream()
-                .filter(container -> container.getTime() > currentTimestamp)
-                .forEach(this::render);
-    }
-
-    public void undoRenderAll() {
-        getEventContainers().forEach(this::undoRender);
+    public void renderRemaining(ReplayContext context) {
+        render(context.getTimeOfCommand());
     }
 
     public void undoRender(PlayerChangeBlockEventContainer eventContainer) {
@@ -38,11 +31,10 @@ public class PlayerChangeBlockEventContainerRenderer extends EventContainerRende
         Player player = Bukkit.getPlayer(getContext().getViewer());
         if (player == null) return;
 
-        if (undoRender) {
-            player.sendBlockChange(eventContainer.getLocation(), eventContainer.getOldBlockMaterial(), eventContainer.getOldBlockData());
-        } else {
-            player.sendBlockChange(eventContainer.getLocation(), eventContainer.getNewBlockMaterial(), eventContainer.getNewBlockData());
-        }
+        Material material = undoRender ? eventContainer.getOldBlockMaterial() : eventContainer.getNewBlockMaterial();
+        byte data = undoRender ? eventContainer.getOldBlockData() : eventContainer.getNewBlockData();
+
+        player.sendBlockChange(eventContainer.getLocation(), material, data);
     }
 
 }
