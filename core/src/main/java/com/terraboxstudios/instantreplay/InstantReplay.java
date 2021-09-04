@@ -23,13 +23,11 @@ public class InstantReplay extends JavaPlugin {
 	@Getter
 	private static VersionSpecificProvider versionSpecificProvider;
 
-	//todo correctly locate implementation
 	static {
 		try {
 			String packageName = VersionSpecificProvider.class.getPackage().getName();
 			String internalsName = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
-			System.out.println(packageName + "." + internalsName);
-			versionSpecificProvider = (VersionSpecificProvider) Class.forName(packageName + "." + internalsName).newInstance();
+			versionSpecificProvider = (VersionSpecificProvider) Class.forName(packageName + "." + internalsName + ".VersionSpecificProviderImpl").newInstance();
 		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | ClassCastException exception) {
 			Bukkit.getLogger().log(Level.SEVERE, "Plugin could not find a valid implementation for this server version.");
 		}
