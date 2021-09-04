@@ -1,5 +1,6 @@
-name: ${project.name}
+name: InstantReplay
 version: ${project.version}
+author: Ben-D-Anderson
 description: ${project.description}
 website: ${project.url}
 main: com.terraboxstudios.instantreplay.InstantReplay
