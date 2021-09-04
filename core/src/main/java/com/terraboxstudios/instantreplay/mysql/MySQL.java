@@ -3,9 +3,12 @@ package com.terraboxstudios.instantreplay.mysql;
 import com.terraboxstudios.instantreplay.InstantReplay;
 import com.terraboxstudios.instantreplay.events.EventContainer;
 import com.terraboxstudios.instantreplay.events.containers.*;
+import com.terraboxstudios.instantreplay.events.renderers.PlayerChangeBlockEventContainerRenderer;
 import com.terraboxstudios.instantreplay.inventory.InventorySerializer;
+import com.terraboxstudios.instantreplay.replay.ReplayContext;
 import com.terraboxstudios.instantreplay.util.Config;
 import com.terraboxstudios.instantreplay.util.Utils;
+import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -21,6 +24,8 @@ import java.util.logging.Level;
 public class MySQL {
 
 	private Connection connection;
+	@Getter
+	private final int eventRenderBuffer;
 
 	private static MySQL instance;
 
@@ -35,6 +40,7 @@ public class MySQL {
 		String host = Config.getConfig().getString("mysql.host");
 		String database = Config.getConfig().getString("mysql.database");
 		int port = Config.getConfig().getInt("mysql.port");
+		eventRenderBuffer = Config.getConfig().getInt("event-render-buffer");
 
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
@@ -179,14 +185,15 @@ public class MySQL {
 		}
 	}
 
-	public List<PlayerChangeBlockEventContainer> getBlockEvents(Location replayLocation, int radius, long timestamp) {
+	public List<PlayerChangeBlockEventContainer> getBlockEvents(ReplayContext context) {
 		List<PlayerChangeBlockEventContainer> blockEvents = new ArrayList<>();
-		if (replayLocation.getWorld() == null) return blockEvents;
+		if (context.getLocation().getWorld() == null) return blockEvents;
 
 		try {
 			PreparedStatement statement = getConnection().prepareStatement
-					("SELECT * FROM block_events WHERE time>=? SORT BY time ASC");
-			statement.setLong(1, timestamp);
+					("SELECT * FROM block_events WHERE time>=? AND time<=? SORT BY time ASC LIMIT " + eventRenderBuffer);
+			statement.setLong(1, context.getStartTimestamp());
+			statement.setLong(2, context.getTimeOfCommand());
 
 			ResultSet results = statement.executeQuery();
 			while (results.next()) {
@@ -196,7 +203,7 @@ public class MySQL {
 				eventLocation.setY(eventLocation.getBlockY());
 				eventLocation.setZ(eventLocation.getBlockZ());
 
-				if (Utils.isLocationInReplay(eventLocation, replayLocation, radius)) {
+				if (Utils.isLocationInReplay(eventLocation, context.getLocation(), context.getRadius())) {
 					blockEvents.add(new PlayerChangeBlockEventContainer(UUID.randomUUID(), eventLocation, results.getLong("time"), Material.getMaterial(results.getString("old_block")), Material.getMaterial(results.getString("new_block")), results.getByte("old_block_data"), results.getByte("new_block_data")));
 				}
 			}
@@ -207,23 +214,23 @@ public class MySQL {
 		return blockEvents;
 	}
 
-	//TODO Add buffering system to only get x amount of events at a time and retrieve the next x amount when needed
-	public List<PlayerMoveEventContainer> getPlayerMoveEvents(Location replayLocation, int radius, long timestamp) {
+	public List<PlayerMoveEventContainer> getPlayerMoveEvents(ReplayContext context) {
 		List<PlayerMoveEventContainer> playerMoveEvents = new ArrayList<>();
-		if (replayLocation.getWorld() == null) return playerMoveEvents;
+		if (context.getLocation().getWorld() == null) return playerMoveEvents;
 
-		radius += 4;
+		int radius = context.getRadius() + 4;
 		try {
 			PreparedStatement statement = getConnection().prepareStatement
-					("SELECT * FROM player_move_events WHERE time>=? SORT BY time ASC");
-			statement.setLong(1, timestamp);
+					("SELECT * FROM player_move_events WHERE time>=? AND time<=? SORT BY time ASC LIMIT " + eventRenderBuffer);
+			statement.setLong(1, context.getStartTimestamp());
+			statement.setLong(2, context.getTimeOfCommand());
 
 			ResultSet results = statement.executeQuery();
 			while (results.next()) {
 				String locString = results.getString("location");
 				Location eventLocation = Utils.stringToLocation(locString);
 
-				if (Utils.isLocationInReplay(eventLocation, replayLocation, radius)) {
+				if (Utils.isLocationInReplay(eventLocation, context.getLocation(), radius)) {
 					playerMoveEvents.add(new PlayerMoveEventContainer(UUID.fromString(results.getString("UUID")), eventLocation, results.getLong("time"), results.getString("name")));
 				}
 			}
@@ -234,21 +241,22 @@ public class MySQL {
 		return playerMoveEvents;
 	}
 
-	public List<PlayerDeathDamageEventContainer> getDeathDamageEvents(Location replayLocation, int radius, long timestamp) {
+	public List<PlayerDeathDamageEventContainer> getDeathDamageEvents(ReplayContext context) {
 		List<PlayerDeathDamageEventContainer> deathDamageEvents = new ArrayList<>();
-		if (replayLocation.getWorld() == null) return deathDamageEvents;
+		if (context.getLocation().getWorld() == null) return deathDamageEvents;
 
 		try {
 			PreparedStatement statement = getConnection().prepareStatement
-					("SELECT * FROM death_damage_events WHERE time>=? SORT BY time ASC");
-			statement.setLong(1, timestamp);
+					("SELECT * FROM death_damage_events WHERE time>=? AND time<=? SORT BY time ASC LIMIT " + eventRenderBuffer);
+			statement.setLong(1, context.getStartTimestamp());
+			statement.setLong(2, context.getTimeOfCommand());
 
 			ResultSet results = statement.executeQuery();
 			while (results.next()) {
 				String locString = results.getString("location");
 				Location eventLocation = Utils.stringToLocation(locString);
 
-				if (Utils.isLocationInReplay(eventLocation, replayLocation, radius)) {
+				if (Utils.isLocationInReplay(eventLocation, context.getLocation(), context.getRadius())) {
 					UUID uuid = UUID.fromString(results.getString("UUID"));
 					eventLocation.setX((int) eventLocation.getX());
 					eventLocation.setY((int) eventLocation.getY());
@@ -264,21 +272,22 @@ public class MySQL {
 		return deathDamageEvents;
 	}
 
-	public List<PlayerJoinLeaveEventContainer> getJoinLeaveEvents(Location replayLocation, int radius, long timestamp) {
+	public List<PlayerJoinLeaveEventContainer> getJoinLeaveEvents(ReplayContext context) {
 		List<PlayerJoinLeaveEventContainer> joinLeaveEvents = new ArrayList<>();
-		if (replayLocation.getWorld() == null) return joinLeaveEvents;
+		if (context.getLocation().getWorld() == null) return joinLeaveEvents;
 
 		try {
 			PreparedStatement statement = getConnection().prepareStatement
-					("SELECT * FROM join_leave_events WHERE time>=? SORT BY time ASC");
-			statement.setLong(1, timestamp);
+					("SELECT * FROM join_leave_events WHERE time>=? AND time<=? SORT BY time ASC LIMIT " + eventRenderBuffer);
+			statement.setLong(1, context.getStartTimestamp());
+			statement.setLong(2, context.getTimeOfCommand());
 
 			ResultSet results = statement.executeQuery();
 			while (results.next()) {
 				String locString = results.getString("location");
 				Location eventLocation = Utils.stringToLocation(locString);
 
-				if (Utils.isLocationInReplay(eventLocation, replayLocation, radius)) {
+				if (Utils.isLocationInReplay(eventLocation, context.getLocation(), context.getRadius())) {
 					UUID uuid = UUID.fromString(results.getString("UUID"));
 					eventLocation.setX((int) eventLocation.getX());
 					eventLocation.setY((int) eventLocation.getY());
@@ -294,21 +303,22 @@ public class MySQL {
 		return joinLeaveEvents;
 	}
 
-	public List<PlayerInventoryEventContainer> getPlayerInventoryEvents(Location replayLocation, int radius, long timestamp) {
+	public List<PlayerInventoryEventContainer> getPlayerInventoryEvents(ReplayContext context) {
 		List<PlayerInventoryEventContainer> playerInventoryEvents = new ArrayList<>();
-		if (replayLocation.getWorld() == null) return playerInventoryEvents;
+		if (context.getLocation().getWorld() == null) return playerInventoryEvents;
 
 		try {
 			PreparedStatement statement = getConnection().prepareStatement
-					("SELECT * FROM player_inventory_events WHERE time>=? SORT BY time ASC");
-			statement.setLong(1, timestamp);
+					("SELECT * FROM player_inventory_events WHERE time>=? AND time<=? SORT BY time ASC LIMIT " + eventRenderBuffer);
+			statement.setLong(1, context.getStartTimestamp());
+			statement.setLong(2, context.getTimeOfCommand());
 
 			ResultSet results = statement.executeQuery();
 			while (results.next()) {
 				String locString = results.getString("location");
 				Location eventLocation = Utils.stringToLocation(locString);
 
-				if (Utils.isLocationInReplay(eventLocation, replayLocation, radius)) {
+				if (Utils.isLocationInReplay(eventLocation, context.getLocation(), context.getRadius())) {
 					String[] serArr = results.getString("serialized").split(";");
 					ItemStack[] content = InventorySerializer.itemStackArrayFromBase64(serArr[0]);
 					ItemStack[] armour = InventorySerializer.itemStackArrayFromBase64(serArr[1]);
@@ -328,6 +338,29 @@ public class MySQL {
 			e.printStackTrace();
 		}
 		return playerInventoryEvents;
+	}
+
+	public void undoRenderAllBlocks(PlayerChangeBlockEventContainerRenderer playerChangeBlockEventContainerRenderer, ReplayContext context) {
+		try {
+			PreparedStatement statement = getConnection().prepareStatement
+					("SELECT * FROM block_events WHERE time>=? SORT BY time DESC");
+			statement.setLong(1, context.getStartTimestamp());
+
+			ResultSet results = statement.executeQuery();
+			while (results.next()) {
+				String locString = results.getString("location");
+				Location eventLocation = Utils.stringToLocation(locString);
+				eventLocation.setX(eventLocation.getBlockX());
+				eventLocation.setY(eventLocation.getBlockY());
+				eventLocation.setZ(eventLocation.getBlockZ());
+
+				if (Utils.isLocationInReplay(eventLocation, context.getLocation(), context.getRadius())) {
+					playerChangeBlockEventContainerRenderer.undoRender(new PlayerChangeBlockEventContainer(UUID.randomUUID(), eventLocation, results.getLong("time"), Material.getMaterial(results.getString("old_block")), Material.getMaterial(results.getString("new_block")), results.getByte("old_block_data"), results.getByte("new_block_data")));
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void cleanTables() {
