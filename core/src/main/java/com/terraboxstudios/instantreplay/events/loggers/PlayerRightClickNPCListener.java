@@ -52,7 +52,7 @@ public class PlayerRightClickNPCListener implements Listener {
 	private void registerListener(ProtocolManager protocolManager) {
 		protocolManager.addPacketListener(new PacketAdapter(InstantReplay.getPlugin(InstantReplay.class), ListenerPriority.NORMAL, PacketType.Play.Client.USE_ENTITY) {
 			public void onPacketReceiving(PacketEvent e) {
-				if (!(e.getPacketType() == PacketType.Play.Client.USE_ENTITY && ReplayThreads.isUserReplaying(e.getPlayer().getUniqueId())))
+				if (e.getPacketType() != PacketType.Play.Client.USE_ENTITY || ReplayThreads.isUserReplaying(e.getPlayer().getUniqueId()))
 					return;
 
 				PacketContainer packet = e.getPacket();
