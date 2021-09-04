@@ -7,7 +7,7 @@ public class UtilsHelperImpl implements UtilsHelper {
 
     @Override
     public ClickEvent getTimestampMessageClickEvent(long timestamp) {
-        return new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, timestamp + "");
+        return new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, String.valueOf(timestamp));
     }
 
 }

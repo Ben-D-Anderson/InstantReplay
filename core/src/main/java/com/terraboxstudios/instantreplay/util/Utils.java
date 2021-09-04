@@ -35,18 +35,18 @@ public class Utils {
 	}
 
 	public static void sendReplayTimestampMessage(Player player, long timestamp) {
-		TextComponent component = new TextComponent(TextComponent.fromLegacyText(Utils.getReplayPrefix() + Config.readColouredString("replay-timestamp-output").replace("{TIMESTAMP}", timestamp + "")));
+		TextComponent component = new TextComponent(TextComponent.fromLegacyText(Utils.getReplayPrefix() + Config.readColouredString("replay-timestamp-output").replace("{TIMESTAMP}", String.valueOf(timestamp))));
 		component.setClickEvent(InstantReplay.getVersionSpecificProvider().getUtilsHelper().getTimestampMessageClickEvent(timestamp));
 		player.spigot().sendMessage(component);
 	}
 
 	public static void sendTimestampMessage(CommandSender sender, long timestamp) {
 		if (!(sender instanceof Player)) {
-			sender.sendMessage(Utils.getReplayPrefix() + Config.readColouredString("timestamp-output").replace("{TIMESTAMP}", timestamp + ""));
+			sender.sendMessage(Utils.getReplayPrefix() + Config.readColouredString("timestamp-output").replace("{TIMESTAMP}", String.valueOf(timestamp)));
 			return;
 		}
 		Player player = (Player) sender;
-		TextComponent component = new TextComponent(TextComponent.fromLegacyText(Utils.getReplayPrefix() + Config.readColouredString("timestamp-output").replace("{TIMESTAMP}", timestamp + "")));
+		TextComponent component = new TextComponent(TextComponent.fromLegacyText(Utils.getReplayPrefix() + Config.readColouredString("timestamp-output").replace("{TIMESTAMP}", String.valueOf(timestamp))));
 		component.setClickEvent(InstantReplay.getVersionSpecificProvider().getUtilsHelper().getTimestampMessageClickEvent(timestamp));
 		player.spigot().sendMessage(component);
 	}

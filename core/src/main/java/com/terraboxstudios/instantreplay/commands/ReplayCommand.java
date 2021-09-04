@@ -68,11 +68,11 @@ public class ReplayCommand implements CommandExecutor {
 						timestamp = ReplayThreads.getThread(player.getUniqueId()).getRendererManager().getCurrentTimestamp();
 						Utils.sendReplayTimestampMessage(player, timestamp);
 					} else {
-						timestamp = (int) Calendar.getInstance().getTimeInMillis() / 1000;
+						timestamp = Calendar.getInstance().getTimeInMillis() / 1000;
 						Utils.sendTimestampMessage(player, timestamp);
 					}
 				} else {
-					timestamp = (int) Calendar.getInstance().getTimeInMillis() / 1000;
+					timestamp = Calendar.getInstance().getTimeInMillis() / 1000;
 					Utils.sendTimestampMessage(sender, timestamp);
 				}
 			}
