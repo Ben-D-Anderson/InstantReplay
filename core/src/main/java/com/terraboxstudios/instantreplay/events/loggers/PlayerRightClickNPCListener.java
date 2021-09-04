@@ -16,20 +16,32 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 public class PlayerRightClickNPCListener implements Listener {
 
+	private final List<UUID> inNPCInventory = new ArrayList<>();
+
 	@EventHandler
 	public void onInvClick(InventoryClickEvent e) {
-		if (e.getCurrentItem() == null || e.getCurrentItem().getItemMeta() == null || e.getCurrentItem().getType() == Material.AIR) {
+		if (e.getCurrentItem() == null
+				|| e.getCurrentItem().getItemMeta() == null
+				|| e.getCurrentItem().getType() == Material.AIR) {
 			return;
 		}
-		//todo check if inventory is an npc inventory
-		if (e.getInventory().getName().contains("'s Inventory")) {
+		if (inNPCInventory.contains(e.getWhoClicked().getUniqueId())) {
 			e.setCancelled(true);
 		}
+	}
+
+	@EventHandler
+	public void onInventoryClose(InventoryCloseEvent event) {
+		inNPCInventory.remove(event.getPlayer().getUniqueId());
 	}
 
 	public PlayerRightClickNPCListener() {
@@ -54,6 +66,7 @@ public class PlayerRightClickNPCListener implements Listener {
 				NPC clickedNPC = clickedNPCOptional.get();
 
 				player.openInventory(replayInstance.getContext().getNpcInventoryMap().get(clickedNPC.getUniqueId()));
+				if (!inNPCInventory.contains(player.getUniqueId())) inNPCInventory.add(player.getUniqueId());
 			}
 		});
 	}
