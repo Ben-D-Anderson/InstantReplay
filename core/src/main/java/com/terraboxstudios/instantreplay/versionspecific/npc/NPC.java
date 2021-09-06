@@ -1,6 +1,7 @@
 package com.terraboxstudios.instantreplay.versionspecific.npc;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.inventory.ItemStack;
@@ -8,6 +9,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.UUID;
 
 @Getter
+@RequiredArgsConstructor
 public abstract class NPC {
 
     private boolean spawned = false;
@@ -15,13 +17,7 @@ public abstract class NPC {
     private final UUID uniqueId;
     private final String name;
     private final NPCSkin<?> skin;
-
-    public NPC(UUID viewer, UUID uniqueId, String name, NPCSkin<?> skin, World world) {
-        this.viewer = viewer;
-        this.uniqueId = uniqueId;
-        this.name = name;
-        this.skin = skin;
-    }
+    private final World world;
 
     public abstract boolean isInvisible();
     public abstract void setInvisible(boolean invisible);
