@@ -23,6 +23,7 @@ no-events-found: "&cNo block, player, death or damage events found meeting radiu
 no-active-replay: "&cYou are not currently running a replay."
 config-reloaded: "&aConfiguration reloaded. Please note this does not change event logging times."
 logs-cleared: "&aLogs successfully cleared."
+block-change-event-parse-error: "Cannot parse BlockChangeEvent to current minecraft version. Either change the server version to the version the event was created in or clear the BlockChangeEvents from the mysql database. Alternatively, use &e/instantreplay clearlogs &7to clear all logs."
 invalid-argument:
   - "&7&m                                                        "
   - "&c                      Help Page                      "

@@ -4,8 +4,8 @@ import com.terraboxstudios.instantreplay.events.EventContainerProvider;
 import com.terraboxstudios.instantreplay.events.EventContainerRenderer;
 import com.terraboxstudios.instantreplay.events.containers.PlayerChangeBlockEventContainer;
 import com.terraboxstudios.instantreplay.replay.ReplayContext;
+import com.terraboxstudios.instantreplay.versionspecific.blocks.BlockChange;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 public class PlayerChangeBlockEventContainerRenderer extends EventContainerRenderer<PlayerChangeBlockEventContainer> {
@@ -31,10 +31,8 @@ public class PlayerChangeBlockEventContainerRenderer extends EventContainerRende
         Player player = Bukkit.getPlayer(getContext().getViewer());
         if (player == null) return;
 
-        Material material = undoRender ? eventContainer.getOldBlockMaterial() : eventContainer.getNewBlockMaterial();
-        byte data = undoRender ? eventContainer.getOldBlockData() : eventContainer.getNewBlockData();
-
-        player.sendBlockChange(eventContainer.getLocation(), material, data);
+        BlockChange blockChange = undoRender ? eventContainer.getOldBlock() : eventContainer.getNewBlock();
+        blockChange.send(player, eventContainer.getLocation());
     }
 
 }

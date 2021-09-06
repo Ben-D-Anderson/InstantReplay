@@ -4,15 +4,18 @@ import com.terraboxstudios.instantreplay.InstantReplay;
 import com.terraboxstudios.instantreplay.events.EventContainer;
 import com.terraboxstudios.instantreplay.events.containers.*;
 import com.terraboxstudios.instantreplay.events.renderers.PlayerChangeBlockEventContainerRenderer;
+import com.terraboxstudios.instantreplay.exceptions.BlockChangeParseException;
 import com.terraboxstudios.instantreplay.inventory.InventorySerializer;
 import com.terraboxstudios.instantreplay.replay.ReplayContext;
+import com.terraboxstudios.instantreplay.util.BlockChangeSerializer;
 import com.terraboxstudios.instantreplay.util.Config;
 import com.terraboxstudios.instantreplay.util.ConsoleLogger;
 import com.terraboxstudios.instantreplay.util.Utils;
+import com.terraboxstudios.instantreplay.versionspecific.blocks.BlockChange;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.sql.*;
@@ -54,7 +57,7 @@ public class MySQL {
 	}
 
 	private final String[] tables = {
-			"block_events (location VARCHAR(255), old_block VARCHAR(255), old_block_data BLOB, new_block VARCHAR(255), new_block_data BLOB, time BIGINT)",
+			"block_events (location VARCHAR(255), old_block VARCHAR(500), new_block VARCHAR(500), time BIGINT)",
 			"player_move_events (name VARCHAR(255), UUID VARCHAR(255), location VARCHAR(255), time BIGINT)",
 			"death_damage_events (name VARCHAR(255), UUID VARCHAR(255), location VARCHAR(255), event_type VARCHAR(255), source VARCHAR(255), time BIGINT)",
 			"player_inventory_events (name VARCHAR(255), UUID VARCHAR(255), location VARCHAR(255), serialized MEDIUMTEXT, time BIGINT)",
@@ -107,13 +110,11 @@ public class MySQL {
 	private void logBlockEvent(PlayerChangeBlockEventContainer blockEventObj) {
 		try {
 			PreparedStatement statement = getConnection().prepareStatement
-					("INSERT INTO block_events (location, old_block, old_block_data, new_block, new_block_data, time) VALUES (?, ?, ?, ?, ?, ?)");
+					("INSERT INTO block_events (location, old_block, new_block, time) VALUES (?, ?, ?, ?, ?, ?)");
 			statement.setString(1, Utils.locationToString(blockEventObj.getLocation()));
-			statement.setString(2, blockEventObj.getOldBlockMaterial().toString());
-			statement.setByte(3, blockEventObj.getOldBlockData());
-			statement.setString(4, blockEventObj.getNewBlockMaterial().toString());
-			statement.setByte(5, blockEventObj.getNewBlockData());
-			statement.setLong(6, blockEventObj.getTime());
+			statement.setString(2, BlockChangeSerializer.serialize(blockEventObj.getOldBlock()));
+			statement.setString(3, BlockChangeSerializer.serialize(blockEventObj.getNewBlock()));
+			statement.setLong(4, blockEventObj.getTime());
 
 			statement.execute();
 		} catch (Exception e) {
@@ -204,7 +205,18 @@ public class MySQL {
 				eventLocation.setZ(eventLocation.getBlockZ());
 
 				if (Utils.isLocationInReplay(eventLocation, context.getLocation(), context.getRadius())) {
-					blockEvents.add(new PlayerChangeBlockEventContainer(UUID.randomUUID(), eventLocation, results.getLong("time"), Material.getMaterial(results.getString("old_block")), Material.getMaterial(results.getString("new_block")), results.getByte("old_block_data"), results.getByte("new_block_data")));
+					try {
+						BlockChange newBlock = BlockChangeSerializer.deserialize(results.getString("new_block"));
+						BlockChange oldBlock = BlockChangeSerializer.deserialize(results.getString("old_block"));
+						blockEvents.add(new PlayerChangeBlockEventContainer(UUID.randomUUID(), eventLocation, results.getLong("time"), newBlock, oldBlock));
+					} catch (BlockChangeParseException e) {
+						Player player = Bukkit.getPlayer(context.getViewer());
+						if (player != null) {
+							player.sendMessage(Config.readColouredString("block-change-event-parse-error"));
+						}
+						ConsoleLogger.getInstance().log(Level.SEVERE, Config.readColouredString("block-change-event-parse-error"));
+						return blockEvents;
+					}
 				}
 			}
 			return blockEvents;
@@ -355,7 +367,9 @@ public class MySQL {
 				eventLocation.setZ(eventLocation.getBlockZ());
 
 				if (Utils.isLocationInReplay(eventLocation, context.getLocation(), context.getRadius())) {
-					playerChangeBlockEventContainerRenderer.undoRender(new PlayerChangeBlockEventContainer(UUID.randomUUID(), eventLocation, results.getLong("time"), Material.getMaterial(results.getString("old_block")), Material.getMaterial(results.getString("new_block")), results.getByte("old_block_data"), results.getByte("new_block_data")));
+					BlockChange newBlock = BlockChangeSerializer.deserialize(results.getString("new_block"));
+					BlockChange oldBlock = BlockChangeSerializer.deserialize(results.getString("old_block"));
+					playerChangeBlockEventContainerRenderer.undoRender(new PlayerChangeBlockEventContainer(UUID.randomUUID(), eventLocation, results.getLong("time"), newBlock, oldBlock));
 				}
 			}
 		} catch (Exception e) {

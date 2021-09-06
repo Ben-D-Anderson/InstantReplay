@@ -1,8 +1,11 @@
 package com.terraboxstudios.instantreplay.events.loggers;
 
+import com.terraboxstudios.instantreplay.InstantReplay;
 import com.terraboxstudios.instantreplay.events.containers.PlayerChangeBlockEventContainer;
+import com.terraboxstudios.instantreplay.versionspecific.blocks.BlockChange;
+import com.terraboxstudios.instantreplay.versionspecific.blocks.BlockChangeData;
+import com.terraboxstudios.instantreplay.versionspecific.blocks.BlockChangeFactory;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -14,37 +17,41 @@ import java.util.UUID;
 
 public class PlayerChangeBlockListener implements Listener {
 
+    private final BlockChangeFactory blockChangeFactory;
+
+    public PlayerChangeBlockListener() {
+        blockChangeFactory = InstantReplay.getVersionSpecificProvider().getBlockChangeFactory();
+    }
+
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBlockPlace(BlockPlaceEvent e) {
         Location location = e.getBlock().getLocation();
-        Material oldMaterial = Material.AIR;
-        Material newMaterial = e.getBlock().getState().getType();
-        byte oldBlockData = 0;
-        byte newBlockData = e.getBlock().getState().getRawData();
-        new PlayerChangeBlockEventContainer(UUID.randomUUID(),
+        BlockChangeData<?> newBlockChangeData = blockChangeFactory.createBlockChangeData(e.getBlock());
+        BlockChange newBlockChange = blockChangeFactory.createBlockChange(newBlockChangeData);
+        BlockChangeData<?> oldBlockChangeData = blockChangeFactory.createEmptyBlockChangeData();
+        BlockChange oldBlockChange = blockChangeFactory.createBlockChange(oldBlockChangeData);
+        new PlayerChangeBlockEventContainer(
+                UUID.randomUUID(),
                 location,
                 Calendar.getInstance().getTimeInMillis(),
-                oldMaterial,
-                newMaterial,
-                oldBlockData,
-                newBlockData
+                newBlockChange,
+                oldBlockChange
         ).log();
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBlockBreak(BlockBreakEvent e) {
         Location location = e.getBlock().getLocation();
-        Material oldMaterial = e.getBlock().getState().getType();
-        Material newMaterial = Material.AIR;
-        byte oldBlockData = e.getBlock().getState().getRawData();
-        byte newBlockData = 0;
-        new PlayerChangeBlockEventContainer(UUID.randomUUID(),
+        BlockChangeData<?> newBlockChangeData = blockChangeFactory.createEmptyBlockChangeData();
+        BlockChange newBlockChange = blockChangeFactory.createBlockChange(newBlockChangeData);
+        BlockChangeData<?> oldBlockChangeData = blockChangeFactory.createBlockChangeData(e.getBlock());
+        BlockChange oldBlockChange = blockChangeFactory.createBlockChange(oldBlockChangeData);
+        new PlayerChangeBlockEventContainer(
+                UUID.randomUUID(),
                 location,
                 Calendar.getInstance().getTimeInMillis(),
-                oldMaterial,
-                newMaterial,
-                oldBlockData,
-                newBlockData
+                newBlockChange,
+                oldBlockChange
         ).log();
     }
 

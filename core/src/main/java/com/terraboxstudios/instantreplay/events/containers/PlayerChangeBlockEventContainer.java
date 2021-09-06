@@ -1,10 +1,10 @@
 package com.terraboxstudios.instantreplay.events.containers;
 
 import com.terraboxstudios.instantreplay.events.EventContainer;
+import com.terraboxstudios.instantreplay.versionspecific.blocks.BlockChange;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.bukkit.Location;
-import org.bukkit.Material;
 
 import java.util.UUID;
 
@@ -12,16 +12,12 @@ import java.util.UUID;
 @Getter
 public final class PlayerChangeBlockEventContainer extends EventContainer {
 
-	//todo version specific implementation
-	private final Material oldBlockMaterial, newBlockMaterial;
-	private final byte oldBlockData, newBlockData;
+	private final BlockChange newBlock, oldBlock;
 
-	public PlayerChangeBlockEventContainer(UUID uuid, Location location, long time, Material oldBlockMaterial, Material newBlockMaterial, byte oldBlockData, byte newBlockData) {
+	public PlayerChangeBlockEventContainer(UUID uuid, Location location, long time, BlockChange newBlock, BlockChange oldBlock) {
 		super(uuid, location, time);
-		this.oldBlockMaterial = oldBlockMaterial;
-		this.newBlockMaterial = newBlockMaterial;
-		this.oldBlockData = oldBlockData;
-		this.newBlockData = newBlockData;
+		this.oldBlock = oldBlock;
+		this.newBlock = newBlock;
 	}
 
 }
