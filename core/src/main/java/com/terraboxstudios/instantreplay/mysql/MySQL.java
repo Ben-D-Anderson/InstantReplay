@@ -43,7 +43,7 @@ public class MySQL {
 		String host = Config.getConfig().getString("mysql.host");
 		String database = Config.getConfig().getString("mysql.database");
 		int port = Config.getConfig().getInt("mysql.port");
-		eventRenderBuffer = Config.getConfig().getInt("event-render-buffer");
+		eventRenderBuffer = Config.getConfig().getInt("settings.event-render-buffer");
 
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
@@ -110,7 +110,7 @@ public class MySQL {
 	private void logBlockEvent(PlayerChangeBlockEventContainer blockEventObj) {
 		try {
 			PreparedStatement statement = getConnection().prepareStatement
-					("INSERT INTO block_events (location, old_block, new_block, time) VALUES (?, ?, ?, ?, ?, ?)");
+					("INSERT INTO block_events (location, old_block, new_block, time) VALUES (?, ?, ?, ?)");
 			statement.setString(1, Utils.locationToString(blockEventObj.getLocation()));
 			statement.setString(2, BlockChangeSerializer.serialize(blockEventObj.getOldBlock()));
 			statement.setString(3, BlockChangeSerializer.serialize(blockEventObj.getNewBlock()));
@@ -192,7 +192,7 @@ public class MySQL {
 
 		try {
 			PreparedStatement statement = getConnection().prepareStatement
-					("SELECT * FROM block_events WHERE time>=? AND time<=? SORT BY time ASC LIMIT " + eventRenderBuffer);
+					("SELECT * FROM block_events WHERE time>=? AND time<=? ORDER BY time ASC LIMIT " + eventRenderBuffer);
 			statement.setLong(1, context.getStartTimestamp());
 			statement.setLong(2, context.getTimeOfCommand());
 
@@ -200,9 +200,6 @@ public class MySQL {
 			while (results.next()) {
 				String locString = results.getString("location");
 				Location eventLocation = Utils.stringToLocation(locString);
-				eventLocation.setX(eventLocation.getBlockX());
-				eventLocation.setY(eventLocation.getBlockY());
-				eventLocation.setZ(eventLocation.getBlockZ());
 
 				if (Utils.isLocationInReplay(eventLocation, context.getLocation(), context.getRadius())) {
 					try {
@@ -233,14 +230,14 @@ public class MySQL {
 		int radius = context.getRadius() + 4;
 		try {
 			PreparedStatement statement = getConnection().prepareStatement
-					("SELECT * FROM player_move_events WHERE time>=? AND time<=? SORT BY time ASC LIMIT " + eventRenderBuffer);
+					("SELECT * FROM player_move_events WHERE time>=? AND time<=? ORDER BY time ASC LIMIT " + eventRenderBuffer);
 			statement.setLong(1, context.getStartTimestamp());
 			statement.setLong(2, context.getTimeOfCommand());
 
 			ResultSet results = statement.executeQuery();
 			while (results.next()) {
 				String locString = results.getString("location");
-				Location eventLocation = Utils.stringToLocation(locString);
+				Location eventLocation = Utils.stringToPreciseLocation(locString);
 
 				if (Utils.isLocationInReplay(eventLocation, context.getLocation(), radius)) {
 					playerMoveEvents.add(new PlayerMoveEventContainer(UUID.fromString(results.getString("UUID")), eventLocation, results.getLong("time"), results.getString("name")));
@@ -259,7 +256,7 @@ public class MySQL {
 
 		try {
 			PreparedStatement statement = getConnection().prepareStatement
-					("SELECT * FROM death_damage_events WHERE time>=? AND time<=? SORT BY time ASC LIMIT " + eventRenderBuffer);
+					("SELECT * FROM death_damage_events WHERE time>=? AND time<=? ORDER BY time ASC LIMIT " + eventRenderBuffer);
 			statement.setLong(1, context.getStartTimestamp());
 			statement.setLong(2, context.getTimeOfCommand());
 
@@ -270,10 +267,6 @@ public class MySQL {
 
 				if (Utils.isLocationInReplay(eventLocation, context.getLocation(), context.getRadius())) {
 					UUID uuid = UUID.fromString(results.getString("UUID"));
-					eventLocation.setX((int) eventLocation.getX());
-					eventLocation.setY((int) eventLocation.getY());
-					eventLocation.setZ((int) eventLocation.getZ());
-
 					deathDamageEvents.add(new PlayerDeathDamageEventContainer(uuid, eventLocation, results.getLong("time"), results.getString("name"), results.getString("event_type"), results.getString("source")));
 				}
 			}
@@ -290,7 +283,7 @@ public class MySQL {
 
 		try {
 			PreparedStatement statement = getConnection().prepareStatement
-					("SELECT * FROM join_leave_events WHERE time>=? AND time<=? SORT BY time ASC LIMIT " + eventRenderBuffer);
+					("SELECT * FROM join_leave_events WHERE time>=? AND time<=? ORDER BY time ASC LIMIT " + eventRenderBuffer);
 			statement.setLong(1, context.getStartTimestamp());
 			statement.setLong(2, context.getTimeOfCommand());
 
@@ -301,10 +294,6 @@ public class MySQL {
 
 				if (Utils.isLocationInReplay(eventLocation, context.getLocation(), context.getRadius())) {
 					UUID uuid = UUID.fromString(results.getString("UUID"));
-					eventLocation.setX((int) eventLocation.getX());
-					eventLocation.setY((int) eventLocation.getY());
-					eventLocation.setZ((int) eventLocation.getZ());
-
 					joinLeaveEvents.add(new PlayerJoinLeaveEventContainer(uuid, eventLocation, results.getLong("time"), results.getString("name"), results.getString("event_type")));
 				}
 			}
@@ -321,7 +310,7 @@ public class MySQL {
 
 		try {
 			PreparedStatement statement = getConnection().prepareStatement
-					("SELECT * FROM player_inventory_events WHERE time>=? AND time<=? SORT BY time ASC LIMIT " + eventRenderBuffer);
+					("SELECT * FROM player_inventory_events WHERE time>=? AND time<=? ORDER BY time ASC LIMIT " + eventRenderBuffer);
 			statement.setLong(1, context.getStartTimestamp());
 			statement.setLong(2, context.getTimeOfCommand());
 
@@ -338,10 +327,6 @@ public class MySQL {
 					ItemStack[] hands = InventorySerializer.itemStackArrayFromBase64(serArr[3]);
 
 					UUID uuid = UUID.fromString(results.getString("UUID"));
-					eventLocation.setX((int) eventLocation.getX());
-					eventLocation.setY((int) eventLocation.getY());
-					eventLocation.setZ((int) eventLocation.getZ());
-
 					playerInventoryEvents.add(new PlayerInventoryEventContainer(uuid, eventLocation, results.getLong("time"), results.getString("name"), results.getString("serialized"), content, armour, hands, health));
 				}
 			}
@@ -355,16 +340,13 @@ public class MySQL {
 	public void undoRenderAllBlocks(PlayerChangeBlockEventContainerRenderer playerChangeBlockEventContainerRenderer, ReplayContext context) {
 		try {
 			PreparedStatement statement = getConnection().prepareStatement
-					("SELECT * FROM block_events WHERE time>=? SORT BY time DESC");
+					("SELECT * FROM block_events WHERE time>=? ORDER BY time DESC");
 			statement.setLong(1, context.getStartTimestamp());
 
 			ResultSet results = statement.executeQuery();
 			while (results.next()) {
 				String locString = results.getString("location");
 				Location eventLocation = Utils.stringToLocation(locString);
-				eventLocation.setX(eventLocation.getBlockX());
-				eventLocation.setY(eventLocation.getBlockY());
-				eventLocation.setZ(eventLocation.getBlockZ());
 
 				if (Utils.isLocationInReplay(eventLocation, context.getLocation(), context.getRadius())) {
 					BlockChange newBlock = BlockChangeSerializer.deserialize(results.getString("new_block"));
