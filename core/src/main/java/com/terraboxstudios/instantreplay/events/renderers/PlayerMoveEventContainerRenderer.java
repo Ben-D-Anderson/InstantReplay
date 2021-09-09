@@ -20,6 +20,7 @@ public class PlayerMoveEventContainerRenderer extends EventContainerRenderer<Pla
         super(context, eventContainerProvider);
     }
 
+    //todo fix move rendering - can't see npc
     @Override
     protected void render(PlayerMoveEventContainer eventContainer) {
         Player player = Bukkit.getPlayer(getContext().getViewer());
