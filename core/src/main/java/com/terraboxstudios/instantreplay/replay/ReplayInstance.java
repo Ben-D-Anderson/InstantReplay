@@ -29,8 +29,8 @@ public class ReplayInstance extends Thread {
             ReplayThreads.stopThread(getContext().getViewer());
             return;
         }
-        player.sendMessage(Utils.getReplayPrefix() + Config.readColouredString("replay-starting-with-timestamp")
-                .replace("{TIMESTAMP}", getRendererManager().getCurrentTimestamp() + "")
+        player.sendMessage(Utils.getReplayPrefix() + Config.readColouredString("replay-starting")
+                .replace("{TIMESTAMP}", (getRendererManager().getCurrentTimestamp() / 1000) + "")
                 .replace("{SPEED}", getContext().getSpeed() + "")
                 .replace("{RADIUS}", getContext().getRadius() + ""));
         getRendererManager().undoRenderAllBlockChanges();
@@ -76,9 +76,16 @@ public class ReplayInstance extends Thread {
 
                 getRendererManager().render();
 
+                if (getRendererManager().getCurrentTimestamp() > getContext().getTimeOfCommand()) {
+                    player.sendMessage(Utils.getReplayPrefix() + Config.readColouredString("replay-finished"));
+                    ReplayThreads.stopThread(getContext().getViewer());
+                    return;
+                }
+
                 try {
                     TimeUnit.MILLISECONDS.sleep(100 / getContext().getSpeed());
-                } catch (InterruptedException ignored) {}
+                } catch (InterruptedException ignored) {
+                }
             }
 
             try {
