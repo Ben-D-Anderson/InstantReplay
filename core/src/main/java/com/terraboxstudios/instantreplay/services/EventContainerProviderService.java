@@ -2,8 +2,10 @@ package com.terraboxstudios.instantreplay.services;
 
 import com.terraboxstudios.instantreplay.events.EventContainer;
 import com.terraboxstudios.instantreplay.events.EventContainerRenderer;
+import com.terraboxstudios.instantreplay.mysql.MySQL;
 import com.terraboxstudios.instantreplay.replay.ReplayContext;
 
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -34,8 +36,11 @@ public class EventContainerProviderService {
 					eventContainerRenderer.getContext().getRadius(),
 					eventContainerRenderer.getContext().getLocation()
 			).build();
-			eventContainerRenderer.getEventContainers().addAll(eventContainerRenderer.getEventContainerProvider().provide(bufferContext));
-			eventContainerRenderer.getProviderLock().release();
+			List<T> containers = eventContainerRenderer.getEventContainerProvider().provide(bufferContext);
+			eventContainerRenderer.getEventContainers().addAll(containers);
+			if (containers.size() >= MySQL.getInstance().getEventRenderBuffer()) {
+				eventContainerRenderer.getProviderLock().release();
+			}
 		});
 	}
 
