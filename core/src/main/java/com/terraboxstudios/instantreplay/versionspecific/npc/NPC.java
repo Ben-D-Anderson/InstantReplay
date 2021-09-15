@@ -29,6 +29,8 @@ public abstract class NPC {
     public abstract void moveTo(Location location);
     public abstract int getId();
 
+    public abstract Location getLocation();
+
     public final void spawn(Location location) {
         spawned = true;
         specificSpawn(location);
