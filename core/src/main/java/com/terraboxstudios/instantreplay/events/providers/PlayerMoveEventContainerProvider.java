@@ -33,6 +33,7 @@ public class PlayerMoveEventContainerProvider implements EventContainerProvider<
             return;
         }
         PlayerMoveEventContainer previous = previousContainers.get(current.getUuid());
+        previousContainers.put(current.getUuid(), current);
         Location previousLocation = previous.getLocation();
         Location locationChange = current.getLocation().subtract(previousLocation);
         locationChange.setYaw(locationChange.getYaw() - previous.getYaw());
@@ -50,7 +51,7 @@ public class PlayerMoveEventContainerProvider implements EventContainerProvider<
             Location newLocation = previousLocation.add(locationChangePerPrediction);
             newLocation.setYaw(newLocation.getYaw() + locationChangePerPrediction.getYaw());
             newLocation.setPitch(newLocation.getPitch() + locationChangePerPrediction.getPitch());
-            long newTimestamp = previous.getTime() + (i * 100L);
+            long newTimestamp = previous.getTime() + (i * (1000L / containersToPredict + 1));
             String name = previous.getName();
 
             PlayerMoveEventContainer newPlayerMoveEventContainer = new PlayerMoveEventContainer(uuid, newLocation, newTimestamp, name);
