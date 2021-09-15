@@ -21,7 +21,7 @@ public class NPCImpl extends NPC {
 
     public NPCImpl(UUID viewer, UUID uniqueId, String name, NPCSkin<?> skin, World world) {
         super(viewer, uniqueId, name, skin, world);
-        if (!(skin.getSkin() instanceof GameProfile)) {
+        if (skin == null || !(skin.getSkin() instanceof GameProfile)) {
             throw new IllegalArgumentException("NPCSkin object must be of type GameProfile in version specific implementation.");
         }
         GameProfile gameProfile = (GameProfile) skin.getSkin();
@@ -82,18 +82,9 @@ public class NPCImpl extends NPC {
         if (viewer == null) return;
         Location oldLocation = new Location(location.getWorld(), entityPlayer.locX, entityPlayer.locY, entityPlayer.locZ, entityPlayer.yaw, entityPlayer.pitch);
         entityPlayer.setLocation(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
+        System.out.println(location.getX() + " : " + location.getY() + " : " + location.getZ());
         PlayerConnection connection = ((CraftPlayer) viewer).getHandle().playerConnection;
-        if (oldLocation.distance(location) >= 8) {
-            connection.sendPacket(new PacketPlayOutEntityTeleport(entityPlayer));
-        } else {
-            connection.sendPacket(new PacketPlayOutRelEntityMove(
-                    entityPlayer.getId(),
-                    (byte) (location.getX() * 4096),
-                    (byte) (location.getY() * 4096),
-                    (byte) (location.getZ() * 4096),
-                    true
-            ));
-        }
+        connection.sendPacket(new PacketPlayOutEntityTeleport(entityPlayer));
         if (oldLocation.getYaw() != location.getYaw() || oldLocation.getPitch() != location.getPitch()) {
             connection.sendPacket(new PacketPlayOutEntityHeadRotation(entityPlayer, (byte) (location.getYaw() * 256 / 360)));
             connection.sendPacket(new PacketPlayOutEntityLook(
@@ -108,6 +99,11 @@ public class NPCImpl extends NPC {
     @Override
     public int getId() {
         return entityPlayer.getId();
+    }
+
+    @Override
+    public Location getLocation() {
+        return entityPlayer.getBukkitEntity().getLocation();
     }
 
 }
