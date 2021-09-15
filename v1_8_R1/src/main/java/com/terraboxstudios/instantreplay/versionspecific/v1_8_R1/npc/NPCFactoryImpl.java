@@ -25,14 +25,21 @@ public class NPCFactoryImpl extends NPCFactory {
         try {
             HttpsURLConnection connection = (HttpsURLConnection) new URL(String.format("https://sessionserver.mojang.com/session/minecraft/profile/%s?unsigned=false", UUIDTypeAdapter.fromUUID(uniqueId))).openConnection();
             if (connection.getResponseCode() == HttpsURLConnection.HTTP_OK) {
-                String reply = new BufferedReader(new InputStreamReader(connection.getInputStream())).readLine();
+                BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                StringBuilder reply = new StringBuilder();
+                String inputLine;
+                while ((inputLine = reader.readLine()) != null) {
+                    reply.append(inputLine);
+                }
                 String skin, signature;
                 try {
-                    skin = reply.split("\"value\":\"")[1].split("\"")[0];
-                    signature = reply.split("\"signature\":\"")[1].split("\"")[0];
+                    skin = reply.toString().split("\"value\" : \"")[1].split("\"")[0];
+                    signature = reply.toString().split("\"signature\" : \"")[1].split("\"")[0];
                 } catch (Exception e) {
-                    skin = reply.split("\"value\": \"")[1].split("\"")[0];
-                    signature = reply.split("\"signature\": \"")[1].split("\"")[0];
+                    ConsoleLogger.getInstance().log(Level.WARNING, "Couldn't parse data from Mojang skin servers.");
+                    ConsoleLogger.getInstance().log(Level.WARNING, "Data Received:");
+                    ConsoleLogger.getInstance().log(Level.WARNING, reply.toString());
+                    return new NPCSkinImpl(profile);
                 }
                 profile.getProperties().put("textures", new Property("textures", skin, signature));
             } else {
