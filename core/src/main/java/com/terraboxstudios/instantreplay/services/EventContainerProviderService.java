@@ -31,7 +31,7 @@ public class EventContainerProviderService {
 		service.execute(() -> {
 			ReplayContext bufferContext = new ReplayContext.Builder(
 					lastEventContainer.getUuid(),
-					lastEventContainer.getTime(),
+					lastEventContainer.getTime() + 1,
 					eventContainerRenderer.getContext().getTimeOfCommand(),
 					eventContainerRenderer.getContext().getRadius(),
 					eventContainerRenderer.getContext().getLocation()
