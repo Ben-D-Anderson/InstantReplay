@@ -72,11 +72,11 @@ public class Utils {
 	}
 
 	public static long roundTime(long time) {
-		return Math.round(time / (double) 100) * 100L;
+		return Math.round(time * (double) 100) / 100L;
 	}
 
 	public static long roundTwoDP(double value) {
-		return Math.round(value / (double) 100) * 100L;
+		return Math.round(value * (double) 100) / 100L;
 	}
 
 }
