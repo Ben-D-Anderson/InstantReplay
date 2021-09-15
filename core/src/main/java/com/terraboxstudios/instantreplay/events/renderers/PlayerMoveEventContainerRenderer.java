@@ -20,7 +20,6 @@ public class PlayerMoveEventContainerRenderer extends EventContainerRenderer<Pla
         super(context, eventContainerProvider);
     }
 
-    //todo fix move rendering - can't see npc
     @Override
     protected void render(PlayerMoveEventContainer eventContainer) {
         Player player = Bukkit.getPlayer(getContext().getViewer());
@@ -41,7 +40,9 @@ public class PlayerMoveEventContainerRenderer extends EventContainerRenderer<Pla
             if (!npc.isSpawned()) {
                 npc.spawn(eventContainer.getLocation());
             } else {
-                npc.moveTo(eventContainer.getLocation());
+                if (!eventContainer.getLocation().equals(npc.getLocation())) {
+                    npc.moveTo(eventContainer.getLocation());
+                }
             }
             CustomInventory customInventory = getContext().getNpcCustomInventoryMap().get(eventContainer.getUuid());
             if (customInventory != null) {
