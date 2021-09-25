@@ -1,16 +1,16 @@
-package com.terraboxstudios.instantreplay.versionspecific.v1_8_R1.npc;
+package com.terraboxstudios.instantreplay.versionspecific.v1_8_R2.npc;
 
 import com.mojang.authlib.GameProfile;
 import com.terraboxstudios.instantreplay.versionspecific.npc.NPC;
 import com.terraboxstudios.instantreplay.versionspecific.npc.NPCSkin;
-import net.minecraft.server.v1_8_R1.*;
+import net.minecraft.server.v1_8_R2.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.craftbukkit.v1_8_R1.CraftServer;
-import org.bukkit.craftbukkit.v1_8_R1.CraftWorld;
-import org.bukkit.craftbukkit.v1_8_R1.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_8_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_8_R2.CraftServer;
+import org.bukkit.craftbukkit.v1_8_R2.CraftWorld;
+import org.bukkit.craftbukkit.v1_8_R2.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_8_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -59,7 +59,7 @@ public class NPCImpl extends NPC {
         if (viewer == null) return;
         entityPlayer.setLocation(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
         PlayerConnection connection = ((CraftPlayer) viewer).getHandle().playerConnection;
-        connection.sendPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, entityPlayer));
+        connection.sendPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER, entityPlayer));
         connection.sendPacket(new PacketPlayOutNamedEntitySpawn(entityPlayer));
         connection.sendPacket(new PacketPlayOutEntityHeadRotation(entityPlayer, (byte) (entityPlayer.yaw * 256 / 360)));
     }
@@ -76,7 +76,7 @@ public class NPCImpl extends NPC {
     public void setEquipmentSlot(int i, ItemStack item) {
         Player viewer = Bukkit.getPlayer(getViewer());
         if (viewer == null) return;
-        net.minecraft.server.v1_8_R1.ItemStack nmsItemStack = CraftItemStack.asNMSCopy(item);
+        net.minecraft.server.v1_8_R2.ItemStack nmsItemStack = CraftItemStack.asNMSCopy(item);
         PlayerConnection connection = ((CraftPlayer) viewer).getHandle().playerConnection;
         connection.sendPacket(new PacketPlayOutEntityEquipment(entityPlayer.getId(), 0, nmsItemStack));
     }
@@ -92,7 +92,7 @@ public class NPCImpl extends NPC {
         connection.sendPacket(new PacketPlayOutEntityTeleport(entityPlayer));
         if (oldLocation.getYaw() != location.getYaw() || oldLocation.getPitch() != location.getPitch()) {
             connection.sendPacket(new PacketPlayOutEntityHeadRotation(entityPlayer, (byte) (location.getYaw() * 256 / 360)));
-            connection.sendPacket(new PacketPlayOutEntityLook(
+            connection.sendPacket(new PacketPlayOutEntity.PacketPlayOutEntityLook(
                     entityPlayer.getId(),
                     (byte) (location.getYaw() * 256 / 360),
                     (byte) (location.getPitch() * 256 / 360),
