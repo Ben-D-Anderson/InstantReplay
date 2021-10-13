@@ -55,7 +55,6 @@ public class PlayerMoveEventContainerRenderer extends EventContainerRenderer<Pla
                     item = new ItemStack(Material.AIR);
                 }
                 npc.setItemInOffHand(item);
-                npc.setEquipmentSlot(0, item);
                 for (int armourSlot = 0; armourSlot < 4; armourSlot++) {
                     item = customInventory.getArmourContents()[armourSlot];
                     if (item == null)
