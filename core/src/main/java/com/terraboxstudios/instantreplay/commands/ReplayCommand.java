@@ -57,7 +57,8 @@ public class ReplayCommand implements CommandExecutor {
 			if (args.length > 1) {
 				timestamp = convertToTimestamp(args[1]);
 				if (timestamp < 1) {
-					sender.sendMessage(Utils.getReplayPrefix() + Config.readColouredString("no-convert-timestamp"));
+					sender.sendMessage(Utils.getReplayPrefix() + Config.readColouredString("no-convert-timestamp")
+							.replace("{FORMAT}", Objects.requireNonNull(Config.getConfig().getString("timestamp-converter-format"))));
 					return true;
 				}
 				Utils.sendTimestampMessage(sender, timestamp);
@@ -231,14 +232,14 @@ public class ReplayCommand implements CommandExecutor {
 	}
 
 	private long convertToTimestamp(String argument) {
-		long timestamp = -1L;
 		SimpleDateFormat sdf = new SimpleDateFormat(Objects.requireNonNull(Config.getConfig().getString("timestamp-converter-format")));
 		try {
 			Date parsedDate = sdf.parse(argument);
-			timestamp = parsedDate.getTime();
+			long timestamp = parsedDate.getTime();
+			return timestamp / 1000;
 		} catch (ParseException ignored) {
+			return -1;
 		}
-		return timestamp / 1000;
 	}
 
 	private long parseTimeArgument(String argument) {
