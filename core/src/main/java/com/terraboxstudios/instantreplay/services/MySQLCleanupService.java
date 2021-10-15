@@ -17,7 +17,8 @@ public class MySQLCleanupService {
 	}
 	
 	public static void shutdown() {
-		service.shutdown();
+		if (service != null)
+			service.shutdown();
 	}
 	
 }
