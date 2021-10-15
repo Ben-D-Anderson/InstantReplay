@@ -4,6 +4,7 @@ author: Ben-D-Anderson
 description: InstantReplay for Minecraft server administrators.
 website: https://github.com/Ben-D-Anderson/InstantReplay
 main: com.terraboxstudios.instantreplay.InstantReplay
+api-version: 1.13
 
 depend:
   - ProtocolLib
