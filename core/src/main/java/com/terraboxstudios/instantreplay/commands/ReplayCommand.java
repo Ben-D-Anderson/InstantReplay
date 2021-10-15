@@ -238,7 +238,7 @@ public class ReplayCommand implements CommandExecutor {
 			timestamp = parsedDate.getTime();
 		} catch (ParseException ignored) {
 		}
-		return timestamp;
+		return timestamp / 1000;
 	}
 
 	private long parseTimeArgument(String argument) {
