@@ -15,6 +15,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Objects;
 import java.util.logging.Level;
 
@@ -28,14 +29,18 @@ public class InstantReplay extends JavaPlugin {
 		try {
 			String packageName = VersionSpecificProvider.class.getPackage().getName();
 			String internalsName = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
-			versionSpecificProvider = (VersionSpecificProvider) Class.forName(packageName + "." + internalsName + ".VersionSpecificProviderImpl").newInstance();
-		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | ClassCastException exception) {
-			ConsoleLogger.getInstance().log(Level.SEVERE, "Plugin could not find a valid implementation for this server version.");
+			versionSpecificProvider = (VersionSpecificProvider) Class.forName(packageName + "." + internalsName + ".VersionSpecificProviderImpl").getConstructor().newInstance();
+		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | ClassCastException | NoSuchMethodException | InvocationTargetException ignored) {
 		}
 	}
 
 	@Override
 	public void onEnable() {
+		if (versionSpecificProvider == null) {
+			ConsoleLogger.getInstance().log(Level.SEVERE, "Plugin could not find a valid implementation for this server version.");
+			Bukkit.getPluginManager().disablePlugin(this);
+			return;
+		}
 		Config.loadConfig();
 		MySQL.getInstance();
 		MySQLCleanupService.start();
