@@ -46,6 +46,7 @@ public class InstantReplay extends JavaPlugin {
 		MySQLCleanupService.start();
 		registerEvents();
 		registerCommands();
+		ConsoleLogger.getInstance().log(Level.INFO, "Successfully Enabled InstantReplay.");
 	}
 	
 	@Override
