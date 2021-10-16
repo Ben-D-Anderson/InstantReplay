@@ -78,7 +78,7 @@ public class NPCImpl extends NPC {
         Player viewer = Bukkit.getPlayer(getViewer());
         if (viewer == null) return;
         PlayerConnection connection = ((CraftPlayer) viewer).getHandle().b;
-        connection.sendPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.b, entityPlayer));
+        connection.sendPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.e, entityPlayer));
         //connection.sendPacket(new PacketPlayOutEntityDestroy(entityPlayer.getId()));
     }
 
