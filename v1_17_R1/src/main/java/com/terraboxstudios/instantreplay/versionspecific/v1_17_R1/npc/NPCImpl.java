@@ -79,7 +79,7 @@ public class NPCImpl extends NPC {
         if (viewer == null) return;
         PlayerConnection connection = ((CraftPlayer) viewer).getHandle().b;
         connection.sendPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.b, entityPlayer));
-        connection.sendPacket(new PacketPlayOutEntityDestroy(entityPlayer.getId()));
+        //connection.sendPacket(new PacketPlayOutEntityDestroy(entityPlayer.getId()));
     }
 
     @Override
@@ -119,7 +119,6 @@ public class NPCImpl extends NPC {
         Location oldLocation = new Location(location.getWorld(), entityPlayer.locX(), entityPlayer.locY(),
                 entityPlayer.locZ(), entityPlayer.getBukkitEntity().getLocation().getYaw(), entityPlayer.getBukkitEntity().getLocation().getPitch());
         entityPlayer.setLocation(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
-        System.out.println(location.getX() + " : " + location.getY() + " : " + location.getZ());
         PlayerConnection connection = ((CraftPlayer) viewer).getHandle().b;
         connection.sendPacket(new PacketPlayOutEntityTeleport(entityPlayer));
         if (oldLocation.getYaw() != location.getYaw() || oldLocation.getPitch() != location.getPitch()) {
