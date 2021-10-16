@@ -2,6 +2,7 @@ package com.terraboxstudios.instantreplay.versionspecific.v1_17_R1.npc;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.datafixers.util.Pair;
+import com.terraboxstudios.instantreplay.util.Utils;
 import com.terraboxstudios.instantreplay.versionspecific.npc.NPC;
 import com.terraboxstudios.instantreplay.versionspecific.npc.NPCSkin;
 import net.minecraft.network.chat.ChatMessage;
@@ -79,7 +80,7 @@ public class NPCImpl extends NPC {
         if (viewer == null) return;
         PlayerConnection connection = ((CraftPlayer) viewer).getHandle().b;
         connection.sendPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.e, entityPlayer));
-        //connection.sendPacket(new PacketPlayOutEntityDestroy(entityPlayer.getId()));
+        connection.sendPacket(new PacketPlayOutEntityDestroy(entityPlayer.getId()));
     }
 
     @Override
@@ -120,7 +121,7 @@ public class NPCImpl extends NPC {
                 entityPlayer.locZ(), entityPlayer.getBukkitEntity().getLocation().getYaw(), entityPlayer.getBukkitEntity().getLocation().getPitch());
         entityPlayer.setLocation(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
         PlayerConnection connection = ((CraftPlayer) viewer).getHandle().b;
-        connection.sendPacket(new PacketPlayOutEntityTeleport(entityPlayer));
+        Utils.runOnMainThread(() -> connection.sendPacket(new PacketPlayOutEntityTeleport(entityPlayer)));
         if (oldLocation.getYaw() != location.getYaw() || oldLocation.getPitch() != location.getPitch()) {
             connection.sendPacket(new PacketPlayOutEntityHeadRotation(entityPlayer, (byte) (location.getYaw() * 256 / 360)));
             connection.sendPacket(new PacketPlayOutEntity.PacketPlayOutEntityLook(
