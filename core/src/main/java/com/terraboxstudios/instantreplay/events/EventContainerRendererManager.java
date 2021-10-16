@@ -7,6 +7,7 @@ import com.terraboxstudios.instantreplay.exceptions.PlayerNotOnlineException;
 import com.terraboxstudios.instantreplay.mysql.MySQL;
 import com.terraboxstudios.instantreplay.replay.ReplayContext;
 import com.terraboxstudios.instantreplay.replay.ReplayThreads;
+import com.terraboxstudios.instantreplay.util.Utils;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -40,8 +41,8 @@ public final class EventContainerRendererManager {
             throw new PlayerNotOnlineException();
         }
 
+        Utils.runOnMainThread(() -> playerMoveEventContainerRenderer.render(currentTimestamp));
         playerChangeBlockEventContainerRenderer.render(currentTimestamp);
-        playerMoveEventContainerRenderer.render(currentTimestamp);
         playerInventoryEventContainerRenderer.render(currentTimestamp);
         playerDeathDamageEventContainerRenderer.render(currentTimestamp);
         playerJoinLeaveEventContainerRenderer.render(currentTimestamp);

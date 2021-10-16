@@ -26,7 +26,7 @@ public class ReplayThreads {
 	}
 
 	public static void stopAllThreads() {
-		threads.keySet().forEach(ReplayThreads::stopThread);
+		threads.keySet().forEach(uuid -> threads.remove(uuid).stopReplay());
 	}
 
 }
