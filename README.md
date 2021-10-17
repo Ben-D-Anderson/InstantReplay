@@ -1,4 +1,8 @@
+<div align="center">
+
 # InstantReplay
+
+<br>
 
 _What is it?_
 
@@ -10,6 +14,8 @@ _Why use it?_
 This plugin is ideal for Minecraft servers running game-modes such as Factions and HCF, as players often break rules
 which would need recorded proof of the player violating the rule in order to punish them. Gone are the days of recording
 your screen to catch rule-breakers, server administrators can now re-watch the rule violation occurring in-game.
+
+</div>
 
 <br>
 
@@ -27,11 +33,12 @@ your screen to catch rule-breakers, server administrators can now re-watch the r
     - [Replay timestamps](#replay-timestamps)
     - [Parsing a date-time](#parsing-timestamps-with-a-date-time)
     - [Parsing with timezones](#parsing-timestamps-with-timezones)
-  - [Reloading configuration files](#reloading-configuration-files)
-  - [Clearing logs](#clearing-logs)
+    - [Reloading configuration files](#reloading-configuration-files)
+    - [Clearing logs](#clearing-logs)
 - [Configuration](#configuration)
 - [Development](#development)
-  <br>
+
+<br>
 
 ## Encountering Issues
 
@@ -94,8 +101,7 @@ start the replay from. The `<time>` argument supports four formats:
 - `{NUMBER}s` - number of seconds ago
 - `{NUMBER}m` - number of minutes ago
 - `{NUMBER}h` - number of hours ago
-- `{NUMBER}t` - a timestamp where `{NUMBER}` is either the seconds or milliseconds
-  since [Unix Epoch](https://www.unixtimestamp.com/). See also [replay timestamps](#replay-timestamps).
+- `{NUMBER}t` - a timestamp where `{NUMBER}` is either the seconds or milliseconds since [Unix Epoch](https://www.unixtimestamp.com/). See also [replay timestamps](#replay-timestamps).
 
 A speed argument may also be optionally passed to the command with the format `/replay start <radius> <time> [speed]`
 where `[speed]` is an integer (whole number). The default speed is `1` (meaning 1x speed). For example, if `2` was
