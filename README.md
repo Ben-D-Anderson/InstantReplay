@@ -13,7 +13,7 @@ _Why use it?_
 
 This plugin is ideal for Minecraft servers running game-modes such as Factions and HCF, as players often break rules
 which would need recorded proof of the player violating the rule in order to punish them. Gone are the days of recording
-your screen to catch rule-breakers, server administrators can now re-watch the rule violation occurring in-game.
+your screen to catch rule-breakers, server admins can now re-watch the rule violation occurring in-game.
 
 </div>
 
