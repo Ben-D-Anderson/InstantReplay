@@ -22,7 +22,7 @@ review events by re-watching them.
 
 ## Encountering Issues
 
-If at any point you encounter issues with InstantReplay (whether that be installing, using or developing the plugin)
+If, at any point, you encounter issues with InstantReplay (whether that be installing, using or developing the plugin)
 open
 a [support request](https://github.com/Ben-D-Anderson/InstantReplay/issues/new?assignees=Ben-D-Anderson&labels=support&template=support-request.md&title=)
 under the [issues tab](https://github.com/Ben-D-Anderson/InstantReplay/issues) and I'll be happy to help. You should
