@@ -1,25 +1,37 @@
-
 # InstantReplay
 
-InstantReplay is a Minecraft plugin for Spigot versions 1.8 to 1.17 (inclusive) which allows Minecraft server admins to
-review events by re-watching them.
+_What is it?_
+
+InstantReplay is a Minecraft plugin for Spigot versions 1.8 to 1.17 (inclusive) which allows Minecraft server
+administrators to review events by re-watching them.
+
+_Why use it?_
+
+This plugin is ideal for Minecraft servers running game-modes such as Factions and HCF, as players often break rules
+which would need recorded proof of the player violating the rule in order to punish them. Gone are the days of recording
+your screen to catch rule-breakers, server administrators can now re-watch the rule violation occurring in-game.
+
+<br>
+
+## Contents
 
 - [Encountering Issues](#encountering-issues)
 - [Installation](#installation)
 - [Usage](#usage)
-  - [Permissions](#permissions)
-  - [View commands](#view-commands)
-  - [Starting a replay](#starting-a-replay)
-  - [Changing replay speed](#changing-replay-speed)
-  - [Pausing a replay](#pausing-a-replay)
-  - [Resuming a replay](#resuming-a-replay)
-  - [Replay timestamps](#replay-timestamps)
+    - [Permissions](#permissions)
+    - [View commands](#view-commands)
+    - [Starting a replay](#starting-a-replay)
+    - [Changing replay speed](#changing-replay-speed)
+    - [Pausing a replay](#pausing-a-replay)
+    - [Resuming a replay](#resuming-a-replay)
+    - [Replay timestamps](#replay-timestamps)
     - [Parsing a date-time](#parsing-timestamps-with-a-date-time)
     - [Parsing with timezones](#parsing-timestamps-with-timezones)
   - [Reloading configuration files](#reloading-configuration-files)
   - [Clearing logs](#clearing-logs)
 - [Configuration](#configuration)
 - [Development](#development)
+  <br>
 
 ## Encountering Issues
 
@@ -29,10 +41,12 @@ a [support request](https://github.com/Ben-D-Anderson/InstantReplay/issues/new?a
 under the [issues tab](https://github.com/Ben-D-Anderson/InstantReplay/issues) and I'll be happy to help. You should
 receive a response within 24 hours of opening the support request.
 
+<br>
+
 ## Installation
 
-1. Ensure you have made a MySQL database for the plugin to use - **the same database should not be used across multiple
-   servers with InstantReplay.**
+1. Ensure you have MySQL database for the plugin to use - **the same database should not be used across multiple servers
+   with InstantReplay.**
 2. Download the [latest version](https://github.com/dmulloy2/ProtocolLib/releases/latest)
    of [ProtocolLib](https://github.com/dmulloy2/ProtocolLib) and move it into the `plugins` folder of your Minecraft
    server.
@@ -56,7 +70,10 @@ receive a response within 24 hours of opening the support request.
 7. Save the changes to the configuration file and restart the Minecraft server. The plugin should now be installed and
    functional.
 
+<br>
+
 ## Usage
+
 ### Permissions
 
 Any player attempting to use the plugin should have the required permissions given by your permission manager of choice.
@@ -154,9 +171,13 @@ Once the logs have been deleted, the data in them **cannot be recovered**. It is
 of the MySQL database used by InstantReplay if you wish to recover event data, in the case that the event logs are
 cleared. Therefore, it is advised that very few individuals are given the required permissions to clear the event logs.
 
+<br>
+
 ## Configuration
 
 ...
+
+<br>
 
 ## Development
 
