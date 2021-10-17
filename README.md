@@ -31,32 +31,30 @@ receive a response within 24 hours of opening the support request.
 
 ## Installation
 
-Download the [latest version](https://github.com/dmulloy2/ProtocolLib/releases/latest)
-of [ProtocolLib](https://github.com/dmulloy2/ProtocolLib) and move it into the `plugins` folder of your Minecraft
-server.
+1. Ensure you have made a MySQL database for the plugin to use - **the same database should not be used across multiple
+   servers with InstantReplay.**
+2. Download the [latest version](https://github.com/dmulloy2/ProtocolLib/releases/latest)
+   of [ProtocolLib](https://github.com/dmulloy2/ProtocolLib) and move it into the `plugins` folder of your Minecraft
+   server.
+3. Download the [latest version](https://github.com/Ben-D-Anderson/InstantReplay/releases/latest) of InstantReplay from
+   the [releases tab](https://github.com/Ben-D-Anderson/InstantReplay/releases) and move it into the `plugins` folder of
+   your Minecraft server.
+4. Start your Minecraft server, and you should see a configuration file generated at `plugins/InstantReplay/config.yml`.
+5. Edit the `mysql` section of the configuration file to contain the details of your MySQL database - this is required
+   for InstantReplay to function.
 
-Download the [latest version](https://github.com/Ben-D-Anderson/InstantReplay/releases/latest) of InstantReplay from
-the [releases tab](https://github.com/Ben-D-Anderson/InstantReplay/releases) and move it into the `plugins` folder of
-your Minecraft server.
+   For Example:
+      ```yaml
+      mysql:
+        username: "admin"
+        password: "adminpassword"
+        host: "127.0.0.1"
+        database: "instantreplay"
+        port: 3306
+      ```
 
-Start your Minecraft server, and you should see a configuration file generated at `plugins/InstantReplay/config.yml`.
-
-Edit the `mysql` section of the configuration file to contain the details of your MySQL database - this is required for
-InstantReplay to function. **The same database should not be used across multiple servers with InstantReplay.**
-
-For Example:
-
-```yaml  
-mysql:  
- username: "admin"
- password: "adminpassword"
- host: "127.0.0.1"
- database: "instantreplay"
- port: 3306  
-```  
-
-Save the changes to the configuration file and restart the Minecraft server. The plugin should now be installed and
-functional.
+7. Save the changes to the configuration file and restart the Minecraft server. The plugin should now be installed and
+   functional.
 
 ## Usage
 ### Permissions
