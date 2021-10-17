@@ -12,11 +12,13 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.DateTimeException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.TimeZone;
 
 public class ReplayCommand implements CommandExecutor {
 
@@ -55,12 +57,23 @@ public class ReplayCommand implements CommandExecutor {
 		if (args[0].equalsIgnoreCase("timestamp")) {
 			long timestamp;
 			if (args.length > 1) {
-				timestamp = convertToTimestamp(args[1]);
-				if (timestamp < 1) {
+				Optional<LocalDateTime> localDateTimeOptional = convertToTimestamp(args[1]);
+				if (!localDateTimeOptional.isPresent()) {
 					sender.sendMessage(Utils.getReplayPrefix() + Config.readColouredString("no-convert-timestamp")
 							.replace("{FORMAT}", Objects.requireNonNull(Config.getConfig().getString("timestamp-converter-format"))));
 					return true;
 				}
+				TimeZone timeZone = TimeZone.getDefault();
+				if (args.length > 2) {
+					String timeZoneStr = args[2];
+					try {
+						timeZone = TimeZone.getTimeZone(timeZoneStr);
+					} catch (DateTimeException e) {
+						sender.sendMessage(Utils.getReplayPrefix() + Config.readColouredString("invalid-timezone"));
+						return true;
+					}
+				}
+				timestamp = localDateTimeOptional.get().atZone(timeZone.toZoneId()).toEpochSecond();
 				Utils.sendTimestampMessage(sender, timestamp);
 			} else {
 				if (sender instanceof Player) {
@@ -231,14 +244,13 @@ public class ReplayCommand implements CommandExecutor {
 		}
 	}
 
-	private long convertToTimestamp(String argument) {
-		SimpleDateFormat sdf = new SimpleDateFormat(Objects.requireNonNull(Config.getConfig().getString("timestamp-converter-format")));
+	private Optional<LocalDateTime> convertToTimestamp(String argument) {
+		String pattern = Objects.requireNonNull(Config.getConfig().getString("timestamp-converter-format"));
 		try {
-			Date parsedDate = sdf.parse(argument);
-			long timestamp = parsedDate.getTime();
-			return timestamp / 1000;
-		} catch (ParseException ignored) {
-			return -1;
+			LocalDateTime localDateTime = LocalDateTime.parse(argument, DateTimeFormatter.ofPattern(pattern));
+			return Optional.of(localDateTime);
+		} catch (Exception ignored) {
+			return Optional.empty();
 		}
 	}
 
