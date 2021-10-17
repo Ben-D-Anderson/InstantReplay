@@ -1,6 +1,7 @@
+
 # InstantReplay
 
-InstantRelay is a Minecraft plugin for Spigot versions 1.8 to 1.17 (inclusive) which allows Minecraft server admins to
+InstantReplay is a Minecraft plugin for Spigot versions 1.8 to 1.17 (inclusive) which allows Minecraft server admins to
 review events by re-watching them.
 
 - [Encountering Issues](#encountering-issues)
@@ -13,8 +14,8 @@ review events by re-watching them.
   - [Pausing a replay](#pausing-a-replay)
   - [Resuming a replay](#resuming-a-replay)
   - [Replay timestamps](#replay-timestamps)
-    - [Parsing a date-time](#parsing-a-date-time)
-    - [Parsing with timezones](#parsing-with-timezones)
+    - [Parsing a date-time](#parsing-timestamps-with-a-date-time)
+    - [Parsing with timezones](#parsing-timestamps-with-timezones)
   - [Reloading configuration files](#reloading-configuration-files)
   - [Clearing logs](#clearing-logs)
 - [Configuration](#configuration)
@@ -45,14 +46,14 @@ InstantReplay to function. **The same database should not be used across multipl
 
 For Example:
 
-```yaml
-mysql:
-  username: "admin"
-  password: "adminpassword"
-  host: "127.0.0.1"
-  database: "instantreplay"
-  port: 3306
-```
+```yaml  
+mysql:  
+ username: "admin"
+ password: "adminpassword"
+ host: "127.0.0.1"
+ database: "instantreplay"
+ port: 3306  
+```  
 
 Save the changes to the configuration file and restart the Minecraft server. The plugin should now be installed and
 functional.
@@ -70,6 +71,7 @@ If a player has the base replay permission, they will be able to view their allo
 help message is also configurable in config as `invalid-argument`.
 
 ### Starting a replay
+
 If a player has the base replay permission, they can start a replay with the command `/replay start <radius> <time>`
 where `<radius>` is the block radius around them where the events unfolded and `<time>` is how long ago they wish to
 start the replay from. The `<time>` argument supports four formats:
@@ -116,7 +118,7 @@ Command use cases:
 - If the player is currently viewing a replay, it will return the current timestamp in the replay.
 - If the player is not viewing a replay, then it will return the current timestamp - not the timestamp in a replay.
 
-#### Parsing a date-time
+#### Parsing timestamps with a date-time
 
 A player can also parse a specified date-time into a timestamp by adding the formatted date-time as an additional
 argument to the command. This makes the command `/replay timestamp [datetime]` where `[datetime]` is the date and time
@@ -124,10 +126,10 @@ to parse into a timestamp in the format specified in the configuration file as `
 
 The default value of `timestamp-converter-format` in the configuration file is `yyyy/MM/dd-HH:mm:ss`. The date is in the
 format [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) (`year-month-day`) and the time is in a
-conventional `hour:minute:second` format where date and time are seperated by a hyphen. An example of using the default
+conventional `hour:minute:second` format, date and time are seperated by a hyphen. An example of using the default
 format would be `/replay timestamp 2021/10/23-18:54:00`.
 
-#### Parsing with timezones
+#### Parsing timestamps with timezones
 
 A player can also provide a timezone when specifying a date-time to parse. This is ideal when a player in a different
 timezone reports an event to the server admin and the admin must view the replay using the provided time and knowledge
