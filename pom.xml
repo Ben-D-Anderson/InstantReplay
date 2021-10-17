@@ -12,6 +12,14 @@
     <url>https://github.com/Ben-D-Anderson/InstantReplay</url>
     <description>InstantReplay for Minecraft server administrators.</description>
 
+    <developers>
+        <developer>
+            <name>Ben Anderson</name>
+            <email>benanderson@duck.com</email>
+            <url>https://github.com/Ben-D-Anderson</url>
+        </developer>
+    </developers>
+
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
