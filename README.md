@@ -41,7 +41,7 @@ your Minecraft server.
 Start your Minecraft server, and you should see a configuration file generated at `plugins/InstantReplay/config.yml`.
 
 Edit the `mysql` section of the configuration file to contain the details of your MySQL database - this is required for
-InstantReplay to function. **Warning: the same database should not be used across multiple servers with InstantReplay.**
+InstantReplay to function. **The same database should not be used across multiple servers with InstantReplay.**
 
 For Example:
 
