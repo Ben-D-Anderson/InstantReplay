@@ -33,7 +33,7 @@ invalid-argument:
   - "&c/replay stop &7- stop the running replay."
   - "&c/replay pause &7- pause the running replay."
   - "&c/replay resume &7- resume the paused replay."
-  - "&c/replay timestamp [date] [timezone]&7- get the current timestamp or parse a date."
+  - "&c/replay timestamp [datetime] [timezone]&7- get the current timestamp or parse a date."
   - "{&c/replay reload &7- reload the plugin's config.}[replay-reload-permission]"
   - "{&c/replay clearlogs &7- clear the replay logs.}[replay-clearlogs-permission]"
   - "&c/replay help &7- show this text."
