@@ -36,6 +36,9 @@ your screen to catch rule-breakers, server admins can now re-watch the rule viol
     - [Reloading configuration files](#reloading-configuration-files)
     - [Clearing logs](#clearing-logs)
 - [Configuration](#configuration)
+    - [MySQL](#mysql)
+    - [Settings](#settings)
+    - [Messages](#messages)
 - [Development](#development)
 
 <br>
@@ -101,7 +104,8 @@ start the replay from. The `<time>` argument supports four formats:
 - `{NUMBER}s` - number of seconds ago
 - `{NUMBER}m` - number of minutes ago
 - `{NUMBER}h` - number of hours ago
-- `{NUMBER}t` - a timestamp where `{NUMBER}` is either the seconds or milliseconds since [Unix Epoch](https://www.unixtimestamp.com/). See also [replay timestamps](#replay-timestamps).
+- `{NUMBER}t` - a timestamp where `{NUMBER}` is either the seconds or milliseconds since
+  [Unix Epoch](https://www.unixtimestamp.com/). See also [replay timestamps](#replay-timestamps).
 
 A speed argument may also be optionally passed to the command with the format `/replay start <radius> <time> [speed]`
 where `[speed]` is an integer (whole number). The default speed is `1` (meaning 1x speed). For example, if `2` was
@@ -167,6 +171,9 @@ If a player has the configuration reload permission (usually defined in the conf
 at `settings.replay-reload-permission`), they can reload the configuration file used by the plugin. This simply means
 the plugin refreshes the values it uses from the configuration file for things such as messages and most settings.
 
+It is only recommended using the `/replay reload` command to reload messages in the configuration file. For settings,
+most of them won't be affected by reloading the configuration file - instead the server should be restarted.
+
 ### Clearing logs
 
 If a player has the permission to clear event logs (usually defined in the configuration file
@@ -180,6 +187,87 @@ cleared. Therefore, it is advised that very few individuals are given the requir
 <br>
 
 ## Configuration
+
+### MySQL
+
+As mentioned in the [installation instructions](#installation), you must configure the MySQL database to be used by
+InstantReplay in the `mysql` section of the configuration file. However, this database **should not** be used for
+different InstantReplay instances across multiple servers - support for this may be added in the future, but currently
+it will cause unexpected behavior.
+
+An example mysql configuration is shown below:
+
+```yaml
+mysql:
+  username: "admin"
+  password: "adminpassword"
+  host: "127.0.0.1"
+  database: "instantreplay"
+  port: 3306
+```
+
+If you wish to run InstantReplay on multiple Minecraft servers and use the same MySQL server then consider creating a
+different database on the MySQL server for each InstantReplay instance. For example one InstantReplay instance could use
+database `instantreplay_1` and another InstantReplay instance could use database `instantreplay_2`.
+
+### Settings
+
+- [use-plugin-prefix](#use-plugin-prefix-boolean)
+- [seconds-per-timestamp-output](#seconds-per-timestamp-output-integer)
+- [ignore-y-radius](#ignore-y-radius-boolean)
+- [seconds-per-player-move-log](#seconds-per-player-move-log-double)
+- [seconds-per-player-inventory-log](#seconds-per-player-inventory-log-double)
+
+#### use-plugin-prefix (boolean)
+
+Determines whether every time a message is sent to a user (from InstantReplay), it should be prefixed with the value
+stored as `plugin-prefix` in the configuration file.
+
+#### seconds-per-timestamp-output (integer)
+
+Whilst a user is viewing/watching a replay, every _x_ number of seconds they are sent the current timestamp of the
+replay in the chat so that they can start a replay from that exact timestamp later if they wish. This configuration
+value determines how often (in seconds) the timestamp is sent to the user whilst viewing/watching a replay.
+
+#### ignore-y-radius (boolean)
+
+When starting a replay, the events to be replayed will be determined by the radius provided in the `/replay start`
+command. If `ignore-y-radius` is `true`, then as long as the events are within the radius on the x-axis and z-axis, the
+events will be counted as part of the replay. However, if `ignore-y-radius` is `false`, the events will also have to be
+within the radius on the y-axis in order to be counted as part of the replay.
+
+For example, let's take the following situation: a player runs the command `/replay start 3 10s` (where `3` is the
+radius of the replay and `10s` means for events in the last 10 seconds) after placing a block 20 y-values above his
+location 5 seconds ago.
+
+- If `ignore-y-radius` is `false`, then the block placement event will not be included in the replay as the block was
+  not placed within the required `3` block radius.
+- If `ignore-y-radius` is `true`, then the block placement event will be included in the replay as the location of the
+  block on the y-axis is irrelevant.
+
+#### seconds-per-player-move-log (double)
+
+Determines how often the current locations of all the players on the server are saved. Please note that there are some
+optimisations built into the saving of player locations, such as the plugin won't continuously save a player's location
+if they haven't moved since last movement log.
+
+During a replay, you will see a player moving much more than just teleporting around every-so-often. This is because,
+when starting a replay, the plugin runs player movement predictions with the movement events that meet the replay
+criteria to try to predict the movements in-between two player movement events.
+
+The recommended value for this setting is `1` however this can be reduced slightly depending on the player-count of the
+server. It's best to experiment and find a value that works best for you, however a value of `1` will be adequate for
+most use-cases.
+
+#### seconds-per-player-inventory-log (double)
+
+Determines how often the inventory contents (includes armour) and health of all the players on the server are saved.
+
+The recommended value for this setting is `1` however this can be reduced slightly depending on the player-count of the
+server. It's best to experiment and find a value that works best for you, however a value of `1` will be adequate for
+most use-cases.
+
+### Messages
 
 ...
 
