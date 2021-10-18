@@ -6,4 +6,7 @@
   database entries with that id).
 - Spectator mode whilst watching replays - not get stopped by ghost blocks
 - Consider using Hibernate for database access
-    - Consider java.sql.Timestamp for event times
+  - Consider java.sql.Timestamp for event times
+- Automatic database backups (toggle-able, disabled by default)
+- Toggle different parts of the logging and replay (i.e. player movement, blocks, damage)
+- Consider splitting location elements of tables in order to compare radius in query.
