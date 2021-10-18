@@ -4,3 +4,4 @@
 - Joining other people's replay as a viewer (using a 4 digit hexadecimal code).
 - Support using same database for multiple InstantReplay instances (saving an id for each server locally and storing all
   database entries with that id).
+- Spectator mode whilst watching replays - not get stopped by ghost blocks
