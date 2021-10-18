@@ -360,13 +360,15 @@ public class MySQL {
 	}
 
 	public void cleanTables() {
+		//3600000 is milliseconds in an hour
+		long millisecondsUntilDeletion = 3600000L * Config.getConfig().getLong("settings.hours-until-logs-deleted");
+		if (millisecondsUntilDeletion <= 0) return;
 		try {
 			for (String table : tables) {
 				String tableName = table.split(" ")[0];
 				PreparedStatement statement = MySQL.getInstance().getConnection().prepareStatement
 						("DELETE FROM " + tableName + " WHERE time<=?");
-				//3600000 is milliseconds in an hour
-				statement.setLong(1, Calendar.getInstance().getTimeInMillis() - (3600000L * Config.getConfig().getLong("settings.hours-until-logs-deleted")));
+				statement.setLong(1, Calendar.getInstance().getTimeInMillis() - millisecondsUntilDeletion);
 				statement.execute();
 			}
 		} catch (SQLException e) {
