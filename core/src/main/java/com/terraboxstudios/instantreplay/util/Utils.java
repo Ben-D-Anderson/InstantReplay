@@ -68,7 +68,8 @@ public class Utils {
 		if (locationOne.getWorld() == null || locationTwo.getWorld() == null) return false;
 		return (locationOne.getBlockX() >= locationTwo.getBlockX() - radius && locationOne.getBlockX() <= locationTwo.getBlockX() + radius)
 				&& (locationOne.getBlockZ() >= locationTwo.getBlockZ() - radius && locationOne.getBlockZ() <= locationTwo.getBlockZ() + radius)
-				&& locationOne.getWorld().getName().equals(locationTwo.getWorld().getName());
+				&& locationOne.getWorld().getName().equals(locationTwo.getWorld().getName())
+				&& (Config.getConfig().getBoolean("settings.ignore-y-radius") || (locationOne.getBlockY() >= locationTwo.getBlockY() - radius && locationOne.getBlockY() <= locationTwo.getBlockY() + radius));
 	}
 
 	public static long roundTime(long time) {
