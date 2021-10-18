@@ -217,6 +217,11 @@ database `instantreplay_1` and another InstantReplay instance could use database
 - [ignore-y-radius](#ignore-y-radius-boolean)
 - [seconds-per-player-move-log](#seconds-per-player-move-log-double)
 - [seconds-per-player-inventory-log](#seconds-per-player-inventory-log-double)
+- [hours-until-logs-deleted](#hours-until-logs-deleted-integer)
+- [event-render-buffer](#event-render-buffer-integer)
+- [replay-permission](#replay-permission-string)
+- [replay-reload-permission](#replay-reload-permission-string)
+- [replay-clearlogs-permission](#replay-clearlogs-permission-string)
 
 #### use-plugin-prefix (boolean)
 
@@ -255,7 +260,7 @@ During a replay, you will see a player moving much more than just teleporting ar
 when starting a replay, the plugin runs player movement predictions with the movement events that meet the replay
 criteria to try to predict the movements in-between two player movement events.
 
-The recommended value for this setting is `1` however this can be reduced slightly depending on the player-count of the
+The recommended value for this setting is `1`, however this can be reduced slightly depending on the player count of the
 server. It's best to experiment and find a value that works best for you, however a value of `1` will be adequate for
 most use-cases.
 
@@ -263,9 +268,59 @@ most use-cases.
 
 Determines how often the inventory contents (includes armour) and health of all the players on the server are saved.
 
-The recommended value for this setting is `1` however this can be reduced slightly depending on the player-count of the
+The recommended value for this setting is `1`, however this can be reduced slightly depending on the player count of the
 server. It's best to experiment and find a value that works best for you, however a value of `1` will be adequate for
 most use-cases.
+
+#### hours-until-logs-deleted (integer)
+
+Determines how often all the event logs stored in the database are deleted. This setting is in hours and once an event
+becomes more than _x_ hours old (where _x_ is `hours-until-logs-deleted`), the event will be permanently deleted from
+the database.
+
+This setting is especially useful for servers with a large player count as they may generate lots of events in a short
+period of time. These servers may find it slightly more efficient and storage-conscious to regularly clear the logs
+every few days - that's what this setting will do.
+
+The default value for this setting is `72`, however you may wish to decrease this value depending on the player count of
+the server. Furthermore, your requirements and preferences for how long ago you wish to be able to replay from should
+also impact this decision. It is recommended to use the lowest value you can that still suits your use-case.
+
+If you wish to stop the automatic deletion of event logs, change this setting to a negative value such as `-1`.
+
+#### event-render-buffer (integer)
+
+Determines the number of events that are held in an internal buffer during the rendering of a replay - this works much
+like how watching a video online will download some video content ahead of your current point in preparation to render
+it.
+
+Deciding on a buffer size:
+
+- If you are expecting to have many administrators viewing replays at the same time, then it is recommended either
+  keeping the buffer setting at its default value or decreasing it.
+- If you are expecting to have many events occurring at the same place in the replay at the same time, then a larger
+  buffer may be ideal to ensure you always have events ready to render.
+- If you use a buffer that is too small, you may experience momentary (~0.1 second) pauses whilst viewing a replay with
+  many events, leading to a less smooth replay experience.
+- If you use a buffer that is too large, you may experience increased memory usage by the plugin (more than necessary)
+  as many events will be held in the internal buffer (in memory).
+
+The default value for this setting is `100`, however you may wish to change this value depending on your use-case.
+Regardless of the buffer size you choose, it is strongly recommended that you keep the setting between the values
+of `50`
+and `500`.
+
+#### replay-permission (string)
+
+...
+
+#### replay-reload-permission (string)
+
+...
+
+#### replay-clearlogs-permission (string)
+
+...
 
 ### Messages
 
