@@ -59,7 +59,7 @@ public class ReplayCommand implements CommandExecutor {
                 Optional<LocalDateTime> localDateTimeOptional = convertToTimestamp(args[1]);
                 if (!localDateTimeOptional.isPresent()) {
                     sender.sendMessage(Utils.getReplayPrefix() + Config.readColouredString("no-convert-timestamp")
-                            .replace("{FORMAT}", Objects.requireNonNull(Config.getConfig().getString("timestamp-converter-format"))));
+                            .replace("{FORMAT}", Objects.requireNonNull(Config.getConfig().getString("settings.timestamp-converter-format"))));
                     return true;
                 }
                 TimeZone timeZone = TimeZone.getDefault();
@@ -244,7 +244,7 @@ public class ReplayCommand implements CommandExecutor {
     }
 
     private Optional<LocalDateTime> convertToTimestamp(String argument) {
-        String pattern = Objects.requireNonNull(Config.getConfig().getString("timestamp-converter-format"));
+        String pattern = Objects.requireNonNull(Config.getConfig().getString("settings.timestamp-converter-format"));
         try {
             LocalDateTime localDateTime = LocalDateTime.parse(argument, DateTimeFormatter.ofPattern(pattern));
             return Optional.of(localDateTime);

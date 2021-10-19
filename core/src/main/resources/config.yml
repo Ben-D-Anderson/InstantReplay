@@ -13,6 +13,7 @@ settings:
   seconds-per-player-inventory-log: 1 #RECOMMENDED IS 1
   hours-until-logs-deleted: 72 #RECOMMENDED IS 72 OR LESS, SET TO -1 TO DISABLE
   event-render-buffer: 100 #RECOMMENDED IS BETWEEN 50 AND 500
+  timestamp-converter-format: "yyyy-MM-dd/HH:mm:ss"
   replay-permission: "replay.replay"
   replay-reload-permission: "replay.reload"
   replay-clearlogs-permission: "replay.clearlogs"
@@ -54,7 +55,6 @@ player-death: "{PLAYER} was killed by {SOURCE}"
 player-join: "{PLAYER} Connected"
 player-leave: "{PLAYER} Disconnected"
 timestamp-output: "&eTimestamp: &7{TIMESTAMP} &e(Click To Copy)"
-timestamp-converter-format: "yyyy/MM/dd-HH:mm:ss"
 invalid-timezone: "&cCouldn't parse timezone, ideally follow the format '{area}/{city}' - e.g. 'Europe/Paris'. Most abbreviations are also supported."
 no-convert-timestamp: "&cCouldn't convert argument to a timestamp. Please use the format: '{FORMAT}'"
 invalid-format-speed: "&cFormat: /replay speed <speed>"

@@ -147,12 +147,12 @@ Command use cases:
 
 A player can also parse a specified date-time into a timestamp by adding the formatted date-time as an additional
 argument to the command. This makes the command `/replay timestamp [datetime]` where `[datetime]` is the date and time
-to parse into a timestamp in the format specified in the configuration file as `timestamp-converter-format`.
+to parse into a timestamp in the format specified in the configuration file as the `timestamp-converter-format`
+setting.
 
-The default value of `timestamp-converter-format` in the configuration file is `yyyy/MM/dd-HH:mm:ss`. The date is in the
-format [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) (`year-month-day`) and the time is in a
-conventional `hour:minute:second` format, date and time are seperated by a hyphen. An example of using the default
-format would be `/replay timestamp 2021/10/23-18:54:00`.
+The default value of the `timestamp-converter-format` setting in the configuration file is `yyyy-MM-dd/HH:mm:ss`. The
+date and time are in the format [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) (`year-month-day`), and seperated by
+a forward-slash. An example of using the default format would be `/replay timestamp 2021/10/23-18:54:00`.
 
 #### Parsing timestamps with timezones
 
@@ -219,6 +219,7 @@ database `instantreplay_1` and another InstantReplay instance could use database
 - [seconds-per-player-inventory-log](#seconds-per-player-inventory-log-double)
 - [hours-until-logs-deleted](#hours-until-logs-deleted-integer)
 - [event-render-buffer](#event-render-buffer-integer)
+- [timestamp-converter-format](#timestamp-converter-format-string)
 - [replay-permission](#replay-permission-string)
 - [replay-reload-permission](#replay-reload-permission-string)
 - [replay-clearlogs-permission](#replay-clearlogs-permission-string)
@@ -310,6 +311,16 @@ Regardless of the buffer size you choose, it is strongly recommended that you ke
 of `50`
 and `500`.
 
+#### timestamp-converter-format (string)
+
+Determines the required format of a date-time when parsing it using the `/replay timestamp [datetime]`. It is only
+recommended changing this value if you have knowledge of date-time parsing, furthermore, the default value for this
+setting should be adequate for most use-cases.
+
+Acceptable characters for a date-time format can be
+found [here](https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html#patterns). The format set
+should be able to resolve to a date and a time - just a date is not enough.
+
 #### replay-permission (string)
 
 This setting is the base permission to use the `/replay` command and all it's sub-commands; other than `/replay reload`
@@ -334,7 +345,15 @@ your current permission plugin.
 
 ### Messages
 
-...
+#### plugin-prefix
+
+Prepended to the start of every message that InstantReplay sends to a user (only when the `use-plugin-prefix` setting
+is `true`). If the `use-plugin-prefix` setting is `false`, this value will be ignored.
+
+#### no-permission
+
+Message sent to a user who tries to execute a command belonging to InstantReplay when they don't have permission to do
+so.
 
 <br>
 
