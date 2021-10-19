@@ -10,3 +10,4 @@
 - Automatic database backups (toggle-able, disabled by default)
 - Toggle different parts of the logging and replay (i.e. player movement, blocks, damage)
 - Consider splitting location elements of tables in order to compare radius in query.
+- Support just time parsing for same day timestamp
