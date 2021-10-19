@@ -17,7 +17,7 @@ settings:
   replay-reload-permission: "replay.reload"
   replay-clearlogs-permission: "replay.clearlogs"
 
-plugin-prefix: "&6&l[&3&lReplay&6&l] &r&7"
+plugin-prefix: "&6&l[&3&lInstantReplay&6&l] &r&7"
 no-permission: "&cInsufficient Permissions."
 no-events-found: "&cNo block, player, death or damage events found meeting radius and time."
 no-active-replay: "&cYou are not currently running a replay."
