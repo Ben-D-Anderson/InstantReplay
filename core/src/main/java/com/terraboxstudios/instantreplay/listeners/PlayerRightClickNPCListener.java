@@ -1,4 +1,4 @@
-package com.terraboxstudios.instantreplay.events.loggers;
+package com.terraboxstudios.instantreplay.listeners;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
@@ -10,6 +10,7 @@ import com.comphenix.protocol.events.PacketEvent;
 import com.terraboxstudios.instantreplay.InstantReplay;
 import com.terraboxstudios.instantreplay.replay.ReplayInstance;
 import com.terraboxstudios.instantreplay.replay.ReplayThreads;
+import com.terraboxstudios.instantreplay.util.Utils;
 import com.terraboxstudios.instantreplay.versionspecific.npc.NPC;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -18,14 +19,11 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 public class PlayerRightClickNPCListener implements Listener {
 
-	private final List<UUID> inNPCInventory = new ArrayList<>();
+	private final List<UUID> inNPCInventory = Collections.synchronizedList(new ArrayList<>());
 
 	@EventHandler
 	public void onInvClick(InventoryClickEvent e) {
@@ -52,7 +50,7 @@ public class PlayerRightClickNPCListener implements Listener {
 	private void registerListener(ProtocolManager protocolManager) {
 		protocolManager.addPacketListener(new PacketAdapter(InstantReplay.getPlugin(InstantReplay.class), ListenerPriority.NORMAL, PacketType.Play.Client.USE_ENTITY) {
 			public void onPacketReceiving(PacketEvent e) {
-				if (e.getPacketType() != PacketType.Play.Client.USE_ENTITY || ReplayThreads.isUserReplaying(e.getPlayer().getUniqueId()))
+				if (e.getPacketType() != PacketType.Play.Client.USE_ENTITY || !ReplayThreads.isUserReplaying(e.getPlayer().getUniqueId()))
 					return;
 
 				PacketContainer packet = e.getPacket();
@@ -65,7 +63,9 @@ public class PlayerRightClickNPCListener implements Listener {
 				if (!clickedNPCOptional.isPresent()) return;
 				NPC clickedNPC = clickedNPCOptional.get();
 
-				player.openInventory(replayInstance.getContext().getNpcInventoryMap().get(clickedNPC.getUniqueId()));
+				Utils.runOnMainThread(() -> {
+					player.openInventory(replayInstance.getContext().getNpcInventoryMap().get(clickedNPC.getUniqueId()));
+				});
 				if (!inNPCInventory.contains(player.getUniqueId())) inNPCInventory.add(player.getUniqueId());
 			}
 		});
