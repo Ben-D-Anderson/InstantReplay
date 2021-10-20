@@ -9,9 +9,11 @@ import com.terraboxstudios.instantreplay.services.EventLoggingService;
 import com.terraboxstudios.instantreplay.services.MySQLCleanupService;
 import com.terraboxstudios.instantreplay.util.Config;
 import com.terraboxstudios.instantreplay.util.ConsoleLogger;
+import com.terraboxstudios.instantreplay.util.PluginVersionChecker;
 import com.terraboxstudios.instantreplay.versionspecific.VersionSpecificProvider;
 import lombok.Getter;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -47,8 +49,9 @@ public class InstantReplay extends JavaPlugin {
 		registerEvents();
 		registerCommands();
 		ConsoleLogger.getInstance().log(Level.INFO, "Successfully Enabled InstantReplay.");
+		checkPluginVersion();
 	}
-	
+
 	@Override
 	public void onDisable() {
 		ReplayThreads.stopAllThreads();
@@ -74,6 +77,15 @@ public class InstantReplay extends JavaPlugin {
 
 	private void registerEvent(Listener l) {
 		Bukkit.getPluginManager().registerEvents(l, this);
+	}
+
+	private void checkPluginVersion() {
+		PluginVersionChecker pluginVersionChecker = new PluginVersionChecker(getDescription().getVersion(), getDescription().getWebsite());
+		if (pluginVersionChecker.shouldUpdate()) {
+			ConsoleLogger.getInstance().log(Level.WARNING,
+					ChatColor.RED + "A new version of InstantReplay is available, please download the latest release from "
+							+ ChatColor.YELLOW + pluginVersionChecker.getLatestReleaseUrl());
+		}
 	}
 
 }
