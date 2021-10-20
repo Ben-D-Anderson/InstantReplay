@@ -1,4 +1,4 @@
-package com.terraboxstudios.instantreplay.events.loggers;
+package com.terraboxstudios.instantreplay.listeners;
 
 import com.terraboxstudios.instantreplay.replay.ReplayThreads;
 import org.bukkit.entity.Player;
