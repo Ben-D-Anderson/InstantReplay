@@ -11,6 +11,7 @@
     </parent>
 
     <artifactId>instantreplay-craftbukkit_1_9_R1</artifactId>
+    <version>${project.parent.version}</version>
     <packaging>jar</packaging>
 
     <properties>
