@@ -44,7 +44,10 @@ public class InstantReplay extends JavaPlugin {
 			return;
 		}
 		Config.loadConfig();
-		MySQL.getInstance();
+		if (!MySQL.getInstance().couldConnect()) {
+			Bukkit.getPluginManager().disablePlugin(this);
+			return;
+		}
 		MySQLCleanupService.start();
 		registerEvents();
 		registerCommands();

@@ -1,6 +1,5 @@
 package com.terraboxstudios.instantreplay.mysql;
 
-import com.terraboxstudios.instantreplay.InstantReplay;
 import com.terraboxstudios.instantreplay.events.EventContainer;
 import com.terraboxstudios.instantreplay.events.containers.*;
 import com.terraboxstudios.instantreplay.events.renderers.PlayerChangeBlockEventContainerRenderer;
@@ -14,6 +13,7 @@ import com.terraboxstudios.instantreplay.util.Utils;
 import com.terraboxstudios.instantreplay.versionspecific.blocks.BlockChange;
 import lombok.Getter;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -30,6 +30,7 @@ public class MySQL {
 	private Connection connection;
 	@Getter
 	private final int eventRenderBuffer;
+	private final boolean couldConnect;
 	private static MySQL instance;
 
 	public static MySQL getInstance() {
@@ -51,9 +52,15 @@ public class MySQL {
 					port + "/" + database, username, password);
 			initTables();
 		} catch (ClassNotFoundException | SQLException exception) {
-			ConsoleLogger.getInstance().log(Level.SEVERE, "Failed to connect to MySQL database!");
-			Bukkit.getPluginManager().disablePlugin(InstantReplay.getPlugin(InstantReplay.class));
+			ConsoleLogger.getInstance().log(Level.SEVERE, ChatColor.RED + "Failed to connect to MySQL database!");
+			couldConnect = false;
+			return;
 		}
+		couldConnect = true;
+	}
+
+	public boolean couldConnect() {
+		return couldConnect;
 	}
 
 	private final String[] tables = {
@@ -147,7 +154,7 @@ public class MySQL {
 			statement.setString(4, deathDamageEventObj.getType());
 			statement.setString(5, deathDamageEventObj.getSource());
 			statement.setLong(6, deathDamageEventObj.getTime());
-			
+
 			statement.execute();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -382,5 +389,4 @@ public class MySQL {
 		} catch (SQLException ignored) {
 		}
 	}
-
 }
