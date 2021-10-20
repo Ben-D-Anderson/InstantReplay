@@ -46,7 +46,7 @@ public class InventoryFactory {
             inventory.setItem(i - 18, item);
         }
         for (int i = 36; i < 40; i++) {
-            ItemStack item = customInventory.getContents()[i - 36];
+            ItemStack item = customInventory.getArmourContents()[i - 36];
             if (item == null)
                 item = new ItemStack(Material.AIR, 1);
             inventory.setItem(i, item);
