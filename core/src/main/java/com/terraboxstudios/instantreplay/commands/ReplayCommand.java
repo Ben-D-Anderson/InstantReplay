@@ -12,7 +12,10 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Objects;
@@ -56,12 +59,6 @@ public class ReplayCommand implements CommandExecutor {
         if (args[0].equalsIgnoreCase("timestamp")) {
             long timestamp;
             if (args.length > 1) {
-                Optional<LocalDateTime> localDateTimeOptional = convertToTimestamp(args[1]);
-                if (!localDateTimeOptional.isPresent()) {
-                    sender.sendMessage(Utils.getReplayPrefix() + Config.readColouredString("no-convert-timestamp")
-                            .replace("{FORMAT}", Objects.requireNonNull(Config.getConfig().getString("settings.timestamp-converter-format"))));
-                    return true;
-                }
                 TimeZone timeZone = TimeZone.getDefault();
                 if (args.length > 2) {
                     String timeZoneStr = args[2];
@@ -69,6 +66,16 @@ public class ReplayCommand implements CommandExecutor {
                         timeZone = TimeZone.getTimeZone(timeZoneStr);
                     } catch (Exception e) {
                         sender.sendMessage(Utils.getReplayPrefix() + Config.readColouredString("invalid-timezone"));
+                        return true;
+                    }
+                }
+                Optional<LocalDateTime> localDateTimeOptional = convertDateTimeToTimestamp(args[1]);
+                if (!localDateTimeOptional.isPresent()) {
+                    localDateTimeOptional = convertTimeToTimestamp(args[1], timeZone.toZoneId());
+                    if (!localDateTimeOptional.isPresent()) {
+                        sender.sendMessage(Utils.getReplayPrefix() + Config.readColouredString("no-convert-timestamp")
+                                .replace("{FORMAT_DATETIME}", Objects.requireNonNull(Config.getConfig().getString("settings.timestamp-converter-format-datetime")))
+                                .replace("{FORMAT_TIME}", Objects.requireNonNull(Config.getConfig().getString("settings.timestamp-converter-format-time"))));
                         return true;
                     }
                 }
@@ -243,10 +250,20 @@ public class ReplayCommand implements CommandExecutor {
         }
     }
 
-    private Optional<LocalDateTime> convertToTimestamp(String argument) {
-        String pattern = Objects.requireNonNull(Config.getConfig().getString("settings.timestamp-converter-format"));
+    private Optional<LocalDateTime> convertDateTimeToTimestamp(String argument) {
+        String pattern = Objects.requireNonNull(Config.getConfig().getString("settings.timestamp-converter-format-datetime"));
         try {
             LocalDateTime localDateTime = LocalDateTime.parse(argument, DateTimeFormatter.ofPattern(pattern));
+            return Optional.of(localDateTime);
+        } catch (Exception ignored) {
+            return Optional.empty();
+        }
+    }
+
+    private Optional<LocalDateTime> convertTimeToTimestamp(String argument, ZoneId zoneId) {
+        String pattern = Objects.requireNonNull(Config.getConfig().getString("settings.timestamp-converter-format-time"));
+        try {
+            LocalDateTime localDateTime = LocalDateTime.of(LocalDate.now(zoneId), LocalTime.parse(argument, DateTimeFormatter.ofPattern(pattern)));
             return Optional.of(localDateTime);
         } catch (Exception ignored) {
             return Optional.empty();

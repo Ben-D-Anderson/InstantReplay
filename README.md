@@ -32,6 +32,7 @@ your screen to catch rule-breakers, server admins can now re-watch the rule viol
     - [Resuming a replay](#resuming-a-replay)
     - [Replay timestamps](#replay-timestamps)
         - [Parsing a date-time](#parsing-timestamps-with-a-date-time)
+        - [Parsing a time](#parsing-timestamps-with-a-time)
         - [Parsing with timezones](#parsing-timestamps-with-timezones)
     - [Reloading configuration files](#reloading-configuration-files)
     - [Clearing logs](#clearing-logs)
@@ -147,23 +148,41 @@ Command use cases:
 
 A player can also parse a specified date-time into a timestamp by adding the formatted date-time as an additional
 argument to the command. This makes the command `/replay timestamp [datetime]` where `[datetime]` is the date and time
-to parse into a timestamp in the format specified in the configuration file as the `timestamp-converter-format`
+to parse into a timestamp in the format specified in the configuration file as the `timestamp-converter-format-datetime`
 setting.
 
-The default value of the `timestamp-converter-format` setting in the configuration file is `yyyy-MM-dd/HH:mm:ss`. The
-date and time are in the format [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) (`year-month-day`), and seperated by
-a forward-slash. An example of using the default format would be `/replay timestamp 2021/10/23-18:54:00`.
+The default value of the `timestamp-converter-format-datetime` setting in the configuration file
+is `yyyy-MM-dd/HH:mm:ss`. The date and time are in the [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) extended
+date-time format, with date and time being seperated by a forward-slash. An example of using the default format would be
+`/replay timestamp 2021/10/23-18:54:00` - this represents the 23rd of October 2021, at the time 18:54 (54 minutes past
+6pm).
+
+#### Parsing timestamps with a time
+
+A player can also parse a specified time into a timestamp by adding the formatted time as an additional argument to the
+command. This makes the command `/replay timestamp [time]` where `[time]` is the time to parse into a timestamp in the
+format specified in the configuration file as the `timestamp-converter-format-time`
+setting.
+
+This works exactly the same way as [parsing with a datetime](#parsing-timestamps-with-a-date-time), however this parsing
+method just assumes that the day it is parsing is the current day.
+
+The default value of the `timestamp-converter-format-time` setting in the configuration file is `HH:mm:ss`. The time is
+in the [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) extended time format. An example of using the default format
+would be `/replay timestamp 18:54:00` - this represents the current day, at the time 18:54 (54 minutes past 6pm).
 
 #### Parsing timestamps with timezones
 
-A player can also provide a timezone when specifying a date-time to parse. This is ideal when a player in a different
-timezone reports an event to the server admin and the admin must view the replay using the provided time and knowledge
-of the timezone.
+A player can also provide a timezone when specifying a date-time or time to parse. This is ideal when a player in a
+different timezone reports an event to the server admin and the admin must view the replay using the provided time and
+knowledge of the timezone.
 
-This makes the command `/replay timestamp [datetime] [timezone]` where `[timezone]` is ideally in the
+This makes the command `/replay timestamp [datetime/time] [timezone]` where `[timezone]` is ideally in the
 format `{area}/{city}`, for example `Europe/Paris` or `America/Los_Angeles`. However, timezone abbreviations are also
 supported (but not encouraged), for example `EST` and `PST`. Furthermore, timezone offsets can also be used, for
 example (`GMT-8` or `GMT-08:00`) and (`GMT+2` or `GMT+02:00`).
+
+It is also worth noting that the timezone is used to retrieve the current date if only a time was specified.
 
 ### Reloading configuration files
 
@@ -219,7 +238,8 @@ database `instantreplay_1` and another InstantReplay instance could use database
 - [seconds-per-player-inventory-log](#seconds-per-player-inventory-log-double)
 - [hours-until-logs-deleted](#hours-until-logs-deleted-integer)
 - [event-render-buffer](#event-render-buffer-integer)
-- [timestamp-converter-format](#timestamp-converter-format-string)
+- [timestamp-converter-format-datetime](#timestamp-converter-format-datetime-string)
+- [timestamp-converter-format-time](#timestamp-converter-format-time-string)
 - [replay-permission](#replay-permission-string)
 - [replay-reload-permission](#replay-reload-permission-string)
 - [replay-clearlogs-permission](#replay-clearlogs-permission-string)
@@ -311,15 +331,29 @@ Regardless of the buffer size you choose, it is strongly recommended that you ke
 of `50`
 and `500`.
 
-#### timestamp-converter-format (string)
+#### timestamp-converter-format-datetime (string)
 
-Determines the required format of a date-time when parsing it using the `/replay timestamp [datetime]`. It is only
+Determines the required format of a date-time when parsing it using `/replay timestamp [datetime]`. It is only
 recommended changing this value if you have knowledge of date-time parsing, furthermore, the default value for this
 setting should be adequate for most use-cases.
 
 Acceptable characters for a date-time format can be
 found [here](https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html#patterns). The format set
 should be able to resolve to a date and a time - just a date is not enough.
+
+It is worth noting that, due to the parsing of the command, spaces cannot be used in the format setting.
+
+#### timestamp-converter-format-time (string)
+
+Determines the required format of a time when parsing it using `/replay timestamp [time]`. It is only recommended
+changing this value if you have knowledge of time parsing, furthermore, the default value for this setting should be
+adequate for most use-cases.
+
+Acceptable characters for a time format can be
+found [here](https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html#patterns). The format set
+should be able to resolve to a time - the current date will be used for the resolved date.
+
+It is worth noting that, due to the parsing of the command, spaces cannot be used in the format setting.
 
 #### replay-permission (string)
 
