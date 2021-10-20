@@ -1,5 +1,5 @@
 name: InstantReplay
-version: 2.0.0
+version: ${revision}
 author: Ben-D-Anderson
 description: InstantReplay for Minecraft server administrators.
 website: https://github.com/Ben-D-Anderson/InstantReplay

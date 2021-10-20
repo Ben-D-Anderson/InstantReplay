@@ -11,6 +11,7 @@
     </parent>
 
     <artifactId>instantreplay-core</artifactId>
+    <version>${project.parent.version}</version>
     <packaging>jar</packaging>
 
     <properties>
@@ -24,6 +25,7 @@
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
+                <filtering>true</filtering>
                 <includes>
                     <include>*</include>
                 </includes>
