@@ -8,6 +8,7 @@ import lombok.Setter;
 import org.bukkit.Location;
 import org.bukkit.inventory.Inventory;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -32,9 +33,9 @@ public class ReplayContext {
         this.radius = builder.radius;
         this.location = builder.location;
         this.speed = builder.speed;
-        this.npcMap = new HashMap<>();
-        this.npcInventoryMap = new HashMap<>();
-        this.npcCustomInventoryMap = new HashMap<>();
+        this.npcMap = Collections.synchronizedMap(new HashMap<>());
+        this.npcInventoryMap = Collections.synchronizedMap(new HashMap<>());
+        this.npcCustomInventoryMap = Collections.synchronizedMap(new HashMap<>());
     }
 
     @RequiredArgsConstructor
