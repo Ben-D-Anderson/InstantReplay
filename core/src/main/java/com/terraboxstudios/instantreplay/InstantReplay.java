@@ -2,6 +2,8 @@ package com.terraboxstudios.instantreplay;
 
 import com.terraboxstudios.instantreplay.commands.ReplayCommand;
 import com.terraboxstudios.instantreplay.events.loggers.*;
+import com.terraboxstudios.instantreplay.listeners.PlayerInteractListener;
+import com.terraboxstudios.instantreplay.listeners.PlayerRightClickNPCListener;
 import com.terraboxstudios.instantreplay.mysql.MySQL;
 import com.terraboxstudios.instantreplay.replay.ReplayThreads;
 import com.terraboxstudios.instantreplay.services.EventContainerProviderService;
@@ -69,12 +71,12 @@ public class InstantReplay extends JavaPlugin {
 	}
 
 	private void registerEvents() {
-		new PlayerMoveLoggingService();
-		new PlayerInventoryLoggingService();
+		new PlayerMoveLogger();
+		new PlayerInventoryLogger();
 		registerEvent(new PlayerInteractListener());
-		registerEvent(new PlayerJoinLeaveListener());
-		registerEvent(new PlayerDeathDamageListener());
-		registerEvent(new PlayerChangeBlockListener());
+		registerEvent(new PlayerJoinLeaveLogger());
+		registerEvent(new PlayerDeathDamageLogger());
+		registerEvent(new PlayerChangeBlockLogger());
 		registerEvent(new PlayerRightClickNPCListener());
 	}
 

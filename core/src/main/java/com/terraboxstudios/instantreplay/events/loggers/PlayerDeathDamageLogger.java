@@ -13,7 +13,7 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import java.util.Calendar;
 
-public class PlayerDeathDamageListener implements Listener {
+public class PlayerDeathDamageLogger implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void damageByEntityEvent(EntityDamageByEntityEvent e) {

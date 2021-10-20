@@ -15,11 +15,11 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import java.util.Calendar;
 import java.util.UUID;
 
-public class PlayerChangeBlockListener implements Listener {
+public class PlayerChangeBlockLogger implements Listener {
 
     private final BlockChangeFactory blockChangeFactory;
 
-    public PlayerChangeBlockListener() {
+    public PlayerChangeBlockLogger() {
         blockChangeFactory = InstantReplay.getVersionSpecificProvider().getBlockChangeFactory();
     }
 
