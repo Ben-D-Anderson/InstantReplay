@@ -24,22 +24,7 @@ your screen to catch rule-breakers, server admins can now re-watch the rule viol
 - [Encountering Issues](#encountering-issues)
 - [Installation](#installation)
 - [Usage](#usage)
-    - [Permissions](#permissions)
-    - [View commands](#view-commands)
-    - [Starting a replay](#starting-a-replay)
-    - [Changing replay speed](#changing-replay-speed)
-    - [Pausing a replay](#pausing-a-replay)
-    - [Resuming a replay](#resuming-a-replay)
-    - [Replay timestamps](#replay-timestamps)
-        - [Parsing a date-time](#parsing-timestamps-with-a-date-time)
-        - [Parsing a time](#parsing-timestamps-with-a-time)
-        - [Parsing with timezones](#parsing-timestamps-with-timezones)
-    - [Reloading configuration files](#reloading-configuration-files)
-    - [Clearing logs](#clearing-logs)
 - [Configuration](#configuration)
-    - [MySQL](#mysql)
-    - [Settings](#settings)
-    - [Messages](#messages)
 - [Development](#development)
 
 <br>
@@ -85,11 +70,32 @@ receive a response within 24 hours of opening the support request.
 
 ## Usage
 
+- [Permissions](#permissions)
+- [View commands](#view-commands)
+- [Starting a replay](#starting-a-replay)
+- [Changing replay speed](#changing-replay-speed)
+- [Pausing a replay](#pausing-a-replay)
+- [Resuming a replay](#resuming-a-replay)
+- [Replay timestamps](#replay-timestamps)
+    - [Parsing a date-time](#parsing-timestamps-with-a-date-time)
+    - [Parsing a time](#parsing-timestamps-with-a-time)
+    - [Parsing with timezones](#parsing-timestamps-with-timezones)
+- [Reloading configuration files](#reloading-configuration-files)
+- [Clearing logs](#clearing-logs)
+
+<br>
+
 ### Permissions
 
 Any player attempting to use the plugin should have the required permissions given by your permission manager of choice.
 The permissions can be found in the configuration file under `settings` with the base permission being set
 at `settings.replay-permission`.
+
+See more information on permissions below:
+
+- [Base permission](#replay-permission-string)
+- [Clearlogs permission](#replay-clearlogs-permission-string)
+- [Reload permission](#replay-reload-permission-string)
 
 ### View commands
 
@@ -206,6 +212,12 @@ cleared. Therefore, it is advised that very few individuals are given the requir
 <br>
 
 ## Configuration
+
+- [MySQL](#mysql)
+- [Settings](#settings)
+- [Messages](#messages)
+
+<br>
 
 ### MySQL
 
@@ -378,6 +390,9 @@ The default value for this setting is `replay.clearlogs`, changing the value is 
 your current permission plugin.
 
 ### Messages
+
+- [plugin-prefix](#plugin-prefix)
+- [no-permission](#no-permission)
 
 #### plugin-prefix
 
