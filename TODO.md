@@ -14,3 +14,4 @@
 - Visualise item drops
 - Add more replay events
 - Implement datetime/time parsing directly into time parameter of `/replay start`
+- Add warning when there are no events for a while, suggest seeking forward
