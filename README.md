@@ -243,6 +243,8 @@ database `instantreplay_1` and another InstantReplay instance could use database
 
 ### Settings
 
+Before changing the settings, please keep in mind that the default values will be perfectly suitable for most use-cases.
+
 - [use-plugin-prefix](#use-plugin-prefix-boolean)
 - [seconds-per-timestamp-output](#seconds-per-timestamp-output-integer)
 - [ignore-y-radius](#ignore-y-radius-boolean)
