@@ -15,9 +15,9 @@ settings:
   event-render-buffer: 100 #RECOMMENDED IS BETWEEN 50 AND 500
   timestamp-converter-format-datetime: "yyyy-MM-dd/HH:mm:ss"
   timestamp-converter-format-time: "HH:mm:ss"
-  replay-permission: "replay.replay"
-  replay-reload-permission: "replay.reload"
-  replay-clearlogs-permission: "replay.clearlogs"
+  replay-permission: "instantreplay.replay"
+  replay-reload-permission: "instantreplay.reload"
+  replay-clearlogs-permission: "instantreplay.clearlogs"
 
 plugin-prefix: "&6&l[&3&lInstantReplay&6&l] &r&7"
 no-permission: "&cInsufficient Permissions."

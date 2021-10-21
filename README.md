@@ -374,22 +374,22 @@ It is worth noting that, due to the parsing of the command, spaces cannot be use
 This setting is the base permission to use the `/replay` command and all it's sub-commands; other than `/replay reload`
 and `/replay clearlogs` who have their own permissions.
 
-The default value for this setting is `replay.replay`, changing the value is up to preference or to make it work with
-your current permission plugin.
+The default value for this setting is `instantreplay.replay`, changing the value is up to preference or to make it work
+with your current permission plugin.
 
 #### replay-reload-permission (string)
 
 This setting is the permission for the `/replay reload` command.
 
-The default value for this setting is `replay.reload`, changing the value is up to preference or to make it work with
-your current permission plugin.
+The default value for this setting is `instantreplay.reload`, changing the value is up to preference or to make it work
+with your current permission plugin.
 
 #### replay-clearlogs-permission (string)
 
 This setting is the permission for the `/replay clearlogs` command.
 
-The default value for this setting is `replay.clearlogs`, changing the value is up to preference or to make it work with
-your current permission plugin.
+The default value for this setting is `instantreplay.clearlogs`, changing the value is up to preference or to make it
+work with your current permission plugin.
 
 ### Messages
 
