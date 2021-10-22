@@ -7,7 +7,10 @@ import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.time.*;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
+import java.util.Optional;
 
 public class Utils {
 
@@ -37,6 +40,25 @@ public class Utils {
 
 	public static String preciseLocationToString(Location loc) {
 		return Objects.requireNonNull(loc.getWorld()).getName() + ":" + Utils.roundTwoDP(loc.getX()) + ":" + Utils.roundTwoDP(loc.getY()) + ":" + Utils.roundTwoDP(loc.getZ()) + ":" + Utils.roundTwoDP(loc.getYaw()) + ":" + Utils.roundTwoDP(loc.getPitch());
+	}
+
+	public static Optional<ZonedDateTime> convertToTimestamp(String argument, ZoneId zoneId) {
+		String datetimePattern = Objects.requireNonNull(Config.getConfig().getString("settings.timestamp-converter-format-datetime"));
+		try {
+			ZonedDateTime zonedDateTime = LocalDateTime.parse(argument, DateTimeFormatter.ofPattern(datetimePattern)).atZone(zoneId);
+			return Optional.of(zonedDateTime);
+		} catch (Exception ignored) {
+		}
+
+		String timePattern = Objects.requireNonNull(Config.getConfig().getString("settings.timestamp-converter-format-time"));
+		try {
+			LocalTime localTime = LocalTime.parse(argument, DateTimeFormatter.ofPattern(timePattern));
+			ZonedDateTime zonedDateTime = localTime.atDate(LocalDate.now(zoneId)).atZone(zoneId);
+			return Optional.of(zonedDateTime);
+		} catch (Exception ignored) {
+		}
+
+		return Optional.empty();
 	}
 
 	public static String getReplayPrefix() {
