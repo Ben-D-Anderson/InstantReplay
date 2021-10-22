@@ -1,6 +1,6 @@
 package com.terraboxstudios.instantreplay;
 
-import com.terraboxstudios.instantreplay.commands.ReplayCommand;
+import com.terraboxstudios.instantreplay.command.ReplayCommand;
 import com.terraboxstudios.instantreplay.events.loggers.*;
 import com.terraboxstudios.instantreplay.listeners.PlayerInteractListener;
 import com.terraboxstudios.instantreplay.listeners.PlayerRightClickNPCListener;
