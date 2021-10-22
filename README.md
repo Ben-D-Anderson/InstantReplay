@@ -31,7 +31,7 @@ _Coming Soon..._
 
 <br>
 
-## Example commands
+## Example Commands
 
 Starting a replay with a 5 block radius, from 10 seconds ago:
 
@@ -102,5 +102,5 @@ Getting the current timestamp:
 
 ## The Wiki
 
-Please read [the wiki](https://github.com/Ben-D-Anderson/InstantReplay/wiki) for guides on usage, configuration and
-development.
+Please read [the wiki](https://github.com/Ben-D-Anderson/InstantReplay/wiki) for detailed guides on usage, configuration
+and development.
