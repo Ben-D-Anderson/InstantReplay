@@ -57,6 +57,12 @@ Resuming a replay:
 /replay resume
 ```
 
+Changing speed of a replay to 2x:
+
+```
+/replay speed 2
+```
+
 Stopping a replay:
 
 ```
