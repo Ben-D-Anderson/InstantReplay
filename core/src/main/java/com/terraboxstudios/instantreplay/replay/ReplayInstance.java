@@ -35,6 +35,7 @@ public class ReplayInstance extends Thread {
                 .replace("{RADIUS}", getContext().getRadius() + ""));
         getRendererManager().undoRenderAllBlockChanges();
         start();
+        ReplayThreads.addToThreads(getContext().getViewer(), this);
     }
 
     public void stopReplay() {
