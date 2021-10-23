@@ -199,12 +199,15 @@ public class MySQL {
 
 		try {
 			PreparedStatement statement = getConnection().prepareStatement
-					("SELECT * FROM block_events WHERE time>=? AND time<=? ORDER BY time ASC LIMIT " + eventRenderBuffer);
+					("SELECT * FROM block_events WHERE time>=? AND time<=? ORDER BY time ASC");
 			statement.setLong(1, context.getStartTimestamp());
 			statement.setLong(2, context.getTimeOfCommand());
 
 			ResultSet results = statement.executeQuery();
 			while (results.next()) {
+				if (blockEvents.size() >= eventRenderBuffer)
+					break;
+
 				String locString = results.getString("location");
 				Location eventLocation = Utils.stringToLocation(locString);
 
@@ -237,12 +240,15 @@ public class MySQL {
 		int radius = context.getRadius() + 4;
 		try {
 			PreparedStatement statement = getConnection().prepareStatement
-					("SELECT * FROM player_move_events WHERE time>=? AND time<=? ORDER BY time ASC LIMIT " + eventRenderBuffer);
+					("SELECT * FROM player_move_events WHERE time>=? AND time<=? ORDER BY time ASC");
 			statement.setLong(1, context.getStartTimestamp());
 			statement.setLong(2, context.getTimeOfCommand());
 
 			ResultSet results = statement.executeQuery();
 			while (results.next()) {
+				if (playerMoveEvents.size() >= eventRenderBuffer)
+					break;
+
 				String locString = results.getString("location");
 				Location eventLocation = Utils.stringToPreciseLocation(locString);
 
@@ -263,12 +269,15 @@ public class MySQL {
 
 		try {
 			PreparedStatement statement = getConnection().prepareStatement
-					("SELECT * FROM death_damage_events WHERE time>=? AND time<=? ORDER BY time ASC LIMIT " + eventRenderBuffer);
+					("SELECT * FROM death_damage_events WHERE time>=? AND time<=? ORDER BY time ASC");
 			statement.setLong(1, context.getStartTimestamp());
 			statement.setLong(2, context.getTimeOfCommand());
 
 			ResultSet results = statement.executeQuery();
 			while (results.next()) {
+				if (deathDamageEvents.size() >= eventRenderBuffer)
+					break;
+
 				String locString = results.getString("location");
 				Location eventLocation = Utils.stringToLocation(locString);
 
@@ -290,12 +299,15 @@ public class MySQL {
 
 		try {
 			PreparedStatement statement = getConnection().prepareStatement
-					("SELECT * FROM join_leave_events WHERE time>=? AND time<=? ORDER BY time ASC LIMIT " + eventRenderBuffer);
+					("SELECT * FROM join_leave_events WHERE time>=? AND time<=? ORDER BY time ASC");
 			statement.setLong(1, context.getStartTimestamp());
 			statement.setLong(2, context.getTimeOfCommand());
 
 			ResultSet results = statement.executeQuery();
 			while (results.next()) {
+				if (joinLeaveEvents.size() >= eventRenderBuffer)
+					break;
+
 				String locString = results.getString("location");
 				Location eventLocation = Utils.stringToLocation(locString);
 
@@ -317,12 +329,15 @@ public class MySQL {
 
 		try {
 			PreparedStatement statement = getConnection().prepareStatement
-					("SELECT * FROM player_inventory_events WHERE time>=? AND time<=? ORDER BY time ASC LIMIT " + eventRenderBuffer);
+					("SELECT * FROM player_inventory_events WHERE time>=? AND time<=? ORDER BY time ASC");
 			statement.setLong(1, context.getStartTimestamp());
 			statement.setLong(2, context.getTimeOfCommand());
 
 			ResultSet results = statement.executeQuery();
 			while (results.next()) {
+				if (playerInventoryEvents.size() >= eventRenderBuffer)
+					break;
+
 				String locString = results.getString("location");
 				Location eventLocation = Utils.stringToLocation(locString);
 
