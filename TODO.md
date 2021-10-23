@@ -10,6 +10,5 @@
 - Automatic database backups (toggle-able, disabled by default)
 - Toggle different parts of the logging and replay (i.e. player movement, blocks, damage)
 - Consider splitting location elements of tables in order to compare radius in query.
-- Refactor command system to make each command a class
 - Visualise item drops (Add more replay events)
 - Add warning when there are no events for a while, suggest seeking forward
