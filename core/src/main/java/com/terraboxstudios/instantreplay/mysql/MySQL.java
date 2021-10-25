@@ -399,9 +399,11 @@ public class MySQL {
 	}
 
 	public void closeConnection() {
-		try {
-			getConnection().close();
-		} catch (SQLException ignored) {
+		if (getConnection() != null) {
+			try {
+				getConnection().close();
+			} catch (SQLException ignored) {
+			}
 		}
 	}
 }
