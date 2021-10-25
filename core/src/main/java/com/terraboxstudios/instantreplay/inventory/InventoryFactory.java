@@ -52,13 +52,13 @@ public class InventoryFactory {
             inventory.setItem(i, item);
         }
 
-        int health = customInventory.getHealth() / 2;
+        double health = customInventory.getHealth() / 2D;
         ItemStack healthItem = InstantReplay.getVersionSpecificProvider().getItemFactory().getHealthItemGUI();
         ItemMeta healthItemMeta = healthItem.getItemMeta();
         if (healthItemMeta != null) {
             healthItemMeta.setDisplayName(ChatColor.GREEN + "Health");
             List<String> lore = new LinkedList<>();
-            lore.add(ChatColor.YELLOW + "" + health + ChatColor.RED + "❤");
+            lore.add(ChatColor.YELLOW + "" + health + ChatColor.RED + " ❤");
             healthItemMeta.setLore(lore);
             healthItem.setItemMeta(healthItemMeta);
         }

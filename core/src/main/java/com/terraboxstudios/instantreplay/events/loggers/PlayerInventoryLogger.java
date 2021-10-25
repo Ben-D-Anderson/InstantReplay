@@ -25,7 +25,7 @@ public class PlayerInventoryLogger {
                 if (player.isDead()) continue;
 
                 ItemStack[] handsArr = InstantReplay.getVersionSpecificProvider().getItemFactory().getHands(player.getInventory());
-                String[] inv = InventorySerializer.playerInventoryToBase64(player.getInventory(), handsArr);
+                String[] inv = InventorySerializer.playerInventoryToBase64(player.getInventory(), handsArr, (int) player.getHealth());
 
                 String[] cachedInventory = invCache.get(player.getUniqueId());
                 if (cachedInventory != null && Arrays.equals(invCache.get(player.getUniqueId()), inv)) {
