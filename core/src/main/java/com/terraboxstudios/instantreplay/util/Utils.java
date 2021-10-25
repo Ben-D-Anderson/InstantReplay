@@ -29,8 +29,8 @@ public class Utils {
 		loc.setX(Utils.roundTwoDP(Double.parseDouble(strArr[1])));
 		loc.setY(Utils.roundTwoDP(Double.parseDouble(strArr[2])));
 		loc.setZ(Utils.roundTwoDP(Double.parseDouble(strArr[3])));
-		loc.setYaw(Utils.roundTwoDP(Float.parseFloat(strArr[4])));
-		loc.setPitch(Utils.roundTwoDP(Float.parseFloat(strArr[5])));
+		loc.setYaw((float) Utils.roundTwoDP(Float.parseFloat(strArr[4])));
+		loc.setPitch((float) Utils.roundTwoDP(Float.parseFloat(strArr[5])));
 		return loc;
 	}
 
@@ -98,8 +98,8 @@ public class Utils {
 		return Math.round(time * (double) 100) / 100L;
 	}
 
-	public static long roundTwoDP(double value) {
-		return Math.round(value * (double) 100) / 100L;
+	public static double roundTwoDP(double value) {
+		return Math.round(value * (double) 100) / 100D;
 	}
 
 }
