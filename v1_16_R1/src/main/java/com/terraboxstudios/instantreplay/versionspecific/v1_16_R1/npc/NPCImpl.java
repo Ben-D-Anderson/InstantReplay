@@ -15,13 +15,12 @@ import org.bukkit.craftbukkit.v1_16_R1.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class NPCImpl extends NPC {
 
     private final EntityPlayer entityPlayer;
+    private final Map<Integer, ItemStack> equipmentCache;
 
     public NPCImpl(UUID viewer, UUID uniqueId, String name, NPCSkin<?> skin, World world) {
         super(viewer, uniqueId, name, skin, world);
@@ -34,6 +33,7 @@ public class NPCImpl extends NPC {
         entityPlayer = new EntityPlayer(nmsServer, nmsWorld, gameProfile, new PlayerInteractManager(nmsWorld));
         entityPlayer.setCustomName(new ChatMessage(name));
         entityPlayer.setCustomNameVisible(true);
+        equipmentCache = new HashMap<>();
     }
 
     @Override
@@ -77,6 +77,9 @@ public class NPCImpl extends NPC {
 
     @Override
     public void setEquipmentSlot(int i, ItemStack item) {
+        if (equipmentCache.containsKey(i)
+                && equipmentCache.get(i) != null
+                && equipmentCache.get(i).isSimilar(item)) return;
         Player viewer = Bukkit.getPlayer(getViewer());
         if (viewer == null) return;
         net.minecraft.server.v1_16_R1.ItemStack nmsItemStack = CraftItemStack.asNMSCopy(item);
@@ -84,6 +87,7 @@ public class NPCImpl extends NPC {
         List<Pair<EnumItemSlot, net.minecraft.server.v1_16_R1.ItemStack>> pairList = new ArrayList<>();
         pairList.add(new Pair<>(getItemSlotFromInt(i), nmsItemStack));
         connection.sendPacket(new PacketPlayOutEntityEquipment(entityPlayer.getId(), pairList));
+        equipmentCache.put(i, item);
     }
 
     private EnumItemSlot getItemSlotFromInt(int i) {
