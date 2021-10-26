@@ -47,15 +47,17 @@ public class ReplayInstance extends Thread {
                 Config.getDataConfig().set("pre-replay." + player.getUniqueId() + ".gamemode", player.getGameMode().toString());
                 Config.getDataConfig().set("pre-replay." + player.getUniqueId() + ".flying", player.isFlying() && player.getAllowFlight());
                 Config.saveDataConfig();
+                player.setGameMode(GameMode.SPECTATOR);
             });
-            player.setGameMode(GameMode.SPECTATOR);
         } else {
-            String gameModeStr = Config.getDataConfig().getString("pre-replay." + player.getUniqueId() + ".gamemode");
-            if (gameModeStr == null) gameModeStr = "SURVIVAL";
-            boolean flying = Config.getDataConfig().getBoolean("pre-replay." + player.getUniqueId() + ".flying");
-            player.setGameMode(GameMode.valueOf(gameModeStr));
-            player.setAllowFlight(flying);
-            player.setFlying(flying);
+            Utils.runOnMainThread(() -> {
+                String gameModeStr = Config.getDataConfig().getString("pre-replay." + player.getUniqueId() + ".gamemode");
+                if (gameModeStr == null) gameModeStr = "SURVIVAL";
+                boolean flying = Config.getDataConfig().getBoolean("pre-replay." + player.getUniqueId() + ".flying");
+                player.setGameMode(GameMode.valueOf(gameModeStr));
+                player.setAllowFlight(flying);
+                player.setFlying(flying);
+            });
         }
     }
 
