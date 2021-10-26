@@ -78,7 +78,7 @@ public class NPCImpl extends NPC {
         if (viewer == null) return;
         net.minecraft.server.v1_8_R3.ItemStack nmsItemStack = CraftItemStack.asNMSCopy(item);
         PlayerConnection connection = ((CraftPlayer) viewer).getHandle().playerConnection;
-        connection.sendPacket(new PacketPlayOutEntityEquipment(entityPlayer.getId(), 0, nmsItemStack));
+        connection.sendPacket(new PacketPlayOutEntityEquipment(entityPlayer.getId(), i, nmsItemStack));
     }
 
     @Override

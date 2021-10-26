@@ -14,11 +14,14 @@ import org.bukkit.craftbukkit.v1_8_R1.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 public class NPCImpl extends NPC {
 
     private final EntityPlayer entityPlayer;
+    private final Map<Integer, ItemStack> equipmentCache;
 
     public NPCImpl(UUID viewer, UUID uniqueId, String name, NPCSkin<?> skin, World world) {
         super(viewer, uniqueId, name, skin, world);
@@ -31,6 +34,7 @@ public class NPCImpl extends NPC {
         entityPlayer = new EntityPlayer(nmsServer, nmsWorld, gameProfile, new PlayerInteractManager(nmsWorld));
         entityPlayer.setCustomName(name);
         entityPlayer.setCustomNameVisible(true);
+        equipmentCache = new HashMap<>();
     }
 
     @Override
@@ -74,11 +78,13 @@ public class NPCImpl extends NPC {
 
     @Override
     public void setEquipmentSlot(int i, ItemStack item) {
+        if (equipmentCache.get(i).isSimilar(item)) return;
         Player viewer = Bukkit.getPlayer(getViewer());
         if (viewer == null) return;
         net.minecraft.server.v1_8_R1.ItemStack nmsItemStack = CraftItemStack.asNMSCopy(item);
         PlayerConnection connection = ((CraftPlayer) viewer).getHandle().playerConnection;
-        connection.sendPacket(new PacketPlayOutEntityEquipment(entityPlayer.getId(), 0, nmsItemStack));
+        connection.sendPacket(new PacketPlayOutEntityEquipment(entityPlayer.getId(), i, nmsItemStack));
+        equipmentCache.put(i, item);
     }
 
     @Override
