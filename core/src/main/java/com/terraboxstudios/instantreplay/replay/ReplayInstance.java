@@ -6,6 +6,7 @@ import com.terraboxstudios.instantreplay.util.Utils;
 import com.terraboxstudios.instantreplay.versionspecific.npc.NPC;
 import lombok.Getter;
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 
 import java.util.concurrent.TimeUnit;
@@ -36,6 +37,26 @@ public class ReplayInstance extends Thread {
         getRendererManager().undoRenderAllBlockChanges();
         start();
         ReplayThreads.addToThreads(getContext().getViewer(), this);
+        updateGameMode(player, true);
+    }
+
+    private void updateGameMode(Player player, boolean enableSpectator) {
+        if (!Config.getConfig().getBoolean("settings.spectator-gamemode")) return;
+        if (enableSpectator) {
+            Utils.runOnMainThread(() -> {
+                Config.getDataConfig().set("pre-replay." + player.getUniqueId() + ".gamemode", player.getGameMode().toString());
+                Config.getDataConfig().set("pre-replay." + player.getUniqueId() + ".flying", player.isFlying() && player.getAllowFlight());
+                Config.saveDataConfig();
+            });
+            player.setGameMode(GameMode.SPECTATOR);
+        } else {
+            String gameModeStr = Config.getDataConfig().getString("pre-replay." + player.getUniqueId() + ".gamemode");
+            if (gameModeStr == null) gameModeStr = "SURVIVAL";
+            boolean flying = Config.getDataConfig().getBoolean("pre-replay." + player.getUniqueId() + ".flying");
+            player.setGameMode(GameMode.valueOf(gameModeStr));
+            player.setAllowFlight(flying);
+            player.setFlying(flying);
+        }
     }
 
     public void stopReplay() {
@@ -43,6 +64,7 @@ public class ReplayInstance extends Thread {
         playing.set(false);
         Player player = Bukkit.getPlayer(getContext().getViewer());
         if (player != null) {
+            updateGameMode(player, false);
             for (NPC npc : getContext().getNpcMap().values()) {
                 npc.deSpawn();
             }

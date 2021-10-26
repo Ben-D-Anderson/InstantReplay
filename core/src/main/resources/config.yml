@@ -9,6 +9,7 @@ settings:
   use-plugin-prefix: true
   seconds-per-timestamp-output: 60
   ignore-y-radius: true
+  spectator-gamemode: true
   seconds-per-player-move-log: 1 #RECOMMENDED IS 1
   seconds-per-player-inventory-log: 1 #RECOMMENDED IS 1
   hours-until-logs-deleted: 72 #RECOMMENDED IS 72 OR LESS, SET TO -1 TO DISABLE
