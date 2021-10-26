@@ -18,6 +18,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.inventory.Inventory;
 
 import java.util.*;
 
@@ -55,6 +56,7 @@ public class PlayerRightClickNPCListener implements Listener {
 
 				PacketContainer packet = e.getPacket();
 				Player player = e.getPlayer();
+				UUID uuid = player.getUniqueId();
 
 				ReplayInstance replayInstance = ReplayThreads.getThread(e.getPlayer().getUniqueId());
 				if (replayInstance == null) return;
@@ -64,7 +66,8 @@ public class PlayerRightClickNPCListener implements Listener {
 				NPC clickedNPC = clickedNPCOptional.get();
 
 				Utils.runOnMainThread(() -> {
-					player.openInventory(replayInstance.getContext().getNpcInventoryMap().get(clickedNPC.getUniqueId()));
+					Inventory inventory = replayInstance.getContext().getNpcInventoryMap().get(clickedNPC.getUniqueId());
+					player.openInventory(inventory);
 				});
 				if (!inNPCInventory.contains(player.getUniqueId())) inNPCInventory.add(player.getUniqueId());
 			}
