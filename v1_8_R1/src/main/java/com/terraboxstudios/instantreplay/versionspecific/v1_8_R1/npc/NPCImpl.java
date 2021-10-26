@@ -78,7 +78,9 @@ public class NPCImpl extends NPC {
 
     @Override
     public void setEquipmentSlot(int i, ItemStack item) {
-        if (equipmentCache.get(i).isSimilar(item)) return;
+        if (equipmentCache.containsKey(i)
+                && equipmentCache.get(i) != null
+                && equipmentCache.get(i).isSimilar(item)) return;
         Player viewer = Bukkit.getPlayer(getViewer());
         if (viewer == null) return;
         net.minecraft.server.v1_8_R1.ItemStack nmsItemStack = CraftItemStack.asNMSCopy(item);
