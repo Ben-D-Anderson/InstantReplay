@@ -359,6 +359,126 @@ public class MySQL {
 		return playerInventoryEvents;
 	}
 
+	public List<PlayerMoveEventContainer> getPreReplayPlayerMoveEvents(ReplayContext context) {
+		List<PlayerMoveEventContainer> playerMoveEvents = new ArrayList<>();
+		if (context.getLocation().getWorld() == null) return playerMoveEvents;
+
+		int radius = context.getRadius() + 4;
+		try {
+			PreparedStatement statement = getConnection().prepareStatement
+					("SELECT max(time) AS time, uuid, location, name FROM player_move_events WHERE uuid IN " +
+							"(SELECT uuid FROM player_move_events WHERE time < ? GROUP BY uuid)" +
+							" GROUP BY uuid");
+			statement.setLong(1, context.getStartTimestamp());
+
+			ResultSet results = statement.executeQuery();
+			while (results.next()) {
+				String locString = results.getString("location");
+				Location eventLocation = Utils.stringToPreciseLocation(locString);
+
+				if (Utils.isLocationInReplay(eventLocation, context.getLocation(), radius)) {
+					playerMoveEvents.add(new PlayerMoveEventContainer(UUID.fromString(results.getString("UUID")), eventLocation, results.getLong("time"), results.getString("name")));
+				}
+			}
+			return playerMoveEvents;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return playerMoveEvents;
+	}
+
+	public List<PlayerDeathDamageEventContainer> getPreReplayDeathEvents(ReplayContext context) {
+		List<PlayerDeathDamageEventContainer> deathEvents = new ArrayList<>();
+		if (context.getLocation().getWorld() == null) return deathEvents;
+
+		try {
+			PreparedStatement statement = getConnection().prepareStatement
+					("SELECT max(time) AS time, uuid, location, name, event_type, source FROM death_damage_events WHERE uuid IN " +
+							"(SELECT uuid FROM death_damage_events WHERE time < ? AND event_type=? GROUP BY uuid)" +
+							" GROUP BY uuid");
+			statement.setLong(1, context.getStartTimestamp());
+			statement.setString(2, "DEATH");
+
+			ResultSet results = statement.executeQuery();
+			while (results.next()) {
+				String locString = results.getString("location");
+				Location eventLocation = Utils.stringToLocation(locString);
+
+				if (Utils.isLocationInReplay(eventLocation, context.getLocation(), context.getRadius())) {
+					UUID uuid = UUID.fromString(results.getString("UUID"));
+					deathEvents.add(new PlayerDeathDamageEventContainer(uuid, eventLocation, results.getLong("time"), results.getString("name"), results.getString("event_type"), results.getString("source")));
+				}
+			}
+			return deathEvents;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return deathEvents;
+	}
+
+	public List<PlayerJoinLeaveEventContainer> getPreReplayLeaveEvents(ReplayContext context) {
+		List<PlayerJoinLeaveEventContainer> leaveEvents = new ArrayList<>();
+		if (context.getLocation().getWorld() == null) return leaveEvents;
+
+		try {
+			PreparedStatement statement = getConnection().prepareStatement
+					("SELECT max(time) AS time, uuid, location, name, event_type FROM join_leave_events WHERE uuid IN " +
+							"(SELECT uuid FROM join_leave_events WHERE time < ? AND event_type=? GROUP BY uuid)" +
+							" GROUP BY uuid");
+			statement.setLong(1, context.getStartTimestamp());
+			statement.setString(2, "LEAVE");
+
+			ResultSet results = statement.executeQuery();
+			while (results.next()) {
+				String locString = results.getString("location");
+				Location eventLocation = Utils.stringToLocation(locString);
+
+				if (Utils.isLocationInReplay(eventLocation, context.getLocation(), context.getRadius())) {
+					UUID uuid = UUID.fromString(results.getString("UUID"));
+					leaveEvents.add(new PlayerJoinLeaveEventContainer(uuid, eventLocation, results.getLong("time"), results.getString("name"), results.getString("event_type")));
+				}
+			}
+			return leaveEvents;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return leaveEvents;
+	}
+
+	public List<PlayerInventoryEventContainer> getPreReplayInventoryEvents(ReplayContext context) {
+		List<PlayerInventoryEventContainer> playerInventoryEvents = new ArrayList<>();
+		if (context.getLocation().getWorld() == null) return playerInventoryEvents;
+
+		try {
+			PreparedStatement statement = getConnection().prepareStatement
+					("SELECT max(time) AS time, uuid, location, name, serialized FROM player_inventory_events WHERE uuid IN " +
+							"(SELECT uuid FROM player_inventory_events WHERE time < ? GROUP BY uuid)" +
+							" GROUP BY uuid");
+			statement.setLong(1, context.getStartTimestamp());
+
+			ResultSet results = statement.executeQuery();
+			while (results.next()) {
+				String locString = results.getString("location");
+				Location eventLocation = Utils.stringToLocation(locString);
+
+				if (Utils.isLocationInReplay(eventLocation, context.getLocation(), context.getRadius())) {
+					String[] serArr = results.getString("serialized").split(";");
+					ItemStack[] content = InventorySerializer.itemStackArrayFromBase64(serArr[0]);
+					ItemStack[] armour = InventorySerializer.itemStackArrayFromBase64(serArr[1]);
+					int health = Integer.parseInt(serArr[2]);
+					ItemStack[] hands = InventorySerializer.itemStackArrayFromBase64(serArr[3]);
+
+					UUID uuid = UUID.fromString(results.getString("UUID"));
+					playerInventoryEvents.add(new PlayerInventoryEventContainer(uuid, eventLocation, results.getLong("time"), results.getString("name"), results.getString("serialized"), content, armour, hands, health));
+				}
+			}
+			return playerInventoryEvents;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return playerInventoryEvents;
+	}
+
 	public void undoRenderAllBlocks(PlayerChangeBlockEventContainerRenderer playerChangeBlockEventContainerRenderer, ReplayContext context) {
 		try {
 			PreparedStatement statement = getConnection().prepareStatement

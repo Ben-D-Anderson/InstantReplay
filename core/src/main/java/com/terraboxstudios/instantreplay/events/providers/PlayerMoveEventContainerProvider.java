@@ -2,6 +2,8 @@ package com.terraboxstudios.instantreplay.events.providers;
 
 import com.terraboxstudios.instantreplay.events.EventContainer;
 import com.terraboxstudios.instantreplay.events.EventContainerProvider;
+import com.terraboxstudios.instantreplay.events.containers.PlayerDeathDamageEventContainer;
+import com.terraboxstudios.instantreplay.events.containers.PlayerJoinLeaveEventContainer;
 import com.terraboxstudios.instantreplay.events.containers.PlayerMoveEventContainer;
 import com.terraboxstudios.instantreplay.mysql.MySQL;
 import com.terraboxstudios.instantreplay.replay.ReplayContext;
@@ -24,7 +26,17 @@ public class PlayerMoveEventContainerProvider implements EventContainerProvider<
     public List<PlayerMoveEventContainer> getEventContainers(ReplayContext context) {
         List<PlayerMoveEventContainer> containers = MySQL.getInstance().getPlayerMoveEvents(context);
         new ArrayList<>(containers).forEach(container -> predictMovementContainers(containers, container));
+        containers.addAll(calculatePreReplayEvents(context));
         return containers;
+    }
+
+    private List<PlayerMoveEventContainer> calculatePreReplayEvents(ReplayContext context) {
+        List<PlayerMoveEventContainer> preMoveEvents = MySQL.getInstance().getPreReplayPlayerMoveEvents(context);
+        List<PlayerDeathDamageEventContainer> preDeathEvents = MySQL.getInstance().getPreReplayDeathEvents(context);
+        List<PlayerJoinLeaveEventContainer> preLeaveEvents = MySQL.getInstance().getPreReplayLeaveEvents(context);
+        preDeathEvents.forEach(deathEvent -> preMoveEvents.removeIf(moveEvent -> deathEvent.getUuid().equals(moveEvent.getUuid()) && deathEvent.getTime() >= moveEvent.getTime()));
+        preLeaveEvents.forEach(leaveEvent -> preMoveEvents.removeIf(moveEvent -> leaveEvent.getUuid().equals(moveEvent.getUuid()) && leaveEvent.getTime() >= moveEvent.getTime()));
+        return preMoveEvents;
     }
 
     private void predictMovementContainers(List<PlayerMoveEventContainer> containers, PlayerMoveEventContainer current) {

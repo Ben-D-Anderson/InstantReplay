@@ -13,3 +13,5 @@
 - Visualise item drops (Add more replay events)
 - Add warning when there are no events for a while, suggest seeking forward
 - Render crouch events (as part of player move)
+- Store x,y,z coords of each event separately in MySQL - can optimise MANY statements if done, including PreReplay
+  events
