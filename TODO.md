@@ -12,3 +12,4 @@
 - Consider splitting location elements of tables in order to compare radius in query.
 - Visualise item drops (Add more replay events)
 - Add warning when there are no events for a while, suggest seeking forward
+- Render crouch events (as part of player move)
