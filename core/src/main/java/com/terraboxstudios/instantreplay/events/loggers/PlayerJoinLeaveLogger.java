@@ -1,6 +1,7 @@
 package com.terraboxstudios.instantreplay.events.loggers;
 
 import com.terraboxstudios.instantreplay.events.containers.PlayerJoinLeaveEventContainer;
+import com.terraboxstudios.instantreplay.events.containers.PlayerMoveEventContainer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -21,6 +22,12 @@ public class PlayerJoinLeaveLogger implements Listener {
                 Calendar.getInstance().getTimeInMillis(),
                 p.getName(),
                 "JOIN"
+        ).log();
+        new PlayerMoveEventContainer(
+                p.getUniqueId(),
+                p.getLocation(),
+                Calendar.getInstance().getTimeInMillis(),
+                p.getName()
         ).log();
     }
 
