@@ -374,7 +374,6 @@ public class MySQL {
 
 			ResultSet results = statement.executeQuery();
 			while (results.next()) {
-				System.out.println(results.getString("location"));
 				String locString = results.getString("location");
 				Location eventLocation = Utils.stringToPreciseLocation(locString);
 
@@ -395,7 +394,7 @@ public class MySQL {
 
 		try {
 			PreparedStatement statement = getConnection().prepareStatement
-					("SELECT name, death_damage_events.uuid, location, event_type, source time FROM death_damage_events" +
+					("SELECT name, death_damage_events.uuid, location, event_type, source, time FROM death_damage_events" +
 							" INNER JOIN (SELECT uuid, MAX(time) AS maxtime FROM death_damage_events" +
 							" WHERE time < ? AND event_type=? GROUP BY uuid)" +
 							" ms ON death_damage_events.uuid = ms.uuid AND time = maxtime");
@@ -425,7 +424,7 @@ public class MySQL {
 
 		try {
 			PreparedStatement statement = getConnection().prepareStatement
-					("SELECT name, join_leave_events.uuid, location, event_type time FROM join_leave_events" +
+					("SELECT name, join_leave_events.uuid, location, event_type, time FROM join_leave_events" +
 							" INNER JOIN (SELECT uuid, MAX(time) AS maxtime FROM join_leave_events" +
 							" WHERE time < ? AND event_type=? GROUP BY uuid)" +
 							" ms ON join_leave_events.uuid = ms.uuid AND time = maxtime");
@@ -465,17 +464,14 @@ public class MySQL {
 			while (results.next()) {
 				String locString = results.getString("location");
 				Location eventLocation = Utils.stringToLocation(locString);
+				String[] serArr = results.getString("serialized").split(";");
+				ItemStack[] content = InventorySerializer.itemStackArrayFromBase64(serArr[0]);
+				ItemStack[] armour = InventorySerializer.itemStackArrayFromBase64(serArr[1]);
+				int health = Integer.parseInt(serArr[2]);
+				ItemStack[] hands = InventorySerializer.itemStackArrayFromBase64(serArr[3]);
 
-				if (Utils.isLocationInReplay(eventLocation, context.getLocation(), context.getRadius())) {
-					String[] serArr = results.getString("serialized").split(";");
-					ItemStack[] content = InventorySerializer.itemStackArrayFromBase64(serArr[0]);
-					ItemStack[] armour = InventorySerializer.itemStackArrayFromBase64(serArr[1]);
-					int health = Integer.parseInt(serArr[2]);
-					ItemStack[] hands = InventorySerializer.itemStackArrayFromBase64(serArr[3]);
-
-					UUID uuid = UUID.fromString(results.getString("UUID"));
-					playerInventoryEvents.add(new PlayerInventoryEventContainer(uuid, eventLocation, results.getLong("time"), results.getString("name"), results.getString("serialized"), content, armour, hands, health));
-				}
+				UUID uuid = UUID.fromString(results.getString("UUID"));
+				playerInventoryEvents.add(new PlayerInventoryEventContainer(uuid, eventLocation, results.getLong("time"), results.getString("name"), results.getString("serialized"), content, armour, hands, health));
 			}
 			return playerInventoryEvents;
 		} catch (Exception e) {
