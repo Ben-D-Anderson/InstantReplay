@@ -4,15 +4,12 @@ import com.terraboxstudios.instantreplay.InstantReplay;
 import com.terraboxstudios.instantreplay.events.EventContainerProvider;
 import com.terraboxstudios.instantreplay.events.EventContainerRenderer;
 import com.terraboxstudios.instantreplay.events.containers.PlayerMoveEventContainer;
-import com.terraboxstudios.instantreplay.inventory.CustomInventory;
 import com.terraboxstudios.instantreplay.replay.ReplayContext;
 import com.terraboxstudios.instantreplay.util.Utils;
 import com.terraboxstudios.instantreplay.versionspecific.npc.NPC;
 import com.terraboxstudios.instantreplay.versionspecific.npc.NPCSkin;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
 public class PlayerMoveEventContainerRenderer extends EventContainerRenderer<PlayerMoveEventContainer> {
 
@@ -43,25 +40,6 @@ public class PlayerMoveEventContainerRenderer extends EventContainerRenderer<Pla
                 if (!eventContainer.getLocation().equals(npc.getLocation())) {
                     npc.moveTo(eventContainer.getLocation());
                 }
-            }
-            CustomInventory customInventory = getContext().getNpcCustomInventoryMap().get(eventContainer.getUuid());
-            if (customInventory != null) {
-                ItemStack item = customInventory.getHands()[0];
-                if (item == null)
-                    item = new ItemStack(Material.AIR);
-                npc.setItemInMainHand(item);
-                item = customInventory.getHands()[1];
-                if (item == null) {
-                    item = new ItemStack(Material.AIR);
-                }
-                npc.setItemInOffHand(item);
-                for (int armourSlot = 0; armourSlot < 4; armourSlot++) {
-                    item = customInventory.getArmourContents()[armourSlot];
-                    if (item == null)
-                        item = new ItemStack(Material.AIR);
-                    npc.setEquipmentSlot(armourSlot + 1, item);
-                }
-
             }
         } else {
             NPCSkin<?> skin = InstantReplay.getVersionSpecificProvider().getNpcFactory()
