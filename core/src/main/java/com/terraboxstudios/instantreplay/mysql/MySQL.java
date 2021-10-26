@@ -366,13 +366,15 @@ public class MySQL {
 		int radius = context.getRadius() + 4;
 		try {
 			PreparedStatement statement = getConnection().prepareStatement
-					("SELECT max(time) AS time, uuid, location, name FROM player_move_events WHERE uuid IN " +
-							"(SELECT uuid FROM player_move_events WHERE time < ? GROUP BY uuid)" +
-							" GROUP BY uuid");
+					("SELECT name, player_move_events.uuid, location, time FROM player_move_events" +
+							" INNER JOIN (SELECT uuid, MAX(time) AS maxtime FROM player_move_events" +
+							" WHERE time < ? GROUP BY uuid)" +
+							" ms ON player_move_events.uuid = ms.uuid AND time = maxtime");
 			statement.setLong(1, context.getStartTimestamp());
 
 			ResultSet results = statement.executeQuery();
 			while (results.next()) {
+				System.out.println(results.getString("location"));
 				String locString = results.getString("location");
 				Location eventLocation = Utils.stringToPreciseLocation(locString);
 
@@ -393,9 +395,10 @@ public class MySQL {
 
 		try {
 			PreparedStatement statement = getConnection().prepareStatement
-					("SELECT max(time) AS time, uuid, location, name, event_type, source FROM death_damage_events WHERE uuid IN " +
-							"(SELECT uuid FROM death_damage_events WHERE time < ? AND event_type=? GROUP BY uuid)" +
-							" GROUP BY uuid");
+					("SELECT name, death_damage_events.uuid, location, event_type, source time FROM death_damage_events" +
+							" INNER JOIN (SELECT uuid, MAX(time) AS maxtime FROM death_damage_events" +
+							" WHERE time < ? AND event_type=? GROUP BY uuid)" +
+							" ms ON death_damage_events.uuid = ms.uuid AND time = maxtime");
 			statement.setLong(1, context.getStartTimestamp());
 			statement.setString(2, "DEATH");
 
@@ -422,9 +425,10 @@ public class MySQL {
 
 		try {
 			PreparedStatement statement = getConnection().prepareStatement
-					("SELECT max(time) AS time, uuid, location, name, event_type FROM join_leave_events WHERE uuid IN " +
-							"(SELECT uuid FROM join_leave_events WHERE time < ? AND event_type=? GROUP BY uuid)" +
-							" GROUP BY uuid");
+					("SELECT name, join_leave_events.uuid, location, event_type time FROM join_leave_events" +
+							" INNER JOIN (SELECT uuid, MAX(time) AS maxtime FROM join_leave_events" +
+							" WHERE time < ? AND event_type=? GROUP BY uuid)" +
+							" ms ON join_leave_events.uuid = ms.uuid AND time = maxtime");
 			statement.setLong(1, context.getStartTimestamp());
 			statement.setString(2, "LEAVE");
 
@@ -451,9 +455,10 @@ public class MySQL {
 
 		try {
 			PreparedStatement statement = getConnection().prepareStatement
-					("SELECT max(time) AS time, uuid, location, name, serialized FROM player_inventory_events WHERE uuid IN " +
-							"(SELECT uuid FROM player_inventory_events WHERE time < ? GROUP BY uuid)" +
-							" GROUP BY uuid");
+					("SELECT name, player_inventory_events.uuid, location, serialized, time FROM player_inventory_events" +
+							" INNER JOIN (SELECT uuid, MAX(time) AS maxtime FROM player_inventory_events" +
+							" WHERE time < ? GROUP BY uuid)" +
+							" ms ON player_inventory_events.uuid = ms.uuid AND time = maxtime");
 			statement.setLong(1, context.getStartTimestamp());
 
 			ResultSet results = statement.executeQuery();
