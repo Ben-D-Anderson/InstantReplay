@@ -49,7 +49,7 @@ public class PlayerMoveEventContainerRenderer extends EventContainerRenderer<Pla
                     eventContainer.getUuid(),
                     eventContainer.getName(),
                     skin,
-                    eventContainer.getWorld()
+                    Bukkit.getWorld(eventContainer.getWorld())
             );
             npc.spawn(eventContainer.getLocation());
             getContext().getNpcMap().put(eventContainer.getUuid(), npc);
