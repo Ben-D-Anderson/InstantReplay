@@ -212,7 +212,7 @@ public class MySQL {
 		int upperX = replayLocation.getBlockX() + radius;
 		int upperY = replayLocation.getBlockY() + radius;
 		int upperZ = replayLocation.getBlockZ() + radius;
-		String worldQuery = "(world = " + Objects.requireNonNull(replayLocation.getWorld()).getName() + ")";
+		String worldQuery = "(world = '" + Objects.requireNonNull(replayLocation.getWorld()).getName() + "')";
 		String xQuery = "(x >= " + lowerX + " AND x <= " + upperX + ")";
 		String yQuery = "(y >= " + lowerY + " AND y <= " + upperY + ")";
 		String zQuery = "(z >= " + lowerZ + " AND z <= " + upperZ + ")";
