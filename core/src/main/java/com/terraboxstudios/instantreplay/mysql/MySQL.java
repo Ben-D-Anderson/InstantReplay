@@ -188,7 +188,7 @@ public class MySQL {
 	private void logPlayerInventoryEvent(PlayerInventoryEventContainer playerInventoryObj) {
 		try {
 			PreparedStatement statement = getConnection().prepareStatement
-					("INSERT INTO player_inventory_events (name, UUID, location, serialized, time) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+					("INSERT INTO player_inventory_events (name, UUID, world, x, y, z, serialized, time) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
 			statement.setString(1, playerInventoryObj.getName());
 			statement.setString(2, playerInventoryObj.getUuid().toString());
 			statement.setString(3, playerInventoryObj.getWorld());
