@@ -434,16 +434,25 @@ public class MySQL {
 		if (context.getLocation().getWorld() == null) return playerInventoryEvents;
 
 		try {
+			String locQuery = getLocationQuery(context, context.getRadius() + 4);
+			//large SQL statement to get all pre-replay inventory events:
+			// - get all inventory events when player was in the replay area during the replay,
+			//   including if they are there as a result of a pre-replay move event.
 			PreparedStatement statement = getConnection().prepareStatement
 					("SELECT name, player_inventory_events.uuid, world, x, y, z, serialized, time FROM player_inventory_events" +
 							" INNER JOIN (SELECT uuid, MAX(time) AS maxtime FROM player_inventory_events" +
 							" WHERE time < ? GROUP BY uuid)" +
 							" ms ON player_inventory_events.uuid = ms.uuid AND time = maxtime" +
 							" WHERE ms.uuid IN (SELECT uuid FROM player_move_events WHERE time>=? AND time<=? "
-							+ getLocationQuery(context, context.getRadius() + 4) + " ORDER BY time ASC)");
+							+ locQuery + " UNION " +
+							"SELECT player_move_events.uuid FROM player_move_events" +
+							" INNER JOIN (SELECT uuid, MAX(time) AS maxtime FROM player_move_events" +
+							" WHERE time < ? " + locQuery + " GROUP BY uuid)" +
+							" ms ON player_move_events.uuid = ms.uuid AND time = maxtime)");
 			statement.setLong(1, context.getStartTimestamp());
 			statement.setLong(2, context.getStartTimestamp());
 			statement.setLong(3, context.getTimeOfCommand());
+			statement.setLong(4, context.getStartTimestamp());
 
 			ResultSet results = statement.executeQuery();
 			while (results.next()) {
