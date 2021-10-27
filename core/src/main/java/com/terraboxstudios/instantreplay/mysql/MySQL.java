@@ -61,7 +61,7 @@ public class MySQL {
 
 	private final String[] tables = {
 			"block_events (world VARCHAR(255), x DOUBLE, y DOUBLE, z DOUBLE, old_block VARCHAR(500), new_block VARCHAR(500), time BIGINT)",
-			"player_move_events (name VARCHAR(255), UUID VARCHAR(255), world VARCHAR(255), x DOUBLE, y DOUBLE, z DOUBLE, time BIGINT)",
+			"player_move_events (name VARCHAR(255), UUID VARCHAR(255), world VARCHAR(255), x DOUBLE, y DOUBLE, z DOUBLE, yaw FLOAT, pitch FLOAT, time BIGINT)",
 			"death_damage_events (name VARCHAR(255), UUID VARCHAR(255), world VARCHAR(255), x DOUBLE, y DOUBLE, z DOUBLE, event_type VARCHAR(255), source VARCHAR(255), time BIGINT)",
 			"player_inventory_events (name VARCHAR(255), UUID VARCHAR(255), world VARCHAR(255), x DOUBLE, y DOUBLE, z DOUBLE, serialized MEDIUMTEXT, time BIGINT)",
 			"join_leave_events (name VARCHAR(255), UUID VARCHAR(255), world VARCHAR(255), x DOUBLE, y DOUBLE, z DOUBLE, event_type VARCHAR(255), time BIGINT)"
@@ -131,14 +131,16 @@ public class MySQL {
 	private void logPlayerMoveEvent(PlayerMoveEventContainer playerMoveObj) {
 		try {
 			PreparedStatement statement = getConnection().prepareStatement
-					("INSERT INTO player_move_events (name, UUID, world, x, y, z, time) VALUES (?, ?, ?, ?, ?, ?, ?)");
+					("INSERT INTO player_move_events (name, UUID, world, x, y, z, yaw, pitch, time) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
 			statement.setString(1, playerMoveObj.getName());
 			statement.setString(2, playerMoveObj.getUuid().toString());
 			statement.setString(3, playerMoveObj.getWorld());
 			statement.setDouble(4, playerMoveObj.getX());
 			statement.setDouble(5, playerMoveObj.getY());
 			statement.setDouble(6, playerMoveObj.getZ());
-			statement.setLong(7, playerMoveObj.getTime());
+			statement.setFloat(7, playerMoveObj.getYaw());
+			statement.setDouble(8, playerMoveObj.getPitch());
+			statement.setLong(9, playerMoveObj.getTime());
 
 			statement.execute();
 		} catch (Exception e) {
@@ -265,7 +267,7 @@ public class MySQL {
 
 			ResultSet results = statement.executeQuery();
 			while (results.next()) {
-				Location location = new Location(Bukkit.getWorld(results.getString("world")), results.getDouble("x"), results.getDouble("y"), results.getDouble("z"));
+				Location location = new Location(Bukkit.getWorld(results.getString("world")), results.getDouble("x"), results.getDouble("y"), results.getDouble("z"), results.getFloat("yaw"), results.getFloat("pitch"));
 				playerMoveEvents.add(new PlayerMoveEventContainer(UUID.fromString(results.getString("UUID")), location, results.getLong("time"), results.getString("name")));
 			}
 			return playerMoveEvents;
@@ -357,7 +359,7 @@ public class MySQL {
 		int radius = context.getRadius() + 4;
 		try {
 			PreparedStatement statement = getConnection().prepareStatement
-					("SELECT name, player_move_events.uuid, world, x, y, z, time FROM player_move_events" +
+					("SELECT name, player_move_events.uuid, world, x, y, z, yaw, pitch, time FROM player_move_events" +
 							" INNER JOIN (SELECT uuid, MAX(time) AS maxtime FROM player_move_events" +
 							" WHERE time < ? " + getLocationQuery(context, radius) + " GROUP BY uuid)" +
 							" ms ON player_move_events.uuid = ms.uuid AND time = maxtime");
@@ -365,7 +367,7 @@ public class MySQL {
 
 			ResultSet results = statement.executeQuery();
 			while (results.next()) {
-				Location location = new Location(Bukkit.getWorld(results.getString("world")), results.getDouble("x"), results.getDouble("y"), results.getDouble("z"));
+				Location location = new Location(Bukkit.getWorld(results.getString("world")), results.getDouble("x"), results.getDouble("y"), results.getDouble("z"), results.getFloat("yaw"), results.getFloat("pitch"));
 				playerMoveEvents.add(new PlayerMoveEventContainer(UUID.fromString(results.getString("UUID")), location, results.getLong("time"), results.getString("name")));
 			}
 			return playerMoveEvents;
