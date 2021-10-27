@@ -225,15 +225,12 @@ public class MySQL {
 
 		try {
 			PreparedStatement statement = getConnection().prepareStatement
-					("SELECT * FROM block_events WHERE time>=? AND time<=? " + getLocationQuery(context, context.getRadius()) + " ORDER BY time ASC");
+					("SELECT * FROM block_events WHERE time>=? AND time<=? " + getLocationQuery(context, context.getRadius()) + " ORDER BY time ASC LIMIT " + eventRenderBuffer);
 			statement.setLong(1, context.getStartTimestamp());
 			statement.setLong(2, context.getTimeOfCommand());
 
 			ResultSet results = statement.executeQuery();
 			while (results.next()) {
-				if (blockEvents.size() >= eventRenderBuffer)
-					break;
-
 				try {
 					Location location = new Location(Bukkit.getWorld(results.getString("world")), results.getDouble("x"), results.getDouble("y"), results.getDouble("z"));
 					BlockChange newBlock = BlockChangeSerializer.deserialize(results.getString("new_block"));
@@ -262,14 +259,12 @@ public class MySQL {
 		int radius = context.getRadius() + 4;
 		try {
 			PreparedStatement statement = getConnection().prepareStatement
-					("SELECT * FROM player_move_events WHERE time>=? AND time<=? " + getLocationQuery(context, radius) + " ORDER BY time ASC");
+					("SELECT * FROM player_move_events WHERE time>=? AND time<=? " + getLocationQuery(context, radius) + " ORDER BY time ASC LIMIT " + eventRenderBuffer);
 			statement.setLong(1, context.getStartTimestamp());
 			statement.setLong(2, context.getTimeOfCommand());
 
 			ResultSet results = statement.executeQuery();
 			while (results.next()) {
-				if (playerMoveEvents.size() >= eventRenderBuffer)
-					break;
 				Location location = new Location(Bukkit.getWorld(results.getString("world")), results.getDouble("x"), results.getDouble("y"), results.getDouble("z"));
 				playerMoveEvents.add(new PlayerMoveEventContainer(UUID.fromString(results.getString("UUID")), location, results.getLong("time"), results.getString("name")));
 			}
@@ -286,15 +281,12 @@ public class MySQL {
 
 		try {
 			PreparedStatement statement = getConnection().prepareStatement
-					("SELECT * FROM death_damage_events WHERE time>=? AND time<=? " + getLocationQuery(context, context.getRadius()) + " ORDER BY time ASC");
+					("SELECT * FROM death_damage_events WHERE time>=? AND time<=? " + getLocationQuery(context, context.getRadius()) + " ORDER BY time ASC LIMIT " + eventRenderBuffer);
 			statement.setLong(1, context.getStartTimestamp());
 			statement.setLong(2, context.getTimeOfCommand());
 
 			ResultSet results = statement.executeQuery();
 			while (results.next()) {
-				if (deathDamageEvents.size() >= eventRenderBuffer)
-					break;
-
 				Location location = new Location(Bukkit.getWorld(results.getString("world")), results.getDouble("x"), results.getDouble("y"), results.getDouble("z"));
 				UUID uuid = UUID.fromString(results.getString("UUID"));
 				deathDamageEvents.add(new PlayerDeathDamageEventContainer(uuid, location, results.getLong("time"), results.getString("name"), results.getString("event_type"), results.getString("source")));
@@ -312,15 +304,12 @@ public class MySQL {
 
 		try {
 			PreparedStatement statement = getConnection().prepareStatement
-					("SELECT * FROM join_leave_events WHERE time>=? AND time<=? " + getLocationQuery(context, context.getRadius()) + " ORDER BY time ASC");
+					("SELECT * FROM join_leave_events WHERE time>=? AND time<=? " + getLocationQuery(context, context.getRadius()) + " ORDER BY time ASC LIMIT " + eventRenderBuffer);
 			statement.setLong(1, context.getStartTimestamp());
 			statement.setLong(2, context.getTimeOfCommand());
 
 			ResultSet results = statement.executeQuery();
 			while (results.next()) {
-				if (joinLeaveEvents.size() >= eventRenderBuffer)
-					break;
-
 				Location location = new Location(Bukkit.getWorld(results.getString("world")), results.getDouble("x"), results.getDouble("y"), results.getDouble("z"));
 				UUID uuid = UUID.fromString(results.getString("UUID"));
 				joinLeaveEvents.add(new PlayerJoinLeaveEventContainer(uuid, location, results.getLong("time"), results.getString("name"), results.getString("event_type")));
@@ -338,15 +327,12 @@ public class MySQL {
 
 		try {
 			PreparedStatement statement = getConnection().prepareStatement
-					("SELECT * FROM player_inventory_events WHERE time>=? AND time<=? " + getLocationQuery(context, context.getRadius()) + " ORDER BY time ASC");
+					("SELECT * FROM player_inventory_events WHERE time>=? AND time<=? " + getLocationQuery(context, context.getRadius()) + " ORDER BY time ASC LIMIT " + eventRenderBuffer);
 			statement.setLong(1, context.getStartTimestamp());
 			statement.setLong(2, context.getTimeOfCommand());
 
 			ResultSet results = statement.executeQuery();
 			while (results.next()) {
-				if (playerInventoryEvents.size() >= eventRenderBuffer)
-					break;
-
 				String[] serArr = results.getString("serialized").split(";");
 				ItemStack[] content = InventorySerializer.itemStackArrayFromBase64(serArr[0]);
 				ItemStack[] armour = InventorySerializer.itemStackArrayFromBase64(serArr[1]);
@@ -373,7 +359,7 @@ public class MySQL {
 			PreparedStatement statement = getConnection().prepareStatement
 					("SELECT name, player_move_events.uuid, world, x, y, z, time FROM player_move_events" +
 							" INNER JOIN (SELECT uuid, MAX(time) AS maxtime FROM player_move_events" +
-							" WHERE time < ? " + getLocationQuery(context, context.getRadius()) + " GROUP BY uuid)" +
+							" WHERE time < ? " + getLocationQuery(context, radius) + " GROUP BY uuid)" +
 							" ms ON player_move_events.uuid = ms.uuid AND time = maxtime");
 			statement.setLong(1, context.getStartTimestamp());
 
