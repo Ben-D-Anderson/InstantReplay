@@ -9,7 +9,6 @@ import com.terraboxstudios.instantreplay.replay.ReplayContext;
 import com.terraboxstudios.instantreplay.util.BlockChangeSerializer;
 import com.terraboxstudios.instantreplay.util.Config;
 import com.terraboxstudios.instantreplay.util.ConsoleLogger;
-import com.terraboxstudios.instantreplay.util.Utils;
 import com.terraboxstudios.instantreplay.versionspecific.blocks.BlockChange;
 import lombok.Getter;
 import org.bukkit.Bukkit;
@@ -19,10 +18,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.logging.Level;
 
 public class MySQL {
@@ -64,11 +60,11 @@ public class MySQL {
 	}
 
 	private final String[] tables = {
-			"block_events (location VARCHAR(255), old_block VARCHAR(500), new_block VARCHAR(500), time BIGINT)",
-			"player_move_events (name VARCHAR(255), UUID VARCHAR(255), location VARCHAR(255), time BIGINT)",
-			"death_damage_events (name VARCHAR(255), UUID VARCHAR(255), location VARCHAR(255), event_type VARCHAR(255), source VARCHAR(255), time BIGINT)",
-			"player_inventory_events (name VARCHAR(255), UUID VARCHAR(255), location VARCHAR(255), serialized MEDIUMTEXT, time BIGINT)",
-			"join_leave_events (name VARCHAR(255), UUID VARCHAR(255), location VARCHAR(255), event_type VARCHAR(255), time BIGINT)"
+			"block_events (world VARCHAR(255), x DOUBLE, y DOUBLE, z DOUBLE, old_block VARCHAR(500), new_block VARCHAR(500), time BIGINT)",
+			"player_move_events (name VARCHAR(255), UUID VARCHAR(255), world VARCHAR(255), x DOUBLE, y DOUBLE, z DOUBLE, time BIGINT)",
+			"death_damage_events (name VARCHAR(255), UUID VARCHAR(255), world VARCHAR(255), x DOUBLE, y DOUBLE, z DOUBLE, event_type VARCHAR(255), source VARCHAR(255), time BIGINT)",
+			"player_inventory_events (name VARCHAR(255), UUID VARCHAR(255), world VARCHAR(255), x DOUBLE, y DOUBLE, z DOUBLE, serialized MEDIUMTEXT, time BIGINT)",
+			"join_leave_events (name VARCHAR(255), UUID VARCHAR(255), world VARCHAR(255), x DOUBLE, y DOUBLE, z DOUBLE, event_type VARCHAR(255), time BIGINT)"
 	};
 
 	private void initTables() {
@@ -117,11 +113,14 @@ public class MySQL {
 	private void logBlockEvent(PlayerChangeBlockEventContainer blockEventObj) {
 		try {
 			PreparedStatement statement = getConnection().prepareStatement
-					("INSERT INTO block_events (location, old_block, new_block, time) VALUES (?, ?, ?, ?)");
-			statement.setString(1, Utils.locationToString(blockEventObj.getLocation()));
-			statement.setString(2, BlockChangeSerializer.serialize(blockEventObj.getOldBlock()));
-			statement.setString(3, BlockChangeSerializer.serialize(blockEventObj.getNewBlock()));
-			statement.setLong(4, blockEventObj.getTime());
+					("INSERT INTO block_events (world, x, y, z, old_block, new_block, time) VALUES (?, ?, ?, ?, ?, ?, ?)");
+			statement.setString(1, blockEventObj.getWorld());
+			statement.setDouble(2, blockEventObj.getX());
+			statement.setDouble(3, blockEventObj.getY());
+			statement.setDouble(4, blockEventObj.getZ());
+			statement.setString(5, BlockChangeSerializer.serialize(blockEventObj.getOldBlock()));
+			statement.setString(6, BlockChangeSerializer.serialize(blockEventObj.getNewBlock()));
+			statement.setLong(7, blockEventObj.getTime());
 
 			statement.execute();
 		} catch (Exception e) {
@@ -132,11 +131,14 @@ public class MySQL {
 	private void logPlayerMoveEvent(PlayerMoveEventContainer playerMoveObj) {
 		try {
 			PreparedStatement statement = getConnection().prepareStatement
-					("INSERT INTO player_move_events (name, UUID, location, time) VALUES (?, ?, ?, ?)");
+					("INSERT INTO player_move_events (name, UUID, world, x, y, z, time) VALUES (?, ?, ?, ?, ?, ?, ?)");
 			statement.setString(1, playerMoveObj.getName());
 			statement.setString(2, playerMoveObj.getUuid().toString());
-			statement.setString(3, Utils.preciseLocationToString(playerMoveObj.getLocation()));
-			statement.setLong(4, playerMoveObj.getTime());
+			statement.setString(3, playerMoveObj.getWorld());
+			statement.setDouble(4, playerMoveObj.getX());
+			statement.setDouble(5, playerMoveObj.getY());
+			statement.setDouble(6, playerMoveObj.getZ());
+			statement.setLong(7, playerMoveObj.getTime());
 
 			statement.execute();
 		} catch (Exception e) {
@@ -147,13 +149,16 @@ public class MySQL {
 	private void logDeathDamageEvent(PlayerDeathDamageEventContainer deathDamageEventObj) {
 		try {
 			PreparedStatement statement = getConnection().prepareStatement
-					("INSERT INTO death_damage_events (name, UUID, location, event_type, source, time) VALUES (?, ?, ?, ?, ?, ?)");
+					("INSERT INTO death_damage_events (name, UUID, world, x, y, z, event_type, source, time) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
 			statement.setString(1, deathDamageEventObj.getName());
 			statement.setString(2, deathDamageEventObj.getUuid().toString());
-			statement.setString(3, Utils.locationToString(deathDamageEventObj.getLocation()));
-			statement.setString(4, deathDamageEventObj.getType());
-			statement.setString(5, deathDamageEventObj.getSource());
-			statement.setLong(6, deathDamageEventObj.getTime());
+			statement.setString(3, deathDamageEventObj.getWorld());
+			statement.setDouble(4, deathDamageEventObj.getX());
+			statement.setDouble(5, deathDamageEventObj.getY());
+			statement.setDouble(6, deathDamageEventObj.getZ());
+			statement.setString(7, deathDamageEventObj.getType());
+			statement.setString(8, deathDamageEventObj.getSource());
+			statement.setLong(9, deathDamageEventObj.getTime());
 
 			statement.execute();
 		} catch (Exception e) {
@@ -164,12 +169,15 @@ public class MySQL {
 	private void logJoinLeaveEvent(PlayerJoinLeaveEventContainer joinLeaveEventObj) {
 		try {
 			PreparedStatement statement = getConnection().prepareStatement
-					("INSERT INTO join_leave_events (name, UUID, location, event_type, time) VALUES (?, ?, ?, ?, ?)");
+					("INSERT INTO join_leave_events (name, UUID, world, x, y, z, event_type, time) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
 			statement.setString(1, joinLeaveEventObj.getName());
 			statement.setString(2, joinLeaveEventObj.getUuid().toString());
-			statement.setString(3, Utils.locationToString(joinLeaveEventObj.getLocation()));
-			statement.setString(4, joinLeaveEventObj.getType());
-			statement.setLong(5, joinLeaveEventObj.getTime());
+			statement.setString(3, joinLeaveEventObj.getWorld());
+			statement.setDouble(4, joinLeaveEventObj.getX());
+			statement.setDouble(5, joinLeaveEventObj.getY());
+			statement.setDouble(6, joinLeaveEventObj.getZ());
+			statement.setString(7, joinLeaveEventObj.getType());
+			statement.setLong(8, joinLeaveEventObj.getTime());
 
 			statement.execute();
 		} catch (Exception e) {
@@ -180,17 +188,35 @@ public class MySQL {
 	private void logPlayerInventoryEvent(PlayerInventoryEventContainer playerInventoryObj) {
 		try {
 			PreparedStatement statement = getConnection().prepareStatement
-					("INSERT INTO player_inventory_events (name, UUID, location, serialized, time) VALUES (?, ?, ?, ?, ?)");
+					("INSERT INTO player_inventory_events (name, UUID, location, serialized, time) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
 			statement.setString(1, playerInventoryObj.getName());
 			statement.setString(2, playerInventoryObj.getUuid().toString());
-			statement.setString(3, Utils.locationToString(playerInventoryObj.getLocation()));
-			statement.setString(4, playerInventoryObj.getSerializedInventory());
-			statement.setLong(5, playerInventoryObj.getTime());
+			statement.setString(3, playerInventoryObj.getWorld());
+			statement.setDouble(4, playerInventoryObj.getX());
+			statement.setDouble(5, playerInventoryObj.getY());
+			statement.setDouble(6, playerInventoryObj.getZ());
+			statement.setString(7, playerInventoryObj.getSerializedInventory());
+			statement.setLong(8, playerInventoryObj.getTime());
 
 			statement.execute();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	private String getLocationQuery(ReplayContext context, int radius) {
+		Location replayLocation = context.getLocation();
+		int lowerX = replayLocation.getBlockX() - radius;
+		int lowerY = replayLocation.getBlockY() - radius;
+		int lowerZ = replayLocation.getBlockZ() - radius;
+		int upperX = replayLocation.getBlockX() + radius;
+		int upperY = replayLocation.getBlockY() + radius;
+		int upperZ = replayLocation.getBlockZ() + radius;
+		String worldQuery = "(world = " + Objects.requireNonNull(replayLocation.getWorld()).getName() + ")";
+		String xQuery = "(x >= " + lowerX + " AND x <= " + upperX + ")";
+		String yQuery = "(y >= " + lowerY + " AND y <= " + upperY + ")";
+		String zQuery = "(z >= " + lowerZ + " AND z <= " + upperZ + ")";
+		return worldQuery + " AND " + xQuery + " AND " + (Config.getConfig().getBoolean("settings.ignore-y-radius") ? "" : yQuery + " AND ") + zQuery;
 	}
 
 	public List<PlayerChangeBlockEventContainer> getBlockEvents(ReplayContext context) {
@@ -199,7 +225,7 @@ public class MySQL {
 
 		try {
 			PreparedStatement statement = getConnection().prepareStatement
-					("SELECT * FROM block_events WHERE time>=? AND time<=? ORDER BY time ASC");
+					("SELECT * FROM block_events WHERE time>=? AND time<=? " + getLocationQuery(context, context.getRadius()) + " ORDER BY time ASC");
 			statement.setLong(1, context.getStartTimestamp());
 			statement.setLong(2, context.getTimeOfCommand());
 
@@ -208,22 +234,18 @@ public class MySQL {
 				if (blockEvents.size() >= eventRenderBuffer)
 					break;
 
-				String locString = results.getString("location");
-				Location eventLocation = Utils.stringToLocation(locString);
-
-				if (Utils.isLocationInReplay(eventLocation, context.getLocation(), context.getRadius())) {
-					try {
-						BlockChange newBlock = BlockChangeSerializer.deserialize(results.getString("new_block"));
-						BlockChange oldBlock = BlockChangeSerializer.deserialize(results.getString("old_block"));
-						blockEvents.add(new PlayerChangeBlockEventContainer(UUID.randomUUID(), eventLocation, results.getLong("time"), newBlock, oldBlock));
-					} catch (BlockChangeParseException e) {
-						Player player = Bukkit.getPlayer(context.getViewer());
-						if (player != null) {
-							player.sendMessage(Config.readColouredString("block-change-event-parse-error"));
-						}
-						ConsoleLogger.getInstance().log(Level.SEVERE, Config.readColouredString("block-change-event-parse-error"));
-						return blockEvents;
+				try {
+					Location location = new Location(Bukkit.getWorld(results.getString("world")), results.getDouble("x"), results.getDouble("y"), results.getDouble("z"));
+					BlockChange newBlock = BlockChangeSerializer.deserialize(results.getString("new_block"));
+					BlockChange oldBlock = BlockChangeSerializer.deserialize(results.getString("old_block"));
+					blockEvents.add(new PlayerChangeBlockEventContainer(UUID.randomUUID(), location, results.getLong("time"), newBlock, oldBlock));
+				} catch (BlockChangeParseException e) {
+					Player player = Bukkit.getPlayer(context.getViewer());
+					if (player != null) {
+						player.sendMessage(Config.readColouredString("block-change-event-parse-error"));
 					}
+					ConsoleLogger.getInstance().log(Level.SEVERE, Config.readColouredString("block-change-event-parse-error"));
+					return blockEvents;
 				}
 			}
 			return blockEvents;
@@ -240,7 +262,7 @@ public class MySQL {
 		int radius = context.getRadius() + 4;
 		try {
 			PreparedStatement statement = getConnection().prepareStatement
-					("SELECT * FROM player_move_events WHERE time>=? AND time<=? ORDER BY time ASC");
+					("SELECT * FROM player_move_events WHERE time>=? AND time<=? " + getLocationQuery(context, radius) + " ORDER BY time ASC");
 			statement.setLong(1, context.getStartTimestamp());
 			statement.setLong(2, context.getTimeOfCommand());
 
@@ -248,13 +270,8 @@ public class MySQL {
 			while (results.next()) {
 				if (playerMoveEvents.size() >= eventRenderBuffer)
 					break;
-
-				String locString = results.getString("location");
-				Location eventLocation = Utils.stringToPreciseLocation(locString);
-
-				if (Utils.isLocationInReplay(eventLocation, context.getLocation(), radius)) {
-					playerMoveEvents.add(new PlayerMoveEventContainer(UUID.fromString(results.getString("UUID")), eventLocation, results.getLong("time"), results.getString("name")));
-				}
+				Location location = new Location(Bukkit.getWorld(results.getString("world")), results.getDouble("x"), results.getDouble("y"), results.getDouble("z"));
+				playerMoveEvents.add(new PlayerMoveEventContainer(UUID.fromString(results.getString("UUID")), location, results.getLong("time"), results.getString("name")));
 			}
 			return playerMoveEvents;
 		} catch (Exception e) {
@@ -269,7 +286,7 @@ public class MySQL {
 
 		try {
 			PreparedStatement statement = getConnection().prepareStatement
-					("SELECT * FROM death_damage_events WHERE time>=? AND time<=? ORDER BY time ASC");
+					("SELECT * FROM death_damage_events WHERE time>=? AND time<=? " + getLocationQuery(context, context.getRadius()) + " ORDER BY time ASC");
 			statement.setLong(1, context.getStartTimestamp());
 			statement.setLong(2, context.getTimeOfCommand());
 
@@ -278,13 +295,9 @@ public class MySQL {
 				if (deathDamageEvents.size() >= eventRenderBuffer)
 					break;
 
-				String locString = results.getString("location");
-				Location eventLocation = Utils.stringToLocation(locString);
-
-				if (Utils.isLocationInReplay(eventLocation, context.getLocation(), context.getRadius())) {
-					UUID uuid = UUID.fromString(results.getString("UUID"));
-					deathDamageEvents.add(new PlayerDeathDamageEventContainer(uuid, eventLocation, results.getLong("time"), results.getString("name"), results.getString("event_type"), results.getString("source")));
-				}
+				Location location = new Location(Bukkit.getWorld(results.getString("world")), results.getDouble("x"), results.getDouble("y"), results.getDouble("z"));
+				UUID uuid = UUID.fromString(results.getString("UUID"));
+				deathDamageEvents.add(new PlayerDeathDamageEventContainer(uuid, location, results.getLong("time"), results.getString("name"), results.getString("event_type"), results.getString("source")));
 			}
 			return deathDamageEvents;
 		} catch (Exception e) {
@@ -299,7 +312,7 @@ public class MySQL {
 
 		try {
 			PreparedStatement statement = getConnection().prepareStatement
-					("SELECT * FROM join_leave_events WHERE time>=? AND time<=? ORDER BY time ASC");
+					("SELECT * FROM join_leave_events WHERE time>=? AND time<=? " + getLocationQuery(context, context.getRadius()) + " ORDER BY time ASC");
 			statement.setLong(1, context.getStartTimestamp());
 			statement.setLong(2, context.getTimeOfCommand());
 
@@ -308,13 +321,9 @@ public class MySQL {
 				if (joinLeaveEvents.size() >= eventRenderBuffer)
 					break;
 
-				String locString = results.getString("location");
-				Location eventLocation = Utils.stringToLocation(locString);
-
-				if (Utils.isLocationInReplay(eventLocation, context.getLocation(), context.getRadius())) {
-					UUID uuid = UUID.fromString(results.getString("UUID"));
-					joinLeaveEvents.add(new PlayerJoinLeaveEventContainer(uuid, eventLocation, results.getLong("time"), results.getString("name"), results.getString("event_type")));
-				}
+				Location location = new Location(Bukkit.getWorld(results.getString("world")), results.getDouble("x"), results.getDouble("y"), results.getDouble("z"));
+				UUID uuid = UUID.fromString(results.getString("UUID"));
+				joinLeaveEvents.add(new PlayerJoinLeaveEventContainer(uuid, location, results.getLong("time"), results.getString("name"), results.getString("event_type")));
 			}
 			return joinLeaveEvents;
 		} catch (Exception e) {
@@ -329,7 +338,7 @@ public class MySQL {
 
 		try {
 			PreparedStatement statement = getConnection().prepareStatement
-					("SELECT * FROM player_inventory_events WHERE time>=? AND time<=? ORDER BY time ASC");
+					("SELECT * FROM player_inventory_events WHERE time>=? AND time<=? " + getLocationQuery(context, context.getRadius()) + " ORDER BY time ASC");
 			statement.setLong(1, context.getStartTimestamp());
 			statement.setLong(2, context.getTimeOfCommand());
 
@@ -338,19 +347,15 @@ public class MySQL {
 				if (playerInventoryEvents.size() >= eventRenderBuffer)
 					break;
 
-				String locString = results.getString("location");
-				Location eventLocation = Utils.stringToLocation(locString);
+				String[] serArr = results.getString("serialized").split(";");
+				ItemStack[] content = InventorySerializer.itemStackArrayFromBase64(serArr[0]);
+				ItemStack[] armour = InventorySerializer.itemStackArrayFromBase64(serArr[1]);
+				int health = Integer.parseInt(serArr[2]);
+				ItemStack[] hands = InventorySerializer.itemStackArrayFromBase64(serArr[3]);
 
-				if (Utils.isLocationInReplay(eventLocation, context.getLocation(), context.getRadius())) {
-					String[] serArr = results.getString("serialized").split(";");
-					ItemStack[] content = InventorySerializer.itemStackArrayFromBase64(serArr[0]);
-					ItemStack[] armour = InventorySerializer.itemStackArrayFromBase64(serArr[1]);
-					int health = Integer.parseInt(serArr[2]);
-					ItemStack[] hands = InventorySerializer.itemStackArrayFromBase64(serArr[3]);
-
-					UUID uuid = UUID.fromString(results.getString("UUID"));
-					playerInventoryEvents.add(new PlayerInventoryEventContainer(uuid, eventLocation, results.getLong("time"), results.getString("name"), results.getString("serialized"), content, armour, hands, health));
-				}
+				Location location = new Location(Bukkit.getWorld(results.getString("world")), results.getDouble("x"), results.getDouble("y"), results.getDouble("z"));
+				UUID uuid = UUID.fromString(results.getString("UUID"));
+				playerInventoryEvents.add(new PlayerInventoryEventContainer(uuid, location, results.getLong("time"), results.getString("name"), results.getString("serialized"), content, armour, hands, health));
 			}
 			return playerInventoryEvents;
 		} catch (Exception e) {
@@ -366,20 +371,16 @@ public class MySQL {
 		int radius = context.getRadius() + 4;
 		try {
 			PreparedStatement statement = getConnection().prepareStatement
-					("SELECT name, player_move_events.uuid, location, time FROM player_move_events" +
+					("SELECT name, player_move_events.uuid, world, x, y, z, time FROM player_move_events" +
 							" INNER JOIN (SELECT uuid, MAX(time) AS maxtime FROM player_move_events" +
-							" WHERE time < ? GROUP BY uuid)" +
+							" WHERE time < ? " + getLocationQuery(context, context.getRadius()) + " GROUP BY uuid)" +
 							" ms ON player_move_events.uuid = ms.uuid AND time = maxtime");
 			statement.setLong(1, context.getStartTimestamp());
 
 			ResultSet results = statement.executeQuery();
 			while (results.next()) {
-				String locString = results.getString("location");
-				Location eventLocation = Utils.stringToPreciseLocation(locString);
-
-				if (Utils.isLocationInReplay(eventLocation, context.getLocation(), radius)) {
-					playerMoveEvents.add(new PlayerMoveEventContainer(UUID.fromString(results.getString("UUID")), eventLocation, results.getLong("time"), results.getString("name")));
-				}
+				Location location = new Location(Bukkit.getWorld(results.getString("world")), results.getDouble("x"), results.getDouble("y"), results.getDouble("z"));
+				playerMoveEvents.add(new PlayerMoveEventContainer(UUID.fromString(results.getString("UUID")), location, results.getLong("time"), results.getString("name")));
 			}
 			return playerMoveEvents;
 		} catch (Exception e) {
@@ -394,22 +395,18 @@ public class MySQL {
 
 		try {
 			PreparedStatement statement = getConnection().prepareStatement
-					("SELECT name, death_damage_events.uuid, location, event_type, source, time FROM death_damage_events" +
+					("SELECT name, death_damage_events.uuid, world, x, y, z, event_type, source, time FROM death_damage_events" +
 							" INNER JOIN (SELECT uuid, MAX(time) AS maxtime FROM death_damage_events" +
-							" WHERE time < ? AND event_type=? GROUP BY uuid)" +
+							" WHERE time < ? AND event_type=? " + getLocationQuery(context, context.getRadius()) + " GROUP BY uuid)" +
 							" ms ON death_damage_events.uuid = ms.uuid AND time = maxtime");
 			statement.setLong(1, context.getStartTimestamp());
 			statement.setString(2, "DEATH");
 
 			ResultSet results = statement.executeQuery();
 			while (results.next()) {
-				String locString = results.getString("location");
-				Location eventLocation = Utils.stringToLocation(locString);
-
-				if (Utils.isLocationInReplay(eventLocation, context.getLocation(), context.getRadius())) {
-					UUID uuid = UUID.fromString(results.getString("UUID"));
-					deathEvents.add(new PlayerDeathDamageEventContainer(uuid, eventLocation, results.getLong("time"), results.getString("name"), results.getString("event_type"), results.getString("source")));
-				}
+				Location location = new Location(Bukkit.getWorld(results.getString("world")), results.getDouble("x"), results.getDouble("y"), results.getDouble("z"));
+				UUID uuid = UUID.fromString(results.getString("UUID"));
+				deathEvents.add(new PlayerDeathDamageEventContainer(uuid, location, results.getLong("time"), results.getString("name"), results.getString("event_type"), results.getString("source")));
 			}
 			return deathEvents;
 		} catch (Exception e) {
@@ -424,22 +421,18 @@ public class MySQL {
 
 		try {
 			PreparedStatement statement = getConnection().prepareStatement
-					("SELECT name, join_leave_events.uuid, location, event_type, time FROM join_leave_events" +
+					("SELECT name, join_leave_events.uuid, world, x, y, z, event_type, time FROM join_leave_events" +
 							" INNER JOIN (SELECT uuid, MAX(time) AS maxtime FROM join_leave_events" +
-							" WHERE time < ? AND event_type=? GROUP BY uuid)" +
+							" WHERE time < ? AND event_type=? " + getLocationQuery(context, context.getRadius()) + " GROUP BY uuid)" +
 							" ms ON join_leave_events.uuid = ms.uuid AND time = maxtime");
 			statement.setLong(1, context.getStartTimestamp());
 			statement.setString(2, "LEAVE");
 
 			ResultSet results = statement.executeQuery();
 			while (results.next()) {
-				String locString = results.getString("location");
-				Location eventLocation = Utils.stringToLocation(locString);
-
-				if (Utils.isLocationInReplay(eventLocation, context.getLocation(), context.getRadius())) {
-					UUID uuid = UUID.fromString(results.getString("UUID"));
-					leaveEvents.add(new PlayerJoinLeaveEventContainer(uuid, eventLocation, results.getLong("time"), results.getString("name"), results.getString("event_type")));
-				}
+				Location location = new Location(Bukkit.getWorld(results.getString("world")), results.getDouble("x"), results.getDouble("y"), results.getDouble("z"));
+				UUID uuid = UUID.fromString(results.getString("UUID"));
+				leaveEvents.add(new PlayerJoinLeaveEventContainer(uuid, location, results.getLong("time"), results.getString("name"), results.getString("event_type")));
 			}
 			return leaveEvents;
 		} catch (Exception e) {
@@ -454,24 +447,27 @@ public class MySQL {
 
 		try {
 			PreparedStatement statement = getConnection().prepareStatement
-					("SELECT name, player_inventory_events.uuid, location, serialized, time FROM player_inventory_events" +
+					("SELECT name, player_inventory_events.uuid, world, x, y, z, serialized, time FROM player_inventory_events" +
 							" INNER JOIN (SELECT uuid, MAX(time) AS maxtime FROM player_inventory_events" +
 							" WHERE time < ? GROUP BY uuid)" +
-							" ms ON player_inventory_events.uuid = ms.uuid AND time = maxtime");
+							" ms ON player_inventory_events.uuid = ms.uuid AND time = maxtime" +
+							" WHERE ms.uuid IN (SELECT uuid FROM player_move_events WHERE time>=? AND time<=? "
+							+ getLocationQuery(context, context.getRadius() + 4) + " ORDER BY time ASC)");
 			statement.setLong(1, context.getStartTimestamp());
+			statement.setLong(2, context.getStartTimestamp());
+			statement.setLong(3, context.getTimeOfCommand());
 
 			ResultSet results = statement.executeQuery();
 			while (results.next()) {
-				String locString = results.getString("location");
-				Location eventLocation = Utils.stringToLocation(locString);
 				String[] serArr = results.getString("serialized").split(";");
 				ItemStack[] content = InventorySerializer.itemStackArrayFromBase64(serArr[0]);
 				ItemStack[] armour = InventorySerializer.itemStackArrayFromBase64(serArr[1]);
 				int health = Integer.parseInt(serArr[2]);
 				ItemStack[] hands = InventorySerializer.itemStackArrayFromBase64(serArr[3]);
 
+				Location location = new Location(Bukkit.getWorld(results.getString("world")), results.getDouble("x"), results.getDouble("y"), results.getDouble("z"));
 				UUID uuid = UUID.fromString(results.getString("UUID"));
-				playerInventoryEvents.add(new PlayerInventoryEventContainer(uuid, eventLocation, results.getLong("time"), results.getString("name"), results.getString("serialized"), content, armour, hands, health));
+				playerInventoryEvents.add(new PlayerInventoryEventContainer(uuid, location, results.getLong("time"), results.getString("name"), results.getString("serialized"), content, armour, hands, health));
 			}
 			return playerInventoryEvents;
 		} catch (Exception e) {
@@ -488,13 +484,18 @@ public class MySQL {
 
 			ResultSet results = statement.executeQuery();
 			while (results.next()) {
-				String locString = results.getString("location");
-				Location eventLocation = Utils.stringToLocation(locString);
-
-				if (Utils.isLocationInReplay(eventLocation, context.getLocation(), context.getRadius())) {
+				try {
+					Location location = new Location(Bukkit.getWorld(results.getString("world")), results.getDouble("x"), results.getDouble("y"), results.getDouble("z"));
 					BlockChange newBlock = BlockChangeSerializer.deserialize(results.getString("new_block"));
 					BlockChange oldBlock = BlockChangeSerializer.deserialize(results.getString("old_block"));
-					playerChangeBlockEventContainerRenderer.undoRender(new PlayerChangeBlockEventContainer(UUID.randomUUID(), eventLocation, results.getLong("time"), newBlock, oldBlock));
+					playerChangeBlockEventContainerRenderer.undoRender(new PlayerChangeBlockEventContainer(UUID.randomUUID(), location, results.getLong("time"), newBlock, oldBlock));
+				} catch (BlockChangeParseException e) {
+					Player player = Bukkit.getPlayer(context.getViewer());
+					if (player != null) {
+						player.sendMessage(Config.readColouredString("block-change-event-parse-error"));
+					}
+					ConsoleLogger.getInstance().log(Level.SEVERE, Config.readColouredString("block-change-event-parse-error"));
+					return;
 				}
 			}
 		} catch (Exception e) {
