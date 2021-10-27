@@ -14,34 +14,6 @@ import java.util.Optional;
 
 public class Utils {
 
-	public static Location stringToLocation(String str) {
-		String[] strArr = str.split(":");
-		Location loc = new Location(Bukkit.getServer().getWorld(strArr[0]), 0, 0, 0);
-		loc.setX(Integer.parseInt(strArr[1]));
-		loc.setY(Integer.parseInt(strArr[2]));
-		loc.setZ(Integer.parseInt(strArr[3]));
-		return loc;
-	}
-
-	public static Location stringToPreciseLocation(String str) {
-		String[] strArr = str.split(":");
-		Location loc = new Location(Bukkit.getServer().getWorld(strArr[0]), 0, 0, 0);
-		loc.setX(Utils.roundTwoDP(Double.parseDouble(strArr[1])));
-		loc.setY(Utils.roundTwoDP(Double.parseDouble(strArr[2])));
-		loc.setZ(Utils.roundTwoDP(Double.parseDouble(strArr[3])));
-		loc.setYaw((float) Utils.roundTwoDP(Float.parseFloat(strArr[4])));
-		loc.setPitch((float) Utils.roundTwoDP(Float.parseFloat(strArr[5])));
-		return loc;
-	}
-
-	public static String locationToString(Location loc) {
-		return Objects.requireNonNull(loc.getWorld()).getName() + ":" + loc.getBlockX() + ":" + loc.getBlockY() + ":" + loc.getBlockZ();
-	}
-
-	public static String preciseLocationToString(Location loc) {
-		return Objects.requireNonNull(loc.getWorld()).getName() + ":" + Utils.roundTwoDP(loc.getX()) + ":" + Utils.roundTwoDP(loc.getY()) + ":" + Utils.roundTwoDP(loc.getZ()) + ":" + Utils.roundTwoDP(loc.getYaw()) + ":" + Utils.roundTwoDP(loc.getPitch());
-	}
-
 	public static Optional<ZonedDateTime> convertToTimestamp(String argument, ZoneId zoneId) {
 		String datetimePattern = Objects.requireNonNull(Config.getConfig().getString("settings.timestamp-converter-format-datetime"));
 		try {
