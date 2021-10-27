@@ -216,7 +216,7 @@ public class MySQL {
 		String xQuery = "(x >= " + lowerX + " AND x <= " + upperX + ")";
 		String yQuery = "(y >= " + lowerY + " AND y <= " + upperY + ")";
 		String zQuery = "(z >= " + lowerZ + " AND z <= " + upperZ + ")";
-		return worldQuery + " AND " + xQuery + " AND " + (Config.getConfig().getBoolean("settings.ignore-y-radius") ? "" : yQuery + " AND ") + zQuery;
+		return "AND " + worldQuery + " AND " + xQuery + " AND " + (Config.getConfig().getBoolean("settings.ignore-y-radius") ? "" : yQuery + " AND ") + zQuery;
 	}
 
 	public List<PlayerChangeBlockEventContainer> getBlockEvents(ReplayContext context) {
