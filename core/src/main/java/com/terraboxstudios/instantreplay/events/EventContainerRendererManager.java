@@ -8,15 +8,15 @@ import com.terraboxstudios.instantreplay.mysql.MySQL;
 import com.terraboxstudios.instantreplay.replay.ReplayContext;
 import com.terraboxstudios.instantreplay.replay.ReplayThreads;
 import com.terraboxstudios.instantreplay.util.Utils;
-import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+
+import java.util.concurrent.atomic.AtomicLong;
 
 public final class EventContainerRendererManager {
 
     private final ReplayContext context;
-    @Getter
-    private long currentTimestamp;
+    private final AtomicLong currentTimestamp;
     private PlayerChangeBlockEventContainerRenderer playerChangeBlockEventContainerRenderer;
     private PlayerDeathDamageEventContainerRenderer playerDeathDamageEventContainerRenderer;
     private PlayerInventoryEventContainerRenderer playerInventoryEventContainerRenderer;
@@ -25,8 +25,12 @@ public final class EventContainerRendererManager {
 
     public EventContainerRendererManager(ReplayContext context) {
         this.context = context;
-        this.currentTimestamp = getFirstTimestamp(context.getStartTimestamp());
+        this.currentTimestamp = new AtomicLong(getFirstTimestamp(context.getStartTimestamp()));
         createRenderers();
+    }
+
+    public long getCurrentTimestamp() {
+        return currentTimestamp.get();
     }
 
     private long getFirstTimestamp(long startTimestamp) {
@@ -41,13 +45,21 @@ public final class EventContainerRendererManager {
             throw new PlayerNotOnlineException();
         }
 
-        Utils.runOnMainThread(() -> playerMoveEventContainerRenderer.render(currentTimestamp));
-        playerChangeBlockEventContainerRenderer.render(currentTimestamp);
-        playerInventoryEventContainerRenderer.render(currentTimestamp);
-        playerDeathDamageEventContainerRenderer.render(currentTimestamp);
-        playerJoinLeaveEventContainerRenderer.render(currentTimestamp);
+        Utils.runOnMainThread(() -> playerMoveEventContainerRenderer.render(getCurrentTimestamp()));
+        playerChangeBlockEventContainerRenderer.render(getCurrentTimestamp());
+        playerInventoryEventContainerRenderer.render(getCurrentTimestamp());
+        playerDeathDamageEventContainerRenderer.render(getCurrentTimestamp());
+        playerJoinLeaveEventContainerRenderer.render(getCurrentTimestamp());
 
-        currentTimestamp += 100;
+        currentTimestamp.addAndGet(100);
+    }
+
+    public void seek(long millis) throws IllegalArgumentException {
+        long newTimestamp = getCurrentTimestamp() + millis;
+        if (newTimestamp <= context.getStartTimestamp() || newTimestamp >= context.getTimeOfCommand()) {
+            throw new IllegalArgumentException("Seek request lies outside of replay time");
+        }
+        currentTimestamp.addAndGet(millis);
     }
 
     public void renderRemainingBlockChanges() {
@@ -102,5 +114,4 @@ public final class EventContainerRendererManager {
         EventContainerProvider<PlayerMoveEventContainer> provider = new PlayerMoveEventContainerProvider();
         this.playerMoveEventContainerRenderer = new PlayerMoveEventContainerRenderer(context, provider);
     }
-
 }
