@@ -8,10 +8,10 @@ import java.util.stream.Collectors;
 
 public interface EventContainerProvider<T extends EventContainer> {
 
-    List<T> getEventContainers(ReplayContext context);
+    List<T> getEventContainers(ReplayContext context, boolean firstRequest);
 
-    default List<T> provide(ReplayContext context) {
-        return getEventContainers(context)
+    default List<T> provide(ReplayContext context, boolean firstRequest) {
+        return getEventContainers(context, firstRequest)
                 .stream()
                 .peek(container -> container.setTime(Utils.roundTime(container.getTime())))
                 .collect(Collectors.toList());

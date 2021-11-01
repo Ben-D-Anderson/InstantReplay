@@ -10,9 +10,9 @@ import java.util.List;
 public class PlayerInventoryEventContainerProvider implements EventContainerProvider<PlayerInventoryEventContainer> {
 
     @Override
-    public List<PlayerInventoryEventContainer> getEventContainers(ReplayContext context) {
+    public List<PlayerInventoryEventContainer> getEventContainers(ReplayContext context, boolean firstRequest) {
         List<PlayerInventoryEventContainer> containers = MySQL.getInstance().getPlayerInventoryEvents(context);
-        containers.addAll(calculatePreReplayEvents(context));
+        if (firstRequest) containers.addAll(calculatePreReplayEvents(context));
         return containers;
     }
 

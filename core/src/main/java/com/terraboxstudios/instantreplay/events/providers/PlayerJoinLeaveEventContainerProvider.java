@@ -10,7 +10,7 @@ import java.util.List;
 public class PlayerJoinLeaveEventContainerProvider implements EventContainerProvider<PlayerJoinLeaveEventContainer> {
 
     @Override
-    public List<PlayerJoinLeaveEventContainer> getEventContainers(ReplayContext context) {
+    public List<PlayerJoinLeaveEventContainer> getEventContainers(ReplayContext context, boolean firstRequest) {
         return MySQL.getInstance().getJoinLeaveEvents(context);
     }
 

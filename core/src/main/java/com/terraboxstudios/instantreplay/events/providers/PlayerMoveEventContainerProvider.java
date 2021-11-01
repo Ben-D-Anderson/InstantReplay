@@ -23,10 +23,10 @@ public class PlayerMoveEventContainerProvider implements EventContainerProvider<
     }
 
     @Override
-    public List<PlayerMoveEventContainer> getEventContainers(ReplayContext context) {
+    public List<PlayerMoveEventContainer> getEventContainers(ReplayContext context, boolean firstRequest) {
         List<PlayerMoveEventContainer> containers = MySQL.getInstance().getPlayerMoveEvents(context);
         new ArrayList<>(containers).forEach(container -> predictMovementContainers(containers, container));
-        containers.addAll(calculatePreReplayEvents(context));
+        if (firstRequest) containers.addAll(calculatePreReplayEvents(context));
         return containers;
     }
 
