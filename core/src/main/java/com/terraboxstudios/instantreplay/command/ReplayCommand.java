@@ -27,6 +27,7 @@ public class ReplayCommand implements CommandExecutor {
         registerSubcommand(new PauseCommand());
         registerSubcommand(new ResumeCommand());
         registerSubcommand(new StartCommand());
+        registerSubcommand(new SeekCommand());
     }
 
     private void registerSubcommand(Subcommand subcommand) {
