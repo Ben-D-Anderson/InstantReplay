@@ -64,7 +64,7 @@ parsing-time-argument: "Parsing time argument with the server default timezone (
 invalid-format-speed: "&cFormat: /replay speed <speed>"
 invalid-argument-speed: "&cSpeed must be an integer, less than or equal to 10."
 invalid-format-seek: "&cFormat: /replay seek <time>"
-invalid-argument-seek: "&cTime must be a positive or negative integer followed by 's' or 'm' to represent 'seconds' or 'minutes'."
+invalid-argument-seek: "&cTime must be a positive integer followed by 's' or 'm' to represent 'seconds' or 'minutes'."
 invalid-time-seek: "&cSeek time goes outside the time constraints of the replay."
 invalid-format-start: "&cFormat: /replay start <radius> <time> [speed]"
 invalid-argument-start: "&cRadius and speed must be integers."

@@ -56,7 +56,7 @@ public final class EventContainerRendererManager {
 
     public void seek(long millis) throws IllegalArgumentException {
         long newTimestamp = getCurrentTimestamp() + millis;
-        if (newTimestamp <= context.getStartTimestamp() || newTimestamp >= context.getTimeOfCommand()) {
+        if (newTimestamp >= context.getTimeOfCommand()) {
             throw new IllegalArgumentException("Seek request lies outside of replay time");
         }
         currentTimestamp.addAndGet(millis);

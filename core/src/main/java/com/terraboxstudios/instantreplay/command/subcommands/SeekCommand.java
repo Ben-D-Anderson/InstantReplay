@@ -59,10 +59,15 @@ public class SeekCommand implements Subcommand {
 
     private long parseTimeArgument(String argument) {
         long longArgument = Long.parseLong(argument.substring(0, argument.length() - 1));
-        if (Character.toLowerCase(argument.charAt(argument.length() - 1)) == 'm') {
+        if (longArgument <= 0) throw new IllegalArgumentException("Seek time must be positive");
+        char character = Character.toLowerCase(argument.charAt(argument.length() - 1));
+        if (character == 'm') {
             return longArgument * 60 * 1000;
+        } else if (character == 's') {
+            return longArgument * 1000;
+        } else {
+            throw new IllegalArgumentException("Invalid time argument");
         }
-        return longArgument * 1000;
     }
 
 }
