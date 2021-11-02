@@ -20,7 +20,7 @@ public abstract class EventContainerRenderer<T extends EventContainer> {
         this.context = context;
         this.eventContainerProvider = eventContainerProvider;
         this.eventContainers = new ConcurrentLinkedQueue<>();
-        this.eventContainers.addAll(eventContainerProvider.provide(context));
+        this.eventContainers.addAll(eventContainerProvider.provide(context, true));
         this.providerLock = new Semaphore(1);
     }
 

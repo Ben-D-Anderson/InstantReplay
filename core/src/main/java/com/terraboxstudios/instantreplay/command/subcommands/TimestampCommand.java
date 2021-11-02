@@ -63,7 +63,7 @@ public class TimestampCommand implements Subcommand {
             if (sender instanceof Player) {
                 Player player = (Player) sender;
                 if (ReplayThreads.isUserReplaying(player.getUniqueId())) {
-                    timestamp = ReplayThreads.getThread(player.getUniqueId()).getRendererManager().getCurrentTimestamp();
+                    timestamp = ReplayThreads.getThread(player.getUniqueId()).getRendererManager().getCurrentTimestamp() / 1000;
                     Utils.sendReplayTimestampMessage(player, timestamp);
                     return;
                 }

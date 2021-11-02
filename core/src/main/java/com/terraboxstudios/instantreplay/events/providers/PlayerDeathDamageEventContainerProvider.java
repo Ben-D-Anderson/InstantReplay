@@ -10,7 +10,7 @@ import java.util.List;
 public class PlayerDeathDamageEventContainerProvider implements EventContainerProvider<PlayerDeathDamageEventContainer> {
 
     @Override
-    public List<PlayerDeathDamageEventContainer> getEventContainers(ReplayContext context) {
+    public List<PlayerDeathDamageEventContainer> getEventContainers(ReplayContext context, boolean firstRequest) {
         return MySQL.getInstance().getDeathDamageEvents(context);
     }
 

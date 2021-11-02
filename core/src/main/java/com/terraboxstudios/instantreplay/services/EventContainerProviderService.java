@@ -36,7 +36,7 @@ public class EventContainerProviderService {
 					eventContainerRenderer.getContext().getRadius(),
 					eventContainerRenderer.getContext().getLocation()
 			).build();
-			List<T> containers = eventContainerRenderer.getEventContainerProvider().provide(bufferContext);
+			List<T> containers = eventContainerRenderer.getEventContainerProvider().provide(bufferContext, false);
 			eventContainerRenderer.getEventContainers().addAll(containers);
 			if (containers.size() >= MySQL.getInstance().getEventRenderBuffer()) {
 				eventContainerRenderer.getProviderLock().release();

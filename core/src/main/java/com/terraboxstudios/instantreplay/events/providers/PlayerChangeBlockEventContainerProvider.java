@@ -10,7 +10,7 @@ import java.util.List;
 public class PlayerChangeBlockEventContainerProvider implements EventContainerProvider<PlayerChangeBlockEventContainer> {
 
     @Override
-    public List<PlayerChangeBlockEventContainer> getEventContainers(ReplayContext context) {
+    public List<PlayerChangeBlockEventContainer> getEventContainers(ReplayContext context, boolean firstRequest) {
         return MySQL.getInstance().getBlockEvents(context);
     }
 
