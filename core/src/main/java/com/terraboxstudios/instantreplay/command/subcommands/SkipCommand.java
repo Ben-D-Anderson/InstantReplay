@@ -8,7 +8,7 @@ import com.terraboxstudios.instantreplay.util.Utils;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class SeekCommand implements Subcommand {
+public class SkipCommand implements Subcommand {
 
     @Override
     public boolean isPlayerOnly() {
@@ -17,7 +17,7 @@ public class SeekCommand implements Subcommand {
 
     @Override
     public String getIdentifier() {
-        return "seek";
+        return "skip";
     }
 
     @Override
@@ -35,31 +35,31 @@ public class SeekCommand implements Subcommand {
             return;
         }
         if (args.length != 1) {
-            sender.sendMessage(Utils.getReplayPrefix() + Config.readColouredString("invalid-format-seek"));
+            sender.sendMessage(Utils.getReplayPrefix() + Config.readColouredString("invalid-format-skip"));
             return;
         }
         long millis;
         try {
             millis = parseTimeArgument(args[0]);
         } catch (Exception e) {
-            sender.sendMessage(Utils.getReplayPrefix() + Config.readColouredString("invalid-argument-seek"));
+            sender.sendMessage(Utils.getReplayPrefix() + Config.readColouredString("invalid-argument-skip"));
             return;
         }
         EventContainerRendererManager rendererManager = ReplayThreads.getThread(player.getUniqueId()).getRendererManager();
         try {
-            rendererManager.seek(millis);
+            rendererManager.skip(millis);
         } catch (IllegalArgumentException exception) {
-            sender.sendMessage(Utils.getReplayPrefix() + Config.readColouredString("invalid-time-seek"));
+            sender.sendMessage(Utils.getReplayPrefix() + Config.readColouredString("invalid-time-skip"));
             return;
         }
-        player.sendMessage(Utils.getReplayPrefix() + Config.readColouredString("replay-seeked")
-                .replace("{SEEKED}", millis / 1000 + "")
+        player.sendMessage(Utils.getReplayPrefix() + Config.readColouredString("replay-skipped")
+                .replace("{SECONDS}", millis / 1000 + "")
                 .replace("{TIMESTAMP}", rendererManager.getCurrentTimestamp() + ""));
     }
 
     private long parseTimeArgument(String argument) {
         long longArgument = Long.parseLong(argument.substring(0, argument.length() - 1));
-        if (longArgument <= 0) throw new IllegalArgumentException("Seek time must be positive");
+        if (longArgument <= 0) throw new IllegalArgumentException("Skip time must be positive");
         char character = Character.toLowerCase(argument.charAt(argument.length() - 1));
         if (character == 'm') {
             return longArgument * 60 * 1000;

@@ -54,10 +54,13 @@ public final class EventContainerRendererManager {
         currentTimestamp.addAndGet(100);
     }
 
-    public void seek(long millis) throws IllegalArgumentException {
+    public void skip(long millis) throws IllegalArgumentException {
         long newTimestamp = getCurrentTimestamp() + millis;
+        if (millis <= 0) {
+            throw new IllegalArgumentException("Skip time must be positive");
+        }
         if (newTimestamp >= context.getTimeOfCommand()) {
-            throw new IllegalArgumentException("Seek request lies outside of replay time");
+            throw new IllegalArgumentException("Skip request lies outside of replay time");
         }
         currentTimestamp.addAndGet(millis);
     }
