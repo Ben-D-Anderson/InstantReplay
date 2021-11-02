@@ -26,7 +26,7 @@ public class PlayerMoveEventContainerProvider implements EventContainerProvider<
     public List<PlayerMoveEventContainer> getEventContainers(ReplayContext context, boolean firstRequest) {
         List<PlayerMoveEventContainer> containers = MySQL.getInstance().getPlayerMoveEvents(context);
         new ArrayList<>(containers).forEach(container -> predictMovementContainers(containers, container));
-        if (firstRequest) containers.addAll(calculatePreReplayEvents(context));
+        if (firstRequest) calculatePreReplayEvents(context).forEach(pre -> insertContainer(containers, pre));
         return containers;
     }
 
