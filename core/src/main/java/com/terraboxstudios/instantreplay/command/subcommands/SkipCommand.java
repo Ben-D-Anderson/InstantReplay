@@ -53,8 +53,7 @@ public class SkipCommand implements Subcommand {
             return;
         }
         player.sendMessage(Utils.getReplayPrefix() + Config.readColouredString("replay-skipped")
-                .replace("{SECONDS}", millis / 1000 + "")
-                .replace("{TIMESTAMP}", rendererManager.getCurrentTimestamp() + ""));
+                .replace("{TIME}", getFormattedTime(millis)));
     }
 
     private long parseTimeArgument(String argument) {
@@ -68,6 +67,26 @@ public class SkipCommand implements Subcommand {
         } else {
             throw new IllegalArgumentException("Invalid time argument");
         }
+    }
+
+    private String getFormattedTime(long millis) {
+        final StringBuilder timeSkipped = new StringBuilder();
+        final long seconds = millis / 1000;
+        final long minutes = seconds / 60;
+        if (minutes > 0) {
+            timeSkipped.append(seconds).append(" ").append("minute");
+            if (minutes != 1) timeSkipped.append("s");
+            final long remainingSeconds = seconds - (minutes * 60);
+            if (remainingSeconds > 0) {
+                timeSkipped.append(" & ");
+                timeSkipped.append(remainingSeconds).append(" ").append("second");
+                if (remainingSeconds != 1) timeSkipped.append("s");
+            }
+        } else {
+            timeSkipped.append(seconds).append(" ").append("second");
+            if (seconds != 1) timeSkipped.append("s");
+        }
+        return timeSkipped.toString();
     }
 
 }
