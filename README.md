@@ -63,6 +63,12 @@ Changing speed of a replay to 2x:
 /replay speed 2
 ```
 
+Skipping 30 seconds in a replay:
+
+```
+/replay skip 30s
+```
+
 Stopping a replay:
 
 ```
