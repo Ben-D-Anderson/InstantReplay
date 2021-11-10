@@ -2,6 +2,7 @@ package com.terraboxstudios.instantreplay.command;
 
 import com.terraboxstudios.instantreplay.command.subcommands.*;
 import com.terraboxstudios.instantreplay.util.Config;
+import lombok.Getter;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -14,6 +15,7 @@ import java.util.TreeMap;
 
 public class ReplayCommand implements CommandExecutor {
 
+    @Getter
     private final Map<String, Subcommand> subcommands;
 
     public ReplayCommand() {
