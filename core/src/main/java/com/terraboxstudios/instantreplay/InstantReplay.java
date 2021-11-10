@@ -1,6 +1,7 @@
 package com.terraboxstudios.instantreplay;
 
 import com.terraboxstudios.instantreplay.command.ReplayCommand;
+import com.terraboxstudios.instantreplay.command.ReplaySubcommandTabCompleter;
 import com.terraboxstudios.instantreplay.events.loggers.*;
 import com.terraboxstudios.instantreplay.listeners.PlayerInteractListener;
 import com.terraboxstudios.instantreplay.listeners.PlayerRightClickNPCListener;
@@ -67,7 +68,9 @@ public class InstantReplay extends JavaPlugin {
 	}
 
 	private void registerCommands() {
-		Objects.requireNonNull(getCommand("replay")).setExecutor(new ReplayCommand());
+		ReplayCommand replayCommand = new ReplayCommand();
+		Objects.requireNonNull(getCommand("replay")).setExecutor(replayCommand);
+		Objects.requireNonNull(getCommand("replay")).setTabCompleter(new ReplaySubcommandTabCompleter(replayCommand));
 	}
 
 	private void registerEvents() {
