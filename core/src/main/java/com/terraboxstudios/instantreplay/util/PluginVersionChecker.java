@@ -22,7 +22,7 @@ public class PluginVersionChecker {
             this.latestReleaseUrl = redirectUrl;
             String[] redirectUrlElements = redirectUrl.split("/");
             String latestVersion = redirectUrlElements[redirectUrlElements.length - 1];
-            return !currentVersion.equals(latestVersion);
+            return !currentVersion.equals("v" + latestVersion);
         } catch (Exception e) {
             return false;
         }
