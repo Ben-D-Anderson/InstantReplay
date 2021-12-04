@@ -5,10 +5,10 @@ import com.terraboxstudios.instantreplay.versionspecific.blocks.BlockChangeFacto
 import com.terraboxstudios.instantreplay.versionspecific.item.ItemFactory;
 import com.terraboxstudios.instantreplay.versionspecific.npc.NPCFactory;
 import com.terraboxstudios.instantreplay.versionspecific.util.UtilsHelper;
-import com.terraboxstudios.instantreplay.versionspecific.v1_17_R1.blocks.BlockChangeFactoryImpl;
-import com.terraboxstudios.instantreplay.versionspecific.v1_17_R1.item.ItemFactoryImpl;
-import com.terraboxstudios.instantreplay.versionspecific.v1_17_R1.npc.NPCFactoryImpl;
-import com.terraboxstudios.instantreplay.versionspecific.v1_17_R1.util.UtilsHelperImpl;
+import com.terraboxstudios.instantreplay.versionspecific.v1_18_R1.blocks.BlockChangeFactoryImpl;
+import com.terraboxstudios.instantreplay.versionspecific.v1_18_R1.item.ItemFactoryImpl;
+import com.terraboxstudios.instantreplay.versionspecific.v1_18_R1.npc.NPCFactoryImpl;
+import com.terraboxstudios.instantreplay.versionspecific.v1_18_R1.util.UtilsHelperImpl;
 import lombok.Getter;
 
 @Getter
