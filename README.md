@@ -19,18 +19,6 @@ your screen to catch rule-breakers, server admins can now re-watch the rule viol
 
 <br>
 
-## Visual Demonstration
-
-<br>
-
-<div align="center">
-
-_Coming Soon..._
-
-</div>
-
-<br>
-
 ## Example Commands
 
 Starting a replay with a 5 block radius, from 10 seconds ago:
